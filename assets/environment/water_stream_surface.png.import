@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bq21qasg2ppqo"
-path.s3tc="res://.godot/imported/idle_down_0.png-d88ca95b4e239a5d8e1a53bb9ae61ac6.s3tc.ctex"
+uid="uid://cx4fwajmb8e8d"
+path.s3tc="res://.godot/imported/water_stream_surface.png-dd51318c7e7059d99833d937bd964157.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/character/frames/idle_down_0.png"
-dest_files=["res://.godot/imported/idle_down_0.png-d88ca95b4e239a5d8e1a53bb9ae61ac6.s3tc.ctex"]
+source_file="res://assets/environment/water_stream_surface.png"
+dest_files=["res://.godot/imported/water_stream_surface.png-dd51318c7e7059d99833d937bd964157.s3tc.ctex"]
 
 [params]
 

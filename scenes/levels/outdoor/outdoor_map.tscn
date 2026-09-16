@@ -29,7 +29,6 @@
 [ext_resource type="Texture2D" uid="uid://7cvsojce1xic" path="res://assets/environment/cliff_tiered_05.png" id="27_cliff_tiered"]
 [ext_resource type="Texture2D" uid="uid://h8ew5dfccfa1" path="res://assets/environment/cliff_block_02.png" id="28_cliff_block"]
 [ext_resource type="Texture2D" uid="uid://dsqwfdlffundv" path="res://assets/environment/rock_sharp_cluster.png" id="29_rock_sharp"]
-[ext_resource type="Texture2D" uid="uid://c8jvauohyb3w1" path="res://assets/environment/rock_cluster_mossy.png" id="30_rock_mossy"]
 [ext_resource type="Texture2D" uid="uid://dtusb2cqgdaaq" path="res://assets/environment/rock_small_01.png" id="31_rock_small"]
 [ext_resource type="Texture2D" uid="uid://8yy16jxjolvf" path="res://assets/environment/dead_tree_gnarled.png" id="32_dead_tree"]
 [ext_resource type="Texture2D" uid="uid://cyif6d7mnks4a" path="res://assets/environment/hanging_chain.png" id="33_chain"]
@@ -38,7 +37,6 @@
 [ext_resource type="Texture2D" uid="uid://bkmne2g4eegf6" path="res://assets/environment/sealed_gate_portal_barrier.png" id="40_gate_barrier"]
 [ext_resource type="Texture2D" uid="uid://csvfqdq7flank" path="res://assets/environment/asur_hanging_banner_large.png" id="41_banner_large"]
 [ext_resource type="Texture2D" uid="uid://epejfv3hxv0h" path="res://assets/environment/asur_hanging_banner_sigil.png" id="42_banner_sigil"]
-[ext_resource type="Texture2D" uid="uid://c8oyncb2gqopb" path="res://assets/environment/brazier_flaming.png" id="43_brazier"]
 [ext_resource type="Texture2D" uid="uid://b0p883qdqlp2v" path="res://assets/environment/bridge_post_tall.png" id="44_bridge_post"]
 [ext_resource type="Texture2D" uid="uid://cmp4yq5fildhw" path="res://assets/environment/bridge_post_banner.png" id="45_bridge_post_banner"]
 [ext_resource type="Texture2D" uid="uid://di7nociaeh8tj" path="res://assets/environment/tower_banner_brazier.png" id="46_tower_banner"]
@@ -47,6 +45,15 @@
 [ext_resource type="Texture2D" uid="uid://bkxjamp7hunjv" path="res://assets/environment/tower_roofed.png" id="49_tower_roofed"]
 [ext_resource type="SpriteFrames" path="res://scenes/levels/outdoor/brazier_sprite_frames.tres" id="50_brazier_frames"]
 [ext_resource type="SpriteFrames" path="res://scenes/levels/outdoor/flame_sprite_frames.tres" id="51_flame_frames"]
+[ext_resource type="Texture2D" uid="uid://b7va14jyp0y0x" path="res://assets/environment/waterfall_fall_03.png" id="52_waterfall3"]
+[ext_resource type="Texture2D" uid="uid://ccos7isyb2nvk" path="res://assets/environment/waterfall_splash_03.png" id="53_splash3"]
+[ext_resource type="Texture2D" uid="uid://c0ekilbhj8oc1" path="res://assets/environment/waterfall_rock_shelf.png" id="54_rock_shelf"]
+[ext_resource type="Texture2D" uid="uid://dortpejomvr0r" path="res://assets/environment/waterfall_chute_narrow.png" id="55_chute_narrow"]
+[ext_resource type="Texture2D" uid="uid://cx4fwajmb8e8d" path="res://assets/environment/water_stream_surface.png" id="56_stream_surface"]
+[ext_resource type="Texture2D" uid="uid://chll6fn1gmysr" path="res://assets/environment/bush_corrupted_red.png" id="57_bush_corrupted"]
+[ext_resource type="Texture2D" uid="uid://ccx2bhyh7em1o" path="res://assets/environment/bush_spiked_red.png" id="58_bush_spiked"]
+[ext_resource type="Texture2D" uid="uid://b8iasgcrxiddn" path="res://assets/environment/rock_spire_01.png" id="59_rock_spire1"]
+[ext_resource type="Texture2D" uid="uid://db15b1x1ugmjc" path="res://assets/environment/rock_spire_02.png" id="60_rock_spire2"]
 
 [sub_resource type="Environment" id="Environment_outdoor"]
 background_mode = 1
@@ -117,13 +124,13 @@ radius = 2.0
 [sub_resource type="BoxShape3D" id="Shape_GateDoor"]
 size = Vector3(4, 5, 1)
 
+[sub_resource type="BoxShape3D" id="Shape_GateTrigger"]
+size = Vector3(5, 3, 4)
+
 [sub_resource type="StandardMaterial3D" id="Mat_GateDoor"]
 albedo_texture = ExtResource("9_gate_door")
 roughness = 0.8
 texture_filter = 0
-
-[sub_resource type="BoxShape3D" id="Shape_GateTrigger"]
-size = Vector3(5, 3, 4)
 
 [node name="OutdoorMap" type="Node3D" unique_id=1877333104]
 
@@ -169,7 +176,7 @@ light_energy = 2.0
 omni_range = 15.0
 
 [node name="DistantMountainsCastle" type="Sprite3D" parent="BackgroundAtmosphere" unique_id=554549218]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1.6, -6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2198143, 2.8692627, -7.317238)
 modulate = Color(0.85, 0.8, 0.9, 0.95)
 pixel_size = 0.032
 texture_filter = 0
@@ -255,106 +262,370 @@ pixel_size = 0.035
 texture_filter = 0
 texture = ExtResource("18_mist3")
 
-[node name="ChasmScenery" type="Node3D" parent="." unique_id=1435209801]
+[node name="ChasmScenery" type="Node3D" parent="." unique_id=1262783163]
 
-[node name="AbyssFloor" type="CSGBox3D" parent="ChasmScenery" unique_id=121745692]
+[node name="AbyssFloor" type="CSGBox3D" parent="ChasmScenery" unique_id=1561132272]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -18, 0)
 size = Vector3(140, 2, 140)
 material = SubResource("Mat_AbyssFloor")
 
-[node name="ChasmCliffL" type="Sprite3D" parent="ChasmScenery" unique_id=1412084718]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, -5.5, 0)
+[node name="ButtressWest_M" type="Sprite3D" parent="ChasmScenery" unique_id=853964597]
+transform = Transform3D(1.3, 0, 0, 0, 1.4, 0, 0, 0, 1, -3.4, -3.2, -1.5)
 pixel_size = 0.038
 billboard = 2
 texture_filter = 0
 texture = ExtResource("25_cliff_massive")
-region_enabled = true
-region_rect = Rect2(0, 0, 115, 115)
 
-[node name="WaterfallL" type="Sprite3D" parent="ChasmScenery" unique_id=67156391]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, -4.5, 0.1)
+[node name="ButtressWest_N" type="Sprite3D" parent="ChasmScenery" unique_id=1629908647]
+transform = Transform3D(1.2, 0, 0, 0, 1.3, 0, 0, 0, 1, -3.2, -3.8, -9)
+pixel_size = 0.038
+billboard = 2
+texture_filter = 0
+texture = ExtResource("24_cliff_tall")
+
+[node name="ButtressEast_S" type="Sprite3D" parent="ChasmScenery" unique_id=1816160769]
+transform = Transform3D(-1.2, 0, 0, 0, 1.3, 0, 0, 0, 1, 3.2, -2.6, 6)
+pixel_size = 0.038
+billboard = 2
+texture_filter = 0
+texture = ExtResource("24_cliff_tall")
+
+[node name="ButtressEast_M" type="Sprite3D" parent="ChasmScenery" unique_id=8741119]
+transform = Transform3D(-1.3, 0, 0, 0, 1.4, 0, 0, 0, 1, 3.4, -3.2, -1.5)
+pixel_size = 0.038
+billboard = 2
+texture_filter = 0
+texture = ExtResource("25_cliff_massive")
+
+[node name="ButtressEast_N" type="Sprite3D" parent="ChasmScenery" unique_id=1401517199]
+transform = Transform3D(-1.2, 0, 0, 0, 1.3, 0, 0, 0, 1, 3.2, -3.8, -9)
+pixel_size = 0.038
+billboard = 2
+texture_filter = 0
+texture = ExtResource("25_cliff_massive")
+
+[node name="West_Tier1_CliffMain" type="Sprite3D" parent="ChasmScenery" unique_id=858893743]
+transform = Transform3D(1.2, 0, 0, 0, 1.3, 0, 0, 0, 1, -9.8, 1.4, -8.5)
+pixel_size = 0.036
+billboard = 2
+texture_filter = 0
+texture = ExtResource("24_cliff_tall")
+
+[node name="West_Tier1_Fall" type="Sprite3D" parent="ChasmScenery" unique_id=1502528488]
+transform = Transform3D(1.1, 0, 0, 0, 1.15, 0, 0, 0, 1, -9.2, 1.2, -8.2)
 pixel_size = 0.032
 billboard = 1
 texture_filter = 0
-texture = ExtResource("20_waterfall1")
+texture = ExtResource("52_waterfall3")
 
-[node name="WaterfallSplashL" type="Sprite3D" parent="ChasmScenery" unique_id=829769402]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, -6.8, 0.2)
+[node name="West_Tier1_Splash" type="Sprite3D" parent="ChasmScenery" unique_id=536670770]
+transform = Transform3D(1.1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, -0.1, -7.9)
 pixel_size = 0.032
 billboard = 1
 texture_filter = 0
 texture = ExtResource("22_splash1")
 
-[node name="MistL" type="Sprite3D" parent="ChasmScenery" unique_id=1069490618]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, -5.8, 0.5)
-modulate = Color(0.7, 0.75, 0.9, 0.65)
-pixel_size = 0.04
-billboard = 1
+[node name="West_Tier1_UpperLedge" type="Sprite3D" parent="ChasmScenery" unique_id=200448559]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1, -8.8, -0.3, -7.4)
+pixel_size = 0.036
+billboard = 2
 texture_filter = 0
-texture = ExtResource("16_mist1")
+texture = ExtResource("27_cliff_tiered")
 
-[node name="LightL" type="OmniLight3D" parent="ChasmScenery" unique_id=1502092700]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, -5, 0.5)
-light_color = Color(0.35, 0.45, 0.7, 1)
-light_energy = 1.8
-omni_range = 10.0
+[node name="West_Tier1_Foliage1" type="Sprite3D" parent="ChasmScenery" unique_id=1442590914]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.4, 1.9, -8.8)
+pixel_size = 0.024
+billboard = 2
+texture_filter = 0
+texture = ExtResource("57_bush_corrupted")
 
-[node name="ChasmCliffR" type="Sprite3D" parent="ChasmScenery" unique_id=1861932176]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, -5.5, 0)
+[node name="West_Tier1_Foliage2" type="Sprite3D" parent="ChasmScenery" unique_id=1254001373]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 1, -8.2, 0.3, -7.1)
+pixel_size = 0.024
+billboard = 2
+texture_filter = 0
+texture = ExtResource("58_bush_spiked")
+
+[node name="West_Tier1_Mist" type="Sprite3D" parent="ChasmScenery" unique_id=906770983]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1, -9, 0.2, -7.6)
+modulate = Color(0.7, 0.8, 1, 0.55)
 pixel_size = 0.038
 billboard = 2
 texture_filter = 0
-texture = ExtResource("25_cliff_massive")
-region_enabled = true
-region_rect = Rect2(0, 0, 115, 115)
+texture = ExtResource("24_cliff_tall")
 
-[node name="WaterfallR" type="Sprite3D" parent="ChasmScenery" unique_id=621736743]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, -4.5, 0.1)
+[node name="West_Tier2_CliffCol2" type="Sprite3D" parent="ChasmScenery" unique_id=805384888]
+transform = Transform3D(1.1, 0, 0, 0, 1.2, 0, 0, 0, 1, -8.8, -1, -3.3)
+pixel_size = 0.038
+billboard = 2
+texture_filter = 0
+texture = ExtResource("28_cliff_block")
+
+[node name="West_Tier2_Stream" type="Sprite3D" parent="ChasmScenery" unique_id=106395280]
+transform = Transform3D(1.1, 0, 0, 0, 1, 0, 0, 0, 1, -8.3, -0.8, -2.8)
+pixel_size = 0.032
+billboard = 1
+texture_filter = 0
+texture = ExtResource("56_stream_surface")
+
+[node name="West_Tier2_RockPromontory" type="Sprite3D" parent="ChasmScenery" unique_id=1696784988]
+transform = Transform3D(1.2, 0, 0, 0, 1.25, 0, 0, 0, 1, -8, -0.9, -2.4)
+pixel_size = 0.034
+billboard = 2
+texture_filter = 0
+texture = ExtResource("54_rock_shelf")
+
+[node name="West_Tier2_Chute" type="Sprite3D" parent="ChasmScenery" unique_id=401357615]
+transform = Transform3D(1.1, 0, 0, 0, 1.2, 0, 0, 0, 1, -8.6, -1.5, -2.3)
+pixel_size = 0.032
+billboard = 1
+texture_filter = 0
+texture = ExtResource("55_chute_narrow")
+
+[node name="West_Tier2_FallBroad" type="Sprite3D" parent="ChasmScenery" unique_id=861497019]
+transform = Transform3D(1.1, 0, 0, 0, 1.2, 0, 0, 0, 1, -7.5, -1.8, -1.9)
 pixel_size = 0.032
 billboard = 1
 texture_filter = 0
 texture = ExtResource("21_waterfall2")
 
-[node name="WaterfallSplashR" type="Sprite3D" parent="ChasmScenery" unique_id=2035247007]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, -6.8, 0.2)
-pixel_size = 0.032
+[node name="West_Tier2_Splash" type="Sprite3D" parent="ChasmScenery" unique_id=394941022]
+transform = Transform3D(1.1, 0, 0, 0, 1, 0, 0, 0, 1, -8, -2.8, -1.6)
+pixel_size = 0.034
 billboard = 1
 texture_filter = 0
 texture = ExtResource("23_splash2")
 
-[node name="MistR" type="Sprite3D" parent="ChasmScenery" unique_id=1646895896]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, -5.8, 0.5)
-modulate = Color(0.7, 0.75, 0.9, 0.65)
-pixel_size = 0.04
+[node name="West_Tier2_Foliage1" type="Sprite3D" parent="ChasmScenery" unique_id=1620144151]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.4, -0.5, -3.5)
+pixel_size = 0.024
+billboard = 2
+texture_filter = 0
+texture = ExtResource("57_bush_corrupted")
+
+[node name="West_Tier2_Foliage2" type="Sprite3D" parent="ChasmScenery" unique_id=496743127]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 1, -7.3, -1.2, -1.4)
+pixel_size = 0.024
+billboard = 2
+texture_filter = 0
+texture = ExtResource("58_bush_spiked")
+
+[node name="West_Tier2_Mist" type="Sprite3D" parent="ChasmScenery" unique_id=1560757524]
+transform = Transform3D(1.3, 0, 0, 0, 1.2, 0, 0, 0, 1, -8.2, -2.2, -1.6)
+modulate = Color(0.7, 0.8, 1, 0.6)
+pixel_size = 0.042
 billboard = 1
 texture_filter = 0
 texture = ExtResource("17_mist2")
 
-[node name="LightR" type="OmniLight3D" parent="ChasmScenery" unique_id=1788120002]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, -5, 0.5)
-light_color = Color(0.35, 0.45, 0.7, 1)
-light_energy = 1.8
-omni_range = 10.0
+[node name="West_Tier2_Glow" type="OmniLight3D" parent="ChasmScenery" unique_id=8605312]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, -1.8, -1.8)
+light_color = Color(0.3, 0.75, 0.95, 1)
+light_energy = 2.0
+omni_range = 8.5
 
-[node name="AbyssFog1" type="Sprite3D" parent="ChasmScenery" unique_id=1629987294]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -7, 6)
-modulate = Color(0.25, 0.12, 0.28, 0.6)
-pixel_size = 0.06
+[node name="West_Tier3_CliffOverhang" type="Sprite3D" parent="ChasmScenery" unique_id=1527098914]
+transform = Transform3D(1.2, 0, 0, 0, 1.3, 0, 0, 0, 1, -8.2, -3.8, 3.6)
+pixel_size = 0.036
+billboard = 2
+texture_filter = 0
+texture = ExtResource("26_cliff_overhang")
+
+[node name="West_Tier3_CliffStepped" type="Sprite3D" parent="ChasmScenery" unique_id=1042566083]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1, -7, -3.4, 4.6)
+pixel_size = 0.036
+billboard = 2
+texture_filter = 0
+texture = ExtResource("27_cliff_tiered")
+
+[node name="West_Tier3_Fall" type="Sprite3D" parent="ChasmScenery" unique_id=266753934]
+transform = Transform3D(1.2, 0, 0, 0, 1.3, 0, 0, 0, 1, -7.6, -5.2, 3.8)
+pixel_size = 0.032
+billboard = 1
+texture_filter = 0
+texture = ExtResource("20_waterfall1")
+
+[node name="West_Tier3_Splash" type="Sprite3D" parent="ChasmScenery" unique_id=2076449981]
+transform = Transform3D(1.3, 0, 0, 0, 1.2, 0, 0, 0, 1, -7.6, -7.2, 4.1)
+pixel_size = 0.036
+billboard = 1
+texture_filter = 0
+texture = ExtResource("53_splash3")
+
+[node name="West_Tier3_Spire1" type="Sprite3D" parent="ChasmScenery" unique_id=918620013]
+transform = Transform3D(1.1, 0, 0, 0, 1.2, 0, 0, 0, 1, -6.4, -5.6, 5.3)
+pixel_size = 0.032
+billboard = 2
+texture_filter = 0
+texture = ExtResource("59_rock_spire1")
+
+[node name="West_Tier3_Spire2" type="Sprite3D" parent="ChasmScenery" unique_id=828590003]
+transform = Transform3D(1.1, 0, 0, 0, 1.2, 0, 0, 0, 1, -9.2, -5.9, 4.8)
+pixel_size = 0.032
+billboard = 2
+texture_filter = 0
+texture = ExtResource("60_rock_spire2")
+
+[node name="West_Tier3_Foliage1" type="Sprite3D" parent="ChasmScenery" unique_id=1923588200]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.8, -3.1, 3.8)
+pixel_size = 0.024
+billboard = 2
+texture_filter = 0
+texture = ExtResource("57_bush_corrupted")
+
+[node name="West_Tier3_Foliage2" type="Sprite3D" parent="ChasmScenery" unique_id=864616510]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 1, -6.7, -2.9, 4.8)
+pixel_size = 0.024
+billboard = 2
+texture_filter = 0
+texture = ExtResource("58_bush_spiked")
+
+[node name="West_Tier3_Mist1" type="Sprite3D" parent="ChasmScenery" unique_id=282776235]
+transform = Transform3D(1.4, 0, 0, 0, 1.3, 0, 0, 0, 1, -7.6, -5.8, 4.2)
+modulate = Color(0.75, 0.82, 1, 0.65)
+pixel_size = 0.045
 billboard = 1
 texture_filter = 0
 texture = ExtResource("18_mist3")
 
-[node name="AbyssFog2" type="Sprite3D" parent="ChasmScenery" unique_id=2056644313]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -7, -4)
-modulate = Color(0.25, 0.12, 0.28, 0.6)
+[node name="West_Tier3_Mist2" type="Sprite3D" parent="ChasmScenery" unique_id=411760927]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1, -8.6, -6.5, 5.1)
+modulate = Color(0.7, 0.78, 0.95, 0.6)
+pixel_size = 0.045
+billboard = 1
+texture_filter = 0
+texture = ExtResource("19_mist4")
+
+[node name="West_Tier3_Glow" type="OmniLight3D" parent="ChasmScenery" unique_id=1814414379]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.6, -5.5, 4)
+light_color = Color(0.35, 0.75, 0.95, 1)
+light_energy = 2.2
+omni_range = 9.0
+
+[node name="East_CliffCol1" type="Sprite3D" parent="ChasmScenery" unique_id=829646796]
+transform = Transform3D(-1.2, 0, 0, 0, 1.3, 0, 0, 0, 1, 8.8, -1.6, -4.6)
+pixel_size = 0.038
+billboard = 2
+texture_filter = 0
+texture = ExtResource("24_cliff_tall")
+
+[node name="East_CliffCol2" type="Sprite3D" parent="ChasmScenery" unique_id=1856738223]
+transform = Transform3D(-1.1, 0, 0, 0, 1.2, 0, 0, 0, 1, 8.2, -2.1, -2.6)
+pixel_size = 0.038
+billboard = 2
+texture_filter = 0
+texture = ExtResource("28_cliff_block")
+
+[node name="East_FallHigh" type="Sprite3D" parent="ChasmScenery" unique_id=1525013274]
+transform = Transform3D(1.1, 0, 0, 0, 1.2, 0, 0, 0, 1, 8.6, -1.8, -4.1)
+pixel_size = 0.032
+billboard = 1
+texture_filter = 0
+texture = ExtResource("21_waterfall2")
+
+[node name="East_SplashHigh" type="Sprite3D" parent="ChasmScenery" unique_id=1006802954]
+transform = Transform3D(1.1, 0, 0, 0, 1, 0, 0, 0, 1, 8.6, -3.2, -3.8)
+pixel_size = 0.032
+billboard = 1
+texture_filter = 0
+texture = ExtResource("22_splash1")
+
+[node name="East_CliffCol3" type="Sprite3D" parent="ChasmScenery" unique_id=1257248546]
+transform = Transform3D(-1.2, 0, 0, 0, 1.3, 0, 0, 0, 1, 8, -3.5, 2)
+pixel_size = 0.038
+billboard = 2
+texture_filter = 0
+texture = ExtResource("24_cliff_tall")
+
+[node name="East_CliffCol4" type="Sprite3D" parent="ChasmScenery" unique_id=1323223002]
+transform = Transform3D(-1.2, 0, 0, 0, 1.2, 0, 0, 0, 1, 7.5, -3.2, 4)
+pixel_size = 0.036
+billboard = 2
+texture_filter = 0
+texture = ExtResource("27_cliff_tiered")
+
+[node name="East_FallLow" type="Sprite3D" parent="ChasmScenery" unique_id=1448676141]
+transform = Transform3D(1.1, 0, 0, 0, 1.25, 0, 0, 0, 1, 7.8, -4.8, 3.2)
+pixel_size = 0.032
+billboard = 1
+texture_filter = 0
+texture = ExtResource("20_waterfall1")
+
+[node name="East_SplashLow" type="Sprite3D" parent="ChasmScenery" unique_id=286878155]
+transform = Transform3D(1.2, 0, 0, 0, 1.1, 0, 0, 0, 1, 7.8, -6.3, 3.5)
+pixel_size = 0.034
+billboard = 1
+texture_filter = 0
+texture = ExtResource("23_splash2")
+
+[node name="East_Foliage1" type="Sprite3D" parent="ChasmScenery" unique_id=2086788190]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, -1.2, -3.6)
+pixel_size = 0.024
+billboard = 2
+texture_filter = 0
+texture = ExtResource("57_bush_corrupted")
+
+[node name="East_Foliage2" type="Sprite3D" parent="ChasmScenery" unique_id=173738589]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 1, 7.8, -2.8, 2.4)
+pixel_size = 0.024
+billboard = 2
+texture_filter = 0
+texture = ExtResource("58_bush_spiked")
+
+[node name="East_Foliage3" type="Sprite3D" parent="ChasmScenery" unique_id=508259174]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 1, 7.2, -2.7, 4.5)
+pixel_size = 0.024
+billboard = 2
+texture_filter = 0
+texture = ExtResource("57_bush_corrupted")
+
+[node name="East_Mist" type="Sprite3D" parent="ChasmScenery" unique_id=1228661537]
+transform = Transform3D(1.3, 0, 0, 0, 1.2, 0, 0, 0, 1, 8.2, -4.6, 0)
+modulate = Color(0.7, 0.78, 0.95, 0.6)
+pixel_size = 0.042
+billboard = 1
+texture_filter = 0
+texture = ExtResource("17_mist2")
+
+[node name="East_Glow" type="OmniLight3D" parent="ChasmScenery" unique_id=1913339414]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.2, -3.6, -1)
+light_color = Color(0.35, 0.75, 0.95, 1)
+light_energy = 2.0
+omni_range = 8.5
+
+[node name="ChainWest2" type="Sprite3D" parent="ChasmScenery" unique_id=574287474]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1, -5.2, -1.8, 1.5)
+pixel_size = 0.03
+billboard = 2
+texture_filter = 0
+texture = ExtResource("33_chain")
+
+[node name="ChainEast1" type="Sprite3D" parent="ChasmScenery" unique_id=1871449724]
+transform = Transform3D(-1.3, 0, 0, 0, 1.2, 0, 0, 0, 1, 5.5, -0.6, -5)
+pixel_size = 0.03
+billboard = 2
+texture_filter = 0
+texture = ExtResource("33_chain")
+
+[node name="ChainEast2" type="Sprite3D" parent="ChasmScenery" unique_id=1344373812]
+transform = Transform3D(-1.2, 0, 0, 0, 1.2, 0, 0, 0, 1, 5.2, -1.8, 1.5)
+modulate = Color(0.35, 0.22, 0.38, 0.65)
+pixel_size = 0.06
+billboard = 1
+texture_filter = 0
+texture = ExtResource("16_mist1")
+
+[node name="FogPlume2" type="Sprite3D" parent="ChasmScenery" unique_id=920496509]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -8.5, -2)
+modulate = Color(0.35, 0.22, 0.38, 0.65)
 pixel_size = 0.06
 billboard = 1
 texture_filter = 0
 texture = ExtResource("19_mist4")
 
-[node name="AbyssFog3" type="Sprite3D" parent="ChasmScenery" unique_id=1609235657]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -11, 0)
-modulate = Color(0.16, 0.06, 0.18, 0.7)
+[node name="DeepAbyssMist" type="Sprite3D" parent="ChasmScenery" unique_id=1772481824]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -12, 0)
+modulate = Color(0.2, 0.1, 0.22, 0.75)
 pixel_size = 0.09
 billboard = 1
 texture_filter = 0
@@ -477,7 +748,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.2, 0.3, 1.2)
 pixel_size = 0.022
 billboard = 2
 texture_filter = 0
-texture = ExtResource("30_rock_mossy")
+texture = ExtResource("27_cliff_tiered")
 
 [node name="RockSmall" type="Sprite3D" parent="Overlook" unique_id=1293396127]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.6, 0.2, -1)
@@ -491,7 +762,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 0, -3.2)
 
 [node name="Sprite" type="AnimatedSprite3D" parent="Overlook/OverlookBrazierL" unique_id=1714087009]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
-pixel_size = 0.01
 billboard = 2
 texture_filter = 0
 sprite_frames = ExtResource("50_brazier_frames")
@@ -508,7 +778,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0, -3.2)
 
 [node name="Sprite" type="AnimatedSprite3D" parent="Overlook/OverlookBrazierR" unique_id=834586196]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
-pixel_size = 0.01
 billboard = 2
 texture_filter = 0
 sprite_frames = ExtResource("50_brazier_frames")
@@ -835,7 +1104,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0.4, -4.5)
 pixel_size = 0.022
 billboard = 2
 texture_filter = 0
-texture = ExtResource("30_rock_mossy")
+texture = ExtResource("27_cliff_tiered")
 
 [node name="Fortress" type="Node3D" parent="." unique_id=651958571]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -25)
@@ -962,10 +1231,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.012356, 7.6357503, 25.351
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Fortress/SealedGate/GateDoor" unique_id=799085031]
 shape = SubResource("Shape_GateDoor")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="Fortress/SealedGate/GateDoor" unique_id=1753178954]
-size = Vector3(4.2, 5.5, 1)
-material = SubResource("Mat_GateDoor")
-
 [node name="GatePlinthL" type="CSGBox3D" parent="Fortress/SealedGate" unique_id=1576891968]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.85, 0.9, 1.1)
 use_collision = true
@@ -1034,7 +1299,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 0, 1.7)
 
 [node name="Sprite" type="AnimatedSprite3D" parent="Fortress/SealedGate/GateBrazierL" unique_id=1904944317]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
-pixel_size = 0.01
 billboard = 2
 texture_filter = 0
 sprite_frames = ExtResource("50_brazier_frames")
@@ -1051,7 +1315,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 0, 1.7)
 
 [node name="Sprite" type="AnimatedSprite3D" parent="Fortress/SealedGate/GateBrazierR" unique_id=540032799]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
-pixel_size = 0.01
 billboard = 2
 texture_filter = 0
 sprite_frames = ExtResource("50_brazier_frames")

@@ -44,13 +44,16 @@ static func extract_assets_now() -> void:
 		"rock_small_01.png": Rect2i(374, 274, 50, 44),
 		"rock_small_02.png": Rect2i(435, 279, 40, 37),
 
-		# Waterfalls
+		# Waterfalls & Chutes & Rock Shelves
 		"waterfall_fall_01.png": Rect2i(715, 51, 79, 134),
 		"waterfall_fall_02.png": Rect2i(807, 54, 74, 126),
 		"waterfall_fall_03.png": Rect2i(894, 47, 90, 140),
 		"waterfall_splash_01.png": Rect2i(715, 194, 83, 115),
 		"waterfall_splash_02.png": Rect2i(804, 225, 57, 90),
 		"waterfall_splash_03.png": Rect2i(923, 195, 83, 119),
+		"waterfall_rock_shelf.png": Rect2i(800, 227, 56, 85),
+		"waterfall_chute_narrow.png": Rect2i(875, 227, 43, 84),
+		"water_stream_surface.png": Rect2i(797, 192, 97, 20),
 
 		# Castle Towers & Ramparts
 		"tower_spire_brazier.png": Rect2i(12, 365, 61, 212),
@@ -106,6 +109,13 @@ static func extract_assets_now() -> void:
 	for file_name in sprites:
 		var rect: Rect2i = sprites[file_name]
 		var crop = img.get_region(rect)
+		var cw = crop.get_width()
+		var ch = crop.get_height()
+		for cy in range(ch):
+			for cx in range(cw):
+				var px = crop.get_pixel(cx, cy)
+				if px.a < 0.04:
+					crop.set_pixel(cx, cy, Color(0, 0, 0, 0))
 		var used = crop.get_used_rect()
 		if used.size.x > 0 and used.size.y > 0 and file_name in ["sealed_gate_portal_barrier.png", "cliff_massive_03.png", "asur_sigil_shrine.png"]:
 			crop = crop.get_region(used)
