@@ -1,0 +1,319 @@
+[gd_scene load_steps=22 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/world/camera_rig.tscn" id="2_camera"]
+[ext_resource type="Script" path="res://scripts/world/sealed_gate.gd" id="3_gate_script"]
+
+[sub_resource type="Environment" id="Environment_outdoor"]
+background_mode = 1
+background_color = Color(0.08, 0.04, 0.07, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.28, 0.22, 0.32, 1)
+ambient_light_energy = 0.7
+tonemap_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="Mat_StoneGround"]
+albedo_color = Color(0.38, 0.40, 0.46, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="Mat_BridgeBalustrade"]
+albedo_color = Color(0.26, 0.28, 0.33, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_CastleWall"]
+albedo_color = Color(0.18, 0.20, 0.24, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Mat_GateWood"]
+albedo_color = Color(0.12, 0.09, 0.08, 1)
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="Mat_SpellBarrier"]
+transparency = 1
+albedo_color = Color(1, 0.1, 0.2, 0.6)
+emission_enabled = true
+emission = Color(1, 0.1, 0.2, 1)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_Brazier"]
+albedo_color = Color(1, 0.7, 0.2, 1)
+emission_enabled = true
+emission = Color(1, 0.6, 0.1, 1)
+emission_energy_multiplier = 2.0
+
+[sub_resource type="BoxShape3D" id="Shape_OverlookGround"]
+size = Vector3(12, 1, 8)
+
+[sub_resource type="BoxShape3D" id="Shape_OverlookSideWall"]
+size = Vector3(1, 3, 8)
+
+[sub_resource type="BoxShape3D" id="Shape_OverlookBackWall"]
+size = Vector3(12, 3, 1)
+
+[sub_resource type="BoxShape3D" id="Shape_BridgeWalkway"]
+size = Vector3(5, 1, 24)
+
+[sub_resource type="BoxShape3D" id="Shape_BridgeRail"]
+size = Vector3(0.6, 1.2, 24)
+
+[sub_resource type="BoxShape3D" id="Shape_PlazaGround"]
+size = Vector3(18, 1, 14)
+
+[sub_resource type="BoxShape3D" id="Shape_PlazaSideWall"]
+size = Vector3(1, 4, 14)
+
+[sub_resource type="BoxShape3D" id="Shape_RampartWall"]
+size = Vector3(7, 7, 2)
+
+[sub_resource type="CylinderShape3D" id="Shape_Tower"]
+height = 9.0
+radius = 2.0
+
+[sub_resource type="BoxShape3D" id="Shape_GateDoor"]
+size = Vector3(4, 5, 1)
+
+[sub_resource type="BoxShape3D" id="Shape_GateTrigger"]
+size = Vector3(5, 3, 4)
+
+[node name="OutdoorGreybox" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_outdoor")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.766044, -0.422618, 0.48481, 0, 0.75471, 0.656059, -0.642788, -0.50257, 0.578142, 0, 15, 0)
+light_color = Color(0.75, 0.78, 0.92, 1)
+light_energy = 0.9
+shadow_enabled = true
+
+[node name="Overlook" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 17)
+
+[node name="Ground" type="StaticBody3D" parent="Overlook"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Overlook/Ground"]
+shape = SubResource("Shape_OverlookGround")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Overlook/Ground"]
+size = Vector3(12, 1, 8)
+material = SubResource("Mat_StoneGround")
+
+[node name="LeftBoundary" type="StaticBody3D" parent="Overlook"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Overlook/LeftBoundary"]
+shape = SubResource("Shape_OverlookSideWall")
+
+[node name="RightBoundary" type="StaticBody3D" parent="Overlook"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Overlook/RightBoundary"]
+shape = SubResource("Shape_OverlookSideWall")
+
+[node name="BackBoundary" type="StaticBody3D" parent="Overlook"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 4)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Overlook/BackBoundary"]
+shape = SubResource("Shape_OverlookBackWall")
+
+[node name="Bridge" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+
+[node name="Walkway" type="StaticBody3D" parent="Bridge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bridge/Walkway"]
+shape = SubResource("Shape_BridgeWalkway")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Bridge/Walkway"]
+size = Vector3(5, 1, 24)
+material = SubResource("Mat_StoneGround")
+
+[node name="LeftBalustrade" type="StaticBody3D" parent="Bridge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.6, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bridge/LeftBalustrade"]
+shape = SubResource("Shape_BridgeRail")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Bridge/LeftBalustrade"]
+size = Vector3(0.6, 1.2, 24)
+material = SubResource("Mat_BridgeBalustrade")
+
+[node name="RightBalustrade" type="StaticBody3D" parent="Bridge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0.6, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bridge/RightBalustrade"]
+shape = SubResource("Shape_BridgeRail")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Bridge/RightBalustrade"]
+size = Vector3(0.6, 1.2, 24)
+material = SubResource("Mat_BridgeBalustrade")
+
+[node name="Torches" type="Node3D" parent="Bridge"]
+
+[node name="TorchL1" type="CSGBox3D" parent="Bridge/Torches"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 1.4, 8)
+size = Vector3(0.4, 0.4, 0.4)
+material = SubResource("Mat_Brazier")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Bridge/Torches/TorchL1"]
+light_color = Color(1, 0.65, 0.25, 1)
+light_energy = 2.0
+omni_range = 8.0
+
+[node name="TorchR1" type="CSGBox3D" parent="Bridge/Torches"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 1.4, 8)
+size = Vector3(0.4, 0.4, 0.4)
+material = SubResource("Mat_Brazier")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Bridge/Torches/TorchR1"]
+light_color = Color(1, 0.65, 0.25, 1)
+light_energy = 2.0
+omni_range = 8.0
+
+[node name="TorchL2" type="CSGBox3D" parent="Bridge/Torches"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 1.4, -6)
+size = Vector3(0.4, 0.4, 0.4)
+material = SubResource("Mat_Brazier")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Bridge/Torches/TorchL2"]
+light_color = Color(1, 0.65, 0.25, 1)
+light_energy = 2.0
+omni_range = 8.0
+
+[node name="TorchR2" type="CSGBox3D" parent="Bridge/Torches"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 1.4, -6)
+size = Vector3(0.4, 0.4, 0.4)
+material = SubResource("Mat_Brazier")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Bridge/Torches/TorchR2"]
+light_color = Color(1, 0.65, 0.25, 1)
+light_energy = 2.0
+omni_range = 8.0
+
+[node name="Plaza" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -18)
+
+[node name="Ground" type="StaticBody3D" parent="Plaza"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Plaza/Ground"]
+shape = SubResource("Shape_PlazaGround")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Plaza/Ground"]
+size = Vector3(18, 1, 14)
+material = SubResource("Mat_StoneGround")
+
+[node name="LeftWall" type="StaticBody3D" parent="Plaza"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 2, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Plaza/LeftWall"]
+shape = SubResource("Shape_PlazaSideWall")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Plaza/LeftWall"]
+size = Vector3(1, 4, 14)
+material = SubResource("Mat_CastleWall")
+
+[node name="RightWall" type="StaticBody3D" parent="Plaza"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 2, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Plaza/RightWall"]
+shape = SubResource("Shape_PlazaSideWall")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Plaza/RightWall"]
+size = Vector3(1, 4, 14)
+material = SubResource("Mat_CastleWall")
+
+[node name="Fortress" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -25)
+
+[node name="LeftRampart" type="StaticBody3D" parent="Fortress"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 3.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Fortress/LeftRampart"]
+shape = SubResource("Shape_RampartWall")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Fortress/LeftRampart"]
+size = Vector3(7, 7, 2)
+material = SubResource("Mat_CastleWall")
+
+[node name="RightRampart" type="StaticBody3D" parent="Fortress"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 3.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Fortress/RightRampart"]
+shape = SubResource("Shape_RampartWall")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Fortress/RightRampart"]
+size = Vector3(7, 7, 2)
+material = SubResource("Mat_CastleWall")
+
+[node name="LeftTower" type="StaticBody3D" parent="Fortress"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 4.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Fortress/LeftTower"]
+shape = SubResource("Shape_Tower")
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="Fortress/LeftTower"]
+radius = 2.0
+height = 9.0
+sides = 12
+material = SubResource("Mat_CastleWall")
+
+[node name="RightTower" type="StaticBody3D" parent="Fortress"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 4.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Fortress/RightTower"]
+shape = SubResource("Shape_Tower")
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="Fortress/RightTower"]
+radius = 2.0
+height = 9.0
+sides = 12
+material = SubResource("Mat_CastleWall")
+
+[node name="SealedGate" type="Node3D" parent="Fortress"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="GateDoor" type="StaticBody3D" parent="Fortress/SealedGate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Fortress/SealedGate/GateDoor"]
+shape = SubResource("Shape_GateDoor")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Fortress/SealedGate/GateDoor"]
+size = Vector3(4, 5, 1)
+material = SubResource("Mat_GateWood")
+
+[node name="SpellBarrierMesh" type="CSGBox3D" parent="Fortress/SealedGate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0.55)
+size = Vector3(3.8, 4.8, 0.1)
+material = SubResource("Mat_SpellBarrier")
+
+[node name="GateInteractionArea" type="Area3D" parent="Fortress/SealedGate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 2)
+script = ExtResource("3_gate_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Fortress/SealedGate/GateInteractionArea"]
+shape = SubResource("Shape_GateTrigger")
+
+[node name="BarrierLight" type="OmniLight3D" parent="Fortress/SealedGate/GateInteractionArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -1.2)
+light_color = Color(1, 0.1, 0.15, 1)
+light_energy = 2.5
+omni_range = 7.0
+
+[node name="PromptLabel" type="Label3D" parent="Fortress/SealedGate/GateInteractionArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, -1)
+visible = false
+billboard = 1
+text = "The Great Gate is sealed by dark Asur sorcery.
+(The path into the fortress is barred)"
+font_size = 28
+outline_size = 6
+
+[node name="Player" parent="." groups=["player"] instance=ExtResource("1_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 17)
+
+[node name="CameraRig" parent="." instance=ExtResource("2_camera")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 11, 31)

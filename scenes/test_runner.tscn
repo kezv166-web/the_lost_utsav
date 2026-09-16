@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://c4fq6me4ne0j7"]
+
+[ext_resource type="PackedScene" uid="uid://dwq4q0aq7swoo" path="res://scenes/levels/outdoor/outdoor_map.tscn" id="1_outdoor"]
+[ext_resource type="Script" uid="uid://d1xmbc6y30e6g" path="res://scripts/test_walk.gd" id="2_test"]
+
+[node name="TestRunner" type="Node3D" unique_id=1579648388]
+
+[node name="OutdoorMap" parent="." unique_id=2112236891 instance=ExtResource("1_outdoor")]
+
+[node name="TestHarness" type="Node" parent="OutdoorMap" unique_id=1559375582]
+script = ExtResource("2_test")

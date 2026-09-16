@@ -1,0 +1,8 @@
+# Godot 4+ ignores
+.godot/
+*.translation
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+*.tmp
