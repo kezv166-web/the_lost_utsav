@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://c5y1j8x24kflm"]
+
+[ext_resource type="SpriteFrames" path="res://scenes/levels/outdoor/flame_sprite_frames.tres" id="1_flame_frames"]
+
+[node name="AnimatedFlame" type="Node3D"]
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+pixel_size = 0.012
+billboard = 2
+texture_filter = 0
+sprite_frames = ExtResource("1_flame_frames")
+autoplay = "default"
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+light_color = Color(1, 0.65, 0.25, 1)
+light_energy = 2.0
+omni_range = 6.0

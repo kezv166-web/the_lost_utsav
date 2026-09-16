@@ -1,0 +1,42 @@
+[gd_resource type="SpriteFrames" load_steps=9 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/environment/fire/brazier/brazier_anim_0.png" id="1_anim_0"]
+[ext_resource type="Texture2D" path="res://assets/environment/fire/brazier/brazier_anim_1.png" id="2_anim_1"]
+[ext_resource type="Texture2D" path="res://assets/environment/fire/brazier/brazier_anim_2.png" id="3_anim_2"]
+[ext_resource type="Texture2D" path="res://assets/environment/fire/brazier/brazier_anim_3.png" id="4_anim_3"]
+[ext_resource type="Texture2D" path="res://assets/environment/fire/brazier/brazier_anim_4.png" id="5_anim_4"]
+[ext_resource type="Texture2D" path="res://assets/environment/fire/brazier/brazier_anim_5.png" id="6_anim_5"]
+[ext_resource type="Texture2D" path="res://assets/environment/fire/brazier/brazier_anim_6.png" id="7_anim_6"]
+[ext_resource type="Texture2D" path="res://assets/environment/fire/brazier/brazier_anim_7.png" id="8_anim_7"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_anim_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_anim_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_anim_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_anim_3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_anim_4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_anim_5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_anim_6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_anim_7")
+}],
+"loop": true,
+"name": &"default",
+"speed": 8.0
+}]

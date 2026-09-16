@@ -38,6 +38,37 @@ func _ready() -> void:
 		else:
 			push_error("FAIL: AnimatedSprite3D not found on Player!")
 
+	# Verify Animated Braziers in the Outdoor Map
+	var overlook_brazier = get_parent().get_node_or_null("Overlook/OverlookBrazierL/Sprite")
+	if overlook_brazier is AnimatedSprite3D:
+		assert(overlook_brazier.billboard == 2, "Brazier must use Y-Billboard (2)")
+		assert(overlook_brazier.texture_filter == 0, "Brazier must use nearest texture filtering (0)")
+		assert(overlook_brazier.sprite_frames != null, "Brazier sprite_frames must not be null")
+		assert(overlook_brazier.sprite_frames.get_frame_count("default") == 8, "Brazier must have 8 animated frames")
+		print("PASSED: Overlook brazier AnimatedSprite3D verified (8 frames, billboard=2, filter=0)")
+	else:
+		push_error("FAIL: OverlookBrazierL/Sprite is not an AnimatedSprite3D!")
+
+	var bridge_torch = get_parent().get_node_or_null("Bridge/PostsAndTorches/TorchL1/FlameSprite")
+	if bridge_torch is AnimatedSprite3D:
+		assert(bridge_torch.billboard == 2, "Bridge torch must use Y-Billboard (2)")
+		assert(bridge_torch.texture_filter == 0, "Bridge torch must use nearest texture filtering (0)")
+		assert(bridge_torch.sprite_frames != null, "Bridge torch sprite_frames must not be null")
+		assert(bridge_torch.sprite_frames.get_frame_count("default") == 8, "Bridge torch must have 8 animated frames")
+		print("PASSED: Bridge torch FlameSprite AnimatedSprite3D verified (8 frames, billboard=2, filter=0)")
+	else:
+		push_error("FAIL: TorchL1/FlameSprite is not an AnimatedSprite3D!")
+
+	var keep_brazier = get_parent().get_node_or_null("Fortress/CitadelKeepSanctum/KeepBrazierCenter")
+	if keep_brazier is AnimatedSprite3D:
+		assert(keep_brazier.billboard == 2, "Keep brazier must use Y-Billboard (2)")
+		assert(keep_brazier.texture_filter == 0, "Keep brazier must use nearest texture filtering (0)")
+		assert(keep_brazier.sprite_frames != null, "Keep brazier sprite_frames must not be null")
+		assert(keep_brazier.sprite_frames.get_frame_count("default") == 8, "Keep brazier must have 8 animated frames")
+		print("PASSED: Citadel Keep brazier AnimatedSprite3D verified (8 frames, billboard=2, filter=0)")
+	else:
+		push_error("FAIL: KeepBrazierCenter is not an AnimatedSprite3D!")
+
 func _physics_process(delta: float) -> void:
 	timer += delta
 	

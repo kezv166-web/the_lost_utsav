@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://dm0k1pyaw20va"]
+
+[ext_resource type="SpriteFrames" path="res://scenes/levels/outdoor/torch_sprite_frames.tres" id="1_torch_frames"]
+
+[node name="AnimatedTorch" type="Node3D"]
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
+pixel_size = 0.01
+billboard = 2
+texture_filter = 0
+sprite_frames = ExtResource("1_torch_frames")
+autoplay = "default"
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+light_color = Color(1, 0.65, 0.25, 1)
+light_energy = 2.0
+omni_range = 6.0

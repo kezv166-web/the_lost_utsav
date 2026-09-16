@@ -45,6 +45,8 @@
 [ext_resource type="Texture2D" uid="uid://baktsgcykse0g" path="res://assets/environment/tower_spiked.png" id="47_tower_spiked"]
 [ext_resource type="Texture2D" uid="uid://31wb0gi45bwa" path="res://assets/environment/rampart_battlement_segment.png" id="48_rampart_battlement"]
 [ext_resource type="Texture2D" uid="uid://bkxjamp7hunjv" path="res://assets/environment/tower_roofed.png" id="49_tower_roofed"]
+[ext_resource type="SpriteFrames" path="res://scenes/levels/outdoor/brazier_sprite_frames.tres" id="50_brazier_frames"]
+[ext_resource type="SpriteFrames" path="res://scenes/levels/outdoor/flame_sprite_frames.tres" id="51_flame_frames"]
 
 [sub_resource type="Environment" id="Environment_outdoor"]
 background_mode = 1
@@ -487,12 +489,13 @@ texture = ExtResource("31_rock_small")
 [node name="OverlookBrazierL" type="Node3D" parent="Overlook" unique_id=1883355177]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 0, -3.2)
 
-[node name="Sprite" type="Sprite3D" parent="Overlook/OverlookBrazierL" unique_id=1714087009]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-pixel_size = 0.022
+[node name="Sprite" type="AnimatedSprite3D" parent="Overlook/OverlookBrazierL" unique_id=1714087009]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+pixel_size = 0.01
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("50_brazier_frames")
+autoplay = "default"
 
 [node name="Light" type="OmniLight3D" parent="Overlook/OverlookBrazierL" unique_id=724959784]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -503,12 +506,13 @@ omni_range = 6.0
 [node name="OverlookBrazierR" type="Node3D" parent="Overlook" unique_id=113107768]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0, -3.2)
 
-[node name="Sprite" type="Sprite3D" parent="Overlook/OverlookBrazierR" unique_id=834586196]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-pixel_size = 0.022
+[node name="Sprite" type="AnimatedSprite3D" parent="Overlook/OverlookBrazierR" unique_id=834586196]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+pixel_size = 0.01
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("50_brazier_frames")
+autoplay = "default"
 
 [node name="Light" type="OmniLight3D" parent="Overlook/OverlookBrazierR" unique_id=1134250285]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -571,12 +575,13 @@ billboard = 2
 texture_filter = 0
 texture = ExtResource("44_bridge_post")
 
-[node name="FlameSprite" type="Sprite3D" parent="Bridge/PostsAndTorches/TorchL1" unique_id=1474851803]
+[node name="FlameSprite" type="AnimatedSprite3D" parent="Bridge/PostsAndTorches/TorchL1" unique_id=1474851803]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
-pixel_size = 0.02
+pixel_size = 0.012
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("51_flame_frames")
+autoplay = "default"
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Bridge/PostsAndTorches/TorchL1" unique_id=369897835]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
@@ -594,12 +599,13 @@ billboard = 2
 texture_filter = 0
 texture = ExtResource("44_bridge_post")
 
-[node name="FlameSprite" type="Sprite3D" parent="Bridge/PostsAndTorches/TorchR1" unique_id=78386981]
+[node name="FlameSprite" type="AnimatedSprite3D" parent="Bridge/PostsAndTorches/TorchR1" unique_id=78386981]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
-pixel_size = 0.02
+pixel_size = 0.012
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("51_flame_frames")
+autoplay = "default"
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Bridge/PostsAndTorches/TorchR1" unique_id=1329125189]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
@@ -651,12 +657,13 @@ billboard = 2
 texture_filter = 0
 texture = ExtResource("44_bridge_post")
 
-[node name="FlameSprite" type="Sprite3D" parent="Bridge/PostsAndTorches/TorchL2" unique_id=696957769]
+[node name="FlameSprite" type="AnimatedSprite3D" parent="Bridge/PostsAndTorches/TorchL2" unique_id=696957769]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
-pixel_size = 0.02
+pixel_size = 0.012
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("51_flame_frames")
+autoplay = "default"
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Bridge/PostsAndTorches/TorchL2" unique_id=2139959079]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
@@ -674,12 +681,13 @@ billboard = 2
 texture_filter = 0
 texture = ExtResource("44_bridge_post")
 
-[node name="FlameSprite" type="Sprite3D" parent="Bridge/PostsAndTorches/TorchR2" unique_id=95031179]
+[node name="FlameSprite" type="AnimatedSprite3D" parent="Bridge/PostsAndTorches/TorchR2" unique_id=95031179]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
-pixel_size = 0.02
+pixel_size = 0.012
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("51_flame_frames")
+autoplay = "default"
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Bridge/PostsAndTorches/TorchR2" unique_id=1804910078]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
@@ -784,12 +792,13 @@ texture = ExtResource("41_banner_large")
 [node name="PlazaBrazierL" type="Node3D" parent="Plaza" unique_id=2024959179]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 0)
 
-[node name="Sprite" type="Sprite3D" parent="Plaza/PlazaBrazierL" unique_id=1316301867]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-pixel_size = 0.024
+[node name="Sprite" type="AnimatedSprite3D" parent="Plaza/PlazaBrazierL" unique_id=1316301867]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+pixel_size = 0.011
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("50_brazier_frames")
+autoplay = "default"
 
 [node name="Light" type="OmniLight3D" parent="Plaza/PlazaBrazierL" unique_id=1619072744]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
@@ -800,12 +809,13 @@ omni_range = 7.0
 [node name="PlazaBrazierR" type="Node3D" parent="Plaza" unique_id=1760807108]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 0)
 
-[node name="Sprite" type="Sprite3D" parent="Plaza/PlazaBrazierR" unique_id=469875338]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-pixel_size = 0.024
+[node name="Sprite" type="AnimatedSprite3D" parent="Plaza/PlazaBrazierR" unique_id=469875338]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+pixel_size = 0.011
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("50_brazier_frames")
+autoplay = "default"
 
 [node name="Light" type="OmniLight3D" parent="Plaza/PlazaBrazierR" unique_id=2026841083]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
@@ -904,12 +914,13 @@ height = 9.0
 sides = 16
 material = SubResource("Mat_BrickWall")
 
-[node name="TowerBrazier" type="Sprite3D" parent="Fortress/LeftTower" unique_id=1736396138]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 0)
-pixel_size = 0.03
+[node name="TowerBrazier" type="AnimatedSprite3D" parent="Fortress/LeftTower" unique_id=1736396138]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.85, 0)
+pixel_size = 0.013
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("50_brazier_frames")
+autoplay = "default"
 
 [node name="TowerFire" type="OmniLight3D" parent="Fortress/LeftTower" unique_id=416445093]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.6, 0)
@@ -929,12 +940,13 @@ height = 9.0
 sides = 16
 material = SubResource("Mat_BrickWall")
 
-[node name="TowerBrazier" type="Sprite3D" parent="Fortress/RightTower" unique_id=383625841]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 0)
-pixel_size = 0.03
+[node name="TowerBrazier" type="AnimatedSprite3D" parent="Fortress/RightTower" unique_id=383625841]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.85, 0)
+pixel_size = 0.013
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("50_brazier_frames")
+autoplay = "default"
 
 [node name="TowerFire" type="OmniLight3D" parent="Fortress/RightTower" unique_id=836990577]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.6, 0)
@@ -1020,12 +1032,13 @@ texture = ExtResource("39_sigil_shrine")
 [node name="GateBrazierL" type="Node3D" parent="Fortress/SealedGate" unique_id=1817138012]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 0, 1.7)
 
-[node name="Sprite" type="Sprite3D" parent="Fortress/SealedGate/GateBrazierL" unique_id=1904944317]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-pixel_size = 0.022
+[node name="Sprite" type="AnimatedSprite3D" parent="Fortress/SealedGate/GateBrazierL" unique_id=1904944317]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+pixel_size = 0.01
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("50_brazier_frames")
+autoplay = "default"
 
 [node name="Light" type="OmniLight3D" parent="Fortress/SealedGate/GateBrazierL" unique_id=412359152]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -1036,12 +1049,13 @@ omni_range = 6.0
 [node name="GateBrazierR" type="Node3D" parent="Fortress/SealedGate" unique_id=898218012]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 0, 1.7)
 
-[node name="Sprite" type="Sprite3D" parent="Fortress/SealedGate/GateBrazierR" unique_id=540032799]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-pixel_size = 0.022
+[node name="Sprite" type="AnimatedSprite3D" parent="Fortress/SealedGate/GateBrazierR" unique_id=540032799]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+pixel_size = 0.01
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("50_brazier_frames")
+autoplay = "default"
 
 [node name="Light" type="OmniLight3D" parent="Fortress/SealedGate/GateBrazierR" unique_id=87788402]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -1117,12 +1131,13 @@ pixel_size = 0.024
 texture_filter = 0
 texture = ExtResource("42_banner_sigil")
 
-[node name="InnerBrazierL" type="Sprite3D" parent="Fortress/InnerCourtyardGatehouse/InnerWallLeft" unique_id=1213069233]
+[node name="InnerBrazierL" type="AnimatedSprite3D" parent="Fortress/InnerCourtyardGatehouse/InnerWallLeft" unique_id=1213069233]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 3.5, 0.8)
-pixel_size = 0.024
+pixel_size = 0.011
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("50_brazier_frames")
+autoplay = "default"
 
 [node name="LightL" type="OmniLight3D" parent="Fortress/InnerCourtyardGatehouse/InnerWallLeft/InnerBrazierL" unique_id=1260497041]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
@@ -1155,12 +1170,13 @@ pixel_size = 0.024
 texture_filter = 0
 texture = ExtResource("42_banner_sigil")
 
-[node name="InnerBrazierR" type="Sprite3D" parent="Fortress/InnerCourtyardGatehouse/InnerWallRight" unique_id=309260155]
+[node name="InnerBrazierR" type="AnimatedSprite3D" parent="Fortress/InnerCourtyardGatehouse/InnerWallRight" unique_id=309260155]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 3.5, 0.8)
-pixel_size = 0.024
+pixel_size = 0.011
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("50_brazier_frames")
+autoplay = "default"
 
 [node name="LightR" type="OmniLight3D" parent="Fortress/InnerCourtyardGatehouse/InnerWallRight/InnerBrazierR" unique_id=985792968]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
@@ -1214,12 +1230,13 @@ light_color = Color(1, 0.15, 0.06, 1)
 light_energy = 4.0
 omni_range = 8.0
 
-[node name="Gate2Brazier" type="Sprite3D" parent="Fortress/InnerCourtyardGatehouse/SecondGatePortal" unique_id=344457752]
+[node name="Gate2Brazier" type="AnimatedSprite3D" parent="Fortress/InnerCourtyardGatehouse/SecondGatePortal" unique_id=344457752]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.6, 0.7)
-pixel_size = 0.024
+pixel_size = 0.011
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("50_brazier_frames")
+autoplay = "default"
 
 [node name="Light" type="OmniLight3D" parent="Fortress/InnerCourtyardGatehouse/SecondGatePortal/Gate2Brazier" unique_id=1900349873]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
@@ -1309,12 +1326,13 @@ billboard = 2
 texture_filter = 0
 texture = ExtResource("48_rampart_battlement")
 
-[node name="KeepBrazierCenter" type="Sprite3D" parent="Fortress/CitadelKeepSanctum" unique_id=1482146272]
+[node name="KeepBrazierCenter" type="AnimatedSprite3D" parent="Fortress/CitadelKeepSanctum" unique_id=1482146272]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.6, 1.4)
-pixel_size = 0.024
+pixel_size = 0.011
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("50_brazier_frames")
+autoplay = "default"
 
 [node name="Light" type="OmniLight3D" parent="Fortress/CitadelKeepSanctum/KeepBrazierCenter" unique_id=80516568]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
@@ -1322,12 +1340,13 @@ light_color = Color(1, 0.55, 0.15, 1)
 light_energy = 3.0
 omni_range = 9.0
 
-[node name="KeepBrazierL" type="Sprite3D" parent="Fortress/CitadelKeepSanctum" unique_id=478324523]
+[node name="KeepBrazierL" type="AnimatedSprite3D" parent="Fortress/CitadelKeepSanctum" unique_id=478324523]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 7.3, 1.4)
-pixel_size = 0.024
+pixel_size = 0.011
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("50_brazier_frames")
+autoplay = "default"
 
 [node name="Light" type="OmniLight3D" parent="Fortress/CitadelKeepSanctum/KeepBrazierL" unique_id=1319153088]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
@@ -1335,12 +1354,13 @@ light_color = Color(1, 0.55, 0.15, 1)
 light_energy = 2.5
 omni_range = 8.0
 
-[node name="KeepBrazierR" type="Sprite3D" parent="Fortress/CitadelKeepSanctum" unique_id=1462933859]
+[node name="KeepBrazierR" type="AnimatedSprite3D" parent="Fortress/CitadelKeepSanctum" unique_id=1462933859]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 7.3, 1.4)
-pixel_size = 0.024
+pixel_size = 0.011
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("50_brazier_frames")
+autoplay = "default"
 
 [node name="Light" type="OmniLight3D" parent="Fortress/CitadelKeepSanctum/KeepBrazierR" unique_id=1243402483]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
@@ -1422,12 +1442,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 4, 0)
 size = Vector3(6.8, 1, 2.2)
 material = SubResource("Mat_BrickWall")
 
-[node name="ViaductBrazier1" type="Sprite3D" parent="Fortress/EastArchedViaduct" unique_id=1524853520]
+[node name="ViaductBrazier1" type="AnimatedSprite3D" parent="Fortress/EastArchedViaduct" unique_id=1524853520]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0.8)
-pixel_size = 0.024
+pixel_size = 0.011
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("50_brazier_frames")
+autoplay = "default"
 
 [node name="Light" type="OmniLight3D" parent="Fortress/EastArchedViaduct/ViaductBrazier1" unique_id=93039553]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
@@ -1435,12 +1456,13 @@ light_color = Color(1, 0.55, 0.15, 1)
 light_energy = 2.2
 omni_range = 6.0
 
-[node name="ViaductBrazier2" type="Sprite3D" parent="Fortress/EastArchedViaduct" unique_id=757854769]
+[node name="ViaductBrazier2" type="AnimatedSprite3D" parent="Fortress/EastArchedViaduct" unique_id=757854769]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 5, 0.8)
-pixel_size = 0.024
+pixel_size = 0.011
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("50_brazier_frames")
+autoplay = "default"
 
 [node name="Light" type="OmniLight3D" parent="Fortress/EastArchedViaduct/ViaductBrazier2" unique_id=634885042]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
@@ -1463,12 +1485,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 2.5, 0)
 size = Vector3(7, 6.5, 2.2)
 material = SubResource("Mat_BrickWall")
 
-[node name="WestBrazier" type="Sprite3D" parent="Fortress/WestMountainRampart" unique_id=1215245042]
+[node name="WestBrazier" type="AnimatedSprite3D" parent="Fortress/WestMountainRampart" unique_id=1215245042]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 6.2, 0.8)
-pixel_size = 0.024
+pixel_size = 0.011
 billboard = 2
 texture_filter = 0
-texture = ExtResource("43_brazier")
+sprite_frames = ExtResource("50_brazier_frames")
+autoplay = "default"
 
 [node name="Light" type="OmniLight3D" parent="Fortress/WestMountainRampart/WestBrazier" unique_id=544786861]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)

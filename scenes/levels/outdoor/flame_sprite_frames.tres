@@ -1,0 +1,42 @@
+[gd_resource type="SpriteFrames" load_steps=9 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/environment/fire/flame_only/flame_anim_0.png" id="1_flame_0"]
+[ext_resource type="Texture2D" path="res://assets/environment/fire/flame_only/flame_anim_1.png" id="2_flame_1"]
+[ext_resource type="Texture2D" path="res://assets/environment/fire/flame_only/flame_anim_2.png" id="3_flame_2"]
+[ext_resource type="Texture2D" path="res://assets/environment/fire/flame_only/flame_anim_3.png" id="4_flame_3"]
+[ext_resource type="Texture2D" path="res://assets/environment/fire/flame_only/flame_anim_4.png" id="5_flame_4"]
+[ext_resource type="Texture2D" path="res://assets/environment/fire/flame_only/flame_anim_5.png" id="6_flame_5"]
+[ext_resource type="Texture2D" path="res://assets/environment/fire/flame_only/flame_anim_6.png" id="7_flame_6"]
+[ext_resource type="Texture2D" path="res://assets/environment/fire/flame_only/flame_anim_7.png" id="8_flame_7"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_flame_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_flame_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_flame_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_flame_3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_flame_4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_flame_5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_flame_6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_flame_7")
+}],
+"loop": true,
+"name": &"default",
+"speed": 8.0
+}]
