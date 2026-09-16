@@ -2,7 +2,7 @@ extends Node3D
 
 @export var target: Node3D
 @export var follow_speed: float = 4.8
-@export var target_offset: Vector3 = Vector3(0.0, 1.5, -4.5)
+@export var target_offset: Vector3 = Vector3(0.0, 5.0, -7.0)
 
 func _ready() -> void:
 	if not target:

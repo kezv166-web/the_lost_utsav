@@ -21,7 +21,7 @@ static func extract_assets_now() -> void:
 
 	var sprites = {
 		# Background & Sky
-		"bg_parallax_mountains_castle.png": Rect2i(15, 874, 1039, 131),
+		"bg_parallax_mountains_castle.png": Rect2i(15, 905, 1039, 100),
 		"moon_blood_red.png": Rect2i(1073, 633, 64, 65),
 		"cloud_dark_01.png": Rect2i(1141, 634, 86, 67),
 		"cloud_dark_02.png": Rect2i(1223, 633, 125, 63),
