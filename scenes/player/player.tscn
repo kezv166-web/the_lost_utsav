@@ -20,5 +20,5 @@ pixel_size = 0.0125
 billboard = 2
 texture_filter = 0
 sprite_frames = ExtResource("2_frames")
-animation = &"idle_down"
-autoplay = "idle_down"
+animation = &"idle_up"
+autoplay = "idle_up"

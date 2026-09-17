@@ -12,6 +12,9 @@ var verified_walk_left: bool = false
 var verified_walk_right: bool = false
 var verified_walk_down: bool = false
 var verified_idle: bool = false
+var verified_jump_up: bool = false
+var verified_jump_right: bool = false
+var screenshot_jump_taken: bool = false
 
 func _save_screenshot(filename: String) -> void:
 	if DisplayServer.get_name() == "headless":
@@ -82,7 +85,7 @@ func _physics_process(delta: float) -> void:
 		screenshot_overlook_taken = true
 		_save_screenshot("screenshot_overlook.png")
 
-	# Phase 0: Test all 4 directional animations on the overlook (0.5s to 3.0s)
+	# Phase 0: Test walk & jump animations on Overlook (0.5s to 4.0s)
 	# 0.5 - 1.0s: Walk UP
 	if timer >= 0.5 and timer < 1.0:
 		Input.action_press("move_up")
@@ -90,60 +93,82 @@ func _physics_process(delta: float) -> void:
 			verified_walk_up = true
 			print("PASSED: Walk UP animation verified ('walk_up')")
 
-	# 1.0 - 1.5s: Walk RIGHT
-	elif timer >= 1.0 and timer < 1.5:
+	# 1.0 - 1.6s: Jump while moving UP
+	elif timer >= 1.0 and timer < 1.6:
+		if timer < 1.1:
+			Input.action_press("jump")
+		else:
+			Input.action_release("jump")
+			
+		if anim_node and anim_node.animation == "jump_up" and not verified_jump_up:
+			verified_jump_up = true
+			print("PASSED: Jump UP animation verified ('jump_up', airborne Y=%.2f)" % player.global_position.y)
+
+	# 1.6 - 2.2s: Walk RIGHT + Jump RIGHT
+	elif timer >= 1.6 and timer < 2.2:
 		Input.action_release("move_up")
 		Input.action_press("move_right")
 		if anim_node and anim_node.animation == "walk_right" and not verified_walk_right:
 			verified_walk_right = true
 			print("PASSED: Walk RIGHT animation verified ('walk_right')")
+			
+		if timer >= 1.8 and timer < 1.9:
+			Input.action_press("jump")
+		elif timer >= 1.9:
+			Input.action_release("jump")
+			if anim_node and anim_node.animation == "jump_right" and not verified_jump_right:
+				verified_jump_right = true
+				print("PASSED: Jump RIGHT animation verified ('jump_right', airborne Y=%.2f)" % player.global_position.y)
+				if not screenshot_jump_taken:
+					screenshot_jump_taken = true
+					_save_screenshot("screenshot_jump.png")
 
-	# 1.5 - 2.0s: Walk DOWN
-	elif timer >= 1.5 and timer < 2.0:
+	# 2.2 - 2.7s: Walk DOWN
+	elif timer >= 2.2 and timer < 2.7:
 		Input.action_release("move_right")
 		Input.action_press("move_down")
 		if anim_node and anim_node.animation == "walk_down" and not verified_walk_down:
 			verified_walk_down = true
 			print("PASSED: Walk DOWN animation verified ('walk_down')")
 
-	# 2.0 - 2.5s: IDLE after walking down
-	elif timer >= 2.0 and timer < 2.5:
+	# 2.7 - 3.2s: IDLE after walking down
+	elif timer >= 2.7 and timer < 3.2:
 		Input.action_release("move_down")
 		if anim_node and anim_node.animation == "idle_down" and not verified_idle:
 			verified_idle = true
 			print("PASSED: Idle transition verified ('idle_down')")
 
-	# 2.5 - 3.0s: Walk LEFT
-	elif timer >= 2.5 and timer < 3.0:
+	# 3.2 - 3.7s: Walk LEFT
+	elif timer >= 3.2 and timer < 3.7:
 		Input.action_press("move_left")
 		if anim_node and anim_node.animation == "walk_left" and not verified_walk_left:
 			verified_walk_left = true
 			print("PASSED: Walk LEFT animation verified ('walk_left')")
 
-	# Phase 1: Walk from Overlook onto Bridge (3.0s to 6.0s)
-	elif timer >= 3.0 and timer < 6.0:
+	# Phase 1: Walk from Overlook onto Bridge (3.7s to 6.5s)
+	elif timer >= 3.7 and timer < 6.5:
 		Input.action_release("move_left")
 		Input.action_press("move_up")
 
-	# Phase 2: Test Bridge Balustrade collision (6.0s to 7.5s) - Try walking Left into balustrade!
-	elif timer >= 6.0 and timer < 7.5:
+	# Phase 2: Test Bridge Balustrade collision (6.5s to 8.0s) - Try walking Left into balustrade!
+	elif timer >= 6.5 and timer < 8.0:
 		Input.action_release("move_up")
 		Input.action_press("move_left")
-		if not balustrade_tested and timer > 7.0:
+		if not balustrade_tested and timer > 7.5:
 			balustrade_tested = true
 			print("Balustrade collision check: Player X=%.2f (Stopped by balustrade at X > -2.2m)" % player.global_position.x)
 			assert(player.global_position.x > -2.2, "Player should be blocked by bridge balustrade!")
 
-	# Phase 3: Resume walking North across Bridge into Plaza and Gate (7.5s to 14.0s)
-	elif timer >= 7.5 and timer < 14.0:
+	# Phase 3: Resume walking North across Bridge into Plaza and Gate (8.0s to 14.5s)
+	elif timer >= 8.0 and timer < 14.5:
 		Input.action_release("move_left")
 		Input.action_press("move_up")
-		if timer >= 9.0 and not screenshot_bridge_taken:
+		if timer >= 9.5 and not screenshot_bridge_taken:
 			screenshot_bridge_taken = true
 			_save_screenshot("screenshot_bridge.png")
 
 	# Phase 4: Push against Sealed Gate
-	elif timer >= 14.0:
+	elif timer >= 14.5:
 		print("Pushing against sealed gate door: (Z=%.2f)" % player.global_position.z)
 		Input.action_release("move_up")
 		_save_screenshot("screenshot_gate.png")
@@ -154,6 +179,8 @@ func _physics_process(delta: float) -> void:
 		assert(verified_walk_down, "walk_down should be verified")
 		assert(verified_walk_left, "walk_left should be verified")
 		assert(verified_idle, "idle should be verified")
+		assert(verified_jump_up, "jump_up should be verified")
+		assert(verified_jump_right, "jump_right should be verified")
 		
-		print("--- ALL TESTS (ALL 4-DIR ANIMATIONS + IDLE + BRIDGE RAILS + GATE COLLISION) PASSED ---")
+		print("--- ALL TESTS (ALL 4-DIR ANIMATIONS + JUMP ANIMATIONS + IDLE + BRIDGE RAILS + GATE COLLISION) PASSED ---")
 		get_tree().quit(0)

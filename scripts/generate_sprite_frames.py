@@ -9,7 +9,11 @@ def generate():
         'walk_down': [(f'walk_down_{i}.png', 1.0) for i in range(8)],
         'walk_up': [(f'walk_up_{i}.png', 1.0) for i in range(8)],
         'walk_left': [(f'walk_left_{i}.png', 1.0) for i in range(8)],
-        'walk_right': [(f'walk_right_{i}.png', 1.0) for i in range(8)]
+        'walk_right': [(f'walk_right_{i}.png', 1.0) for i in range(8)],
+        'jump_down': [(f'jump_down_{i}.png', 1.0) for i in range(4)],
+        'jump_up': [(f'jump_up_{i}.png', 1.0) for i in range(4)],
+        'jump_left': [(f'jump_left_{i}.png', 1.0) for i in range(4)],
+        'jump_right': [(f'jump_right_{i}.png', 1.0) for i in range(4)]
     }
 
     tex_files = []
@@ -31,14 +35,23 @@ def generate():
 
     anim_blocks = []
     for anim_name, frames in anims.items():
-        # Set walk animation to 10.5 FPS for snappy, grounded footsteps at 4.5 m/s
-        speed = 10.5 if 'walk' in anim_name else 5.0
+        if 'walk' in anim_name:
+            speed = 10.5
+            is_loop = True
+        elif 'jump' in anim_name:
+            speed = 8.0
+            is_loop = False
+        else:
+            speed = 5.0
+            is_loop = True
+
         frame_objs = []
         for f, d in frames:
             frame_objs.append('{\n"duration": ' + f'{d:.1f}' + ',\n"texture": ExtResource("' + ext_map[f] + '")\n}')
         
         frames_str = ',\n'.join(frame_objs)
-        block = f'{{\n"frames": [\n{frames_str}\n],\n"loop": true,\n"name": &"{anim_name}",\n"speed": {speed}\n}}'
+        loop_str = 'true' if is_loop else 'false'
+        block = f'{{\n"frames": [\n{frames_str}\n],\n"loop": {loop_str},\n"name": &"{anim_name}",\n"speed": {speed}\n}}'
         anim_blocks.append(block)
 
     lines.append(',\n'.join(anim_blocks))

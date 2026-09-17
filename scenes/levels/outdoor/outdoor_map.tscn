@@ -153,63 +153,62 @@ initial_velocity_min = 0.4
 initial_velocity_max = 1.2
 color = Color(1, 0.45, 0.15, 0.8)
 
-[node name="BackgroundAtmosphere" type="Node3D" parent="." unique_id=446470156]
+[node name="BackgroundAtmosphere" type="Node3D" parent="." unique_id=15148574]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, -42)
 script = ExtResource("5_backdrop_script")
 
-[node name="DistantMountainsCastle" type="Sprite3D" parent="BackgroundAtmosphere" unique_id=41835458]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
-modulate = Color(0.85, 0.8, 0.95, 0.95)
-pixel_size = 0.085
+[node name="DistantMountainsCastle" type="Sprite3D" parent="BackgroundAtmosphere" unique_id=1284087750]
+modulate = Color(0.85, 0.78, 0.92, 0.95)
+pixel_size = 0.12
 billboard = 1
 texture_filter = 0
 texture = ExtResource("11_bg_panorama")
 
-[node name="BloodRedMoon" type="Sprite3D" parent="BackgroundAtmosphere" unique_id=608245876]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 8.5, 1.5)
-modulate = Color(1, 0.4, 0.4, 1)
-pixel_size = 0.08
+[node name="BloodRedMoon" type="Sprite3D" parent="BackgroundAtmosphere" unique_id=686670824]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.0, 7.5, -2)
+modulate = Color(1, 0.35, 0.35, 1)
+pixel_size = 0.13
 billboard = 1
 texture_filter = 0
 texture = ExtResource("12_moon")
 
-[node name="MoonGlow" type="OmniLight3D" parent="BackgroundAtmosphere/BloodRedMoon" unique_id=1272214899]
+[node name="MoonGlow" type="OmniLight3D" parent="BackgroundAtmosphere/BloodRedMoon" unique_id=995420102]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
 light_color = Color(1, 0.25, 0.3, 1)
-light_energy = 3.0
-omni_range = 25.0
+light_energy = 3.5
+omni_range = 30.0
 
-[node name="MovingClouds" type="Node3D" parent="BackgroundAtmosphere" unique_id=2014524696]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 2)
+[node name="MovingClouds" type="Node3D" parent="BackgroundAtmosphere" unique_id=670328343]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.0, 1)
 script = ExtResource("4_cloud_script")
-speed = 0.5
 
-[node name="Cloud1" type="Sprite3D" parent="BackgroundAtmosphere/MovingClouds" unique_id=1319263672]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0.5, 0)
+[node name="Cloud1" type="Sprite3D" parent="BackgroundAtmosphere/MovingClouds" unique_id=1101389135]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 1.5, 0)
 modulate = Color(0.75, 0.65, 0.82, 0.75)
-pixel_size = 0.07
+pixel_size = 0.11
 billboard = 1
 texture_filter = 0
 texture = ExtResource("13_cloud1")
 
-[node name="Cloud2" type="Sprite3D" parent="BackgroundAtmosphere/MovingClouds" unique_id=1139846084]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1.2, 0.5)
+[node name="Cloud2" type="Sprite3D" parent="BackgroundAtmosphere/MovingClouds" unique_id=1570858631]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 2.0, 0.5)
 modulate = Color(0.7, 0.6, 0.75, 0.7)
-pixel_size = 0.075
+pixel_size = 0.12
 billboard = 1
 texture_filter = 0
 texture = ExtResource("14_cloud2")
 
-[node name="Cloud3" type="Sprite3D" parent="BackgroundAtmosphere/MovingClouds" unique_id=30336379]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0.8, 0)
+[node name="Cloud3" type="Sprite3D" parent="BackgroundAtmosphere/MovingClouds" unique_id=2139035090]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 1.8, -0.2)
 modulate = Color(0.75, 0.65, 0.8, 0.75)
-pixel_size = 0.07
+pixel_size = 0.11
 billboard = 1
 texture_filter = 0
 texture = ExtResource("15_cloud3")
 
-[node name="HighAtmosphereMist" type="Sprite3D" parent="BackgroundAtmosphere" unique_id=1568157102]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 2)
-modulate = Color(0.35, 0.22, 0.38, 0.65)
+[node name="HighAtmosphereMist" type="Sprite3D" parent="BackgroundAtmosphere" unique_id=1941429612]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 2)
+modulate = Color(0.4, 0.25, 0.42, 0.5)
 pixel_size = 0.08
 billboard = 1
 texture_filter = 0
@@ -1322,7 +1321,7 @@ light_energy = 3.6
 omni_range = 4.5
 
 [node name="GateBarrierPortalSprite" type="Sprite3D" parent="Fortress/SealedGate" unique_id=1880197490]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7, 0.65)
+transform = Transform3D(1.4028894, 0, 0, 0, 1.1658404, 0, 0, 0, 1, 0.14772522, 2.5947185, 1.6050873)
 pixel_size = 0.026
 texture_filter = 0
 texture = ExtResource("40_gate_barrier")
@@ -1340,7 +1339,7 @@ size = Vector3(3.2, 1, 1.2)
 material = SubResource("Mat_BrickWall")
 
 [node name="AsurSigilShrineTop" type="Sprite3D" parent="Fortress/SealedGate" unique_id=792831722]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.8, 1)
+transform = Transform3D(1.850751, 0, 0, 0, 1.5329645, 0, 0, 0, 1, 0.017443657, 2.4366696, 1.6946201)
 pixel_size = 0.025
 texture_filter = 0
 texture = ExtResource("39_sigil_shrine")

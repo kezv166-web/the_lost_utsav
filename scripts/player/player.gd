@@ -11,9 +11,11 @@ enum Direction {
 @export var acceleration: float = 24.0
 @export var friction: float = 30.0
 @export var gravity: float = 18.0
+@export var jump_velocity: float = 6.8
 
-var current_direction: Direction = Direction.DOWN
+var current_direction: Direction = Direction.UP
 var is_walking: bool = false
+var is_jumping: bool = false
 
 @onready var anim_sprite: AnimatedSprite3D = $AnimatedSprite3D
 
@@ -26,6 +28,7 @@ func _setup_inputs() -> void:
 	_add_key_binding("move_right", KEY_D, KEY_RIGHT)
 	_add_key_binding("move_up", KEY_W, KEY_UP)
 	_add_key_binding("move_down", KEY_S, KEY_DOWN)
+	_add_key_binding("jump", KEY_SPACE)
 	_add_key_binding("interact", KEY_E)
 	_add_key_binding("pause", KEY_ESCAPE)
 
@@ -45,11 +48,16 @@ func _add_key_binding(action_name: String, primary_key: Key, secondary_key: Key 
 			InputMap.action_add_event(action_name, ev2)
 
 func _physics_process(delta: float) -> void:
-	# Apply gravity
-	if not is_on_floor():
-		velocity.y -= gravity * delta
+	# Jump & Gravity
+	if is_on_floor():
+		if Input.is_action_just_pressed("jump"):
+			velocity.y = jump_velocity
+			is_jumping = true
+		else:
+			is_jumping = false
+			velocity.y = 0.0
 	else:
-		velocity.y = 0.0
+		velocity.y -= gravity * delta
 
 	# 2.5D X/Z plane movement
 	var input_vec = Input.get_vector("move_left", "move_right", "move_up", "move_down")
@@ -95,7 +103,10 @@ func _update_animation() -> void:
 			dir_str = "right"
 			
 	var target_anim: String
-	if is_walking:
+	if not is_on_floor() or is_jumping:
+		target_anim = "jump_" + dir_str
+		anim_sprite.speed_scale = 1.0
+	elif is_walking:
 		target_anim = "walk_" + dir_str
 		# Dynamic playback scale matching ground velocity to eliminate foot sliding
 		var ground_speed = Vector2(velocity.x, velocity.z).length()
@@ -105,4 +116,9 @@ func _update_animation() -> void:
 		anim_sprite.speed_scale = 1.0
 		
 	if anim_sprite.animation != target_anim:
+		var prev_anim = anim_sprite.animation
+		var prev_frame = anim_sprite.frame
 		anim_sprite.play(target_anim)
+		# Preserve air-time frame when changing direction mid-air
+		if ("jump" in str(prev_anim)) and ("jump" in target_anim):
+			anim_sprite.frame = prev_frame

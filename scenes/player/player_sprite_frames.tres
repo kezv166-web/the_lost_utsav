@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=37 format=3]
+[gd_resource type="SpriteFrames" load_steps=53 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/character/frames/idle_down_0.png" id="1_idle_down_0"]
 [ext_resource type="Texture2D" path="res://assets/character/frames/idle_up_0.png" id="2_idle_up_0"]
@@ -36,6 +36,22 @@
 [ext_resource type="Texture2D" path="res://assets/character/frames/walk_right_5.png" id="34_walk_right_5"]
 [ext_resource type="Texture2D" path="res://assets/character/frames/walk_right_6.png" id="35_walk_right_6"]
 [ext_resource type="Texture2D" path="res://assets/character/frames/walk_right_7.png" id="36_walk_right_7"]
+[ext_resource type="Texture2D" path="res://assets/character/frames/jump_down_0.png" id="37_jump_down_0"]
+[ext_resource type="Texture2D" path="res://assets/character/frames/jump_down_1.png" id="38_jump_down_1"]
+[ext_resource type="Texture2D" path="res://assets/character/frames/jump_down_2.png" id="39_jump_down_2"]
+[ext_resource type="Texture2D" path="res://assets/character/frames/jump_down_3.png" id="40_jump_down_3"]
+[ext_resource type="Texture2D" path="res://assets/character/frames/jump_up_0.png" id="41_jump_up_0"]
+[ext_resource type="Texture2D" path="res://assets/character/frames/jump_up_1.png" id="42_jump_up_1"]
+[ext_resource type="Texture2D" path="res://assets/character/frames/jump_up_2.png" id="43_jump_up_2"]
+[ext_resource type="Texture2D" path="res://assets/character/frames/jump_up_3.png" id="44_jump_up_3"]
+[ext_resource type="Texture2D" path="res://assets/character/frames/jump_left_0.png" id="45_jump_left_0"]
+[ext_resource type="Texture2D" path="res://assets/character/frames/jump_left_1.png" id="46_jump_left_1"]
+[ext_resource type="Texture2D" path="res://assets/character/frames/jump_left_2.png" id="47_jump_left_2"]
+[ext_resource type="Texture2D" path="res://assets/character/frames/jump_left_3.png" id="48_jump_left_3"]
+[ext_resource type="Texture2D" path="res://assets/character/frames/jump_right_0.png" id="49_jump_right_0"]
+[ext_resource type="Texture2D" path="res://assets/character/frames/jump_right_1.png" id="50_jump_right_1"]
+[ext_resource type="Texture2D" path="res://assets/character/frames/jump_right_2.png" id="51_jump_right_2"]
+[ext_resource type="Texture2D" path="res://assets/character/frames/jump_right_3.png" id="52_jump_right_3"]
 
 [resource]
 animations = [
@@ -238,5 +254,97 @@ animations = [
 "loop": true,
 "name": &"walk_right",
 "speed": 10.5
+},
+{
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("37_jump_down_0")
+},
+{
+"duration": 1.0,
+"texture": ExtResource("38_jump_down_1")
+},
+{
+"duration": 1.0,
+"texture": ExtResource("39_jump_down_2")
+},
+{
+"duration": 1.0,
+"texture": ExtResource("40_jump_down_3")
+}
+],
+"loop": false,
+"name": &"jump_down",
+"speed": 8.0
+},
+{
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("41_jump_up_0")
+},
+{
+"duration": 1.0,
+"texture": ExtResource("42_jump_up_1")
+},
+{
+"duration": 1.0,
+"texture": ExtResource("43_jump_up_2")
+},
+{
+"duration": 1.0,
+"texture": ExtResource("44_jump_up_3")
+}
+],
+"loop": false,
+"name": &"jump_up",
+"speed": 8.0
+},
+{
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("45_jump_left_0")
+},
+{
+"duration": 1.0,
+"texture": ExtResource("46_jump_left_1")
+},
+{
+"duration": 1.0,
+"texture": ExtResource("47_jump_left_2")
+},
+{
+"duration": 1.0,
+"texture": ExtResource("48_jump_left_3")
+}
+],
+"loop": false,
+"name": &"jump_left",
+"speed": 8.0
+},
+{
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("49_jump_right_0")
+},
+{
+"duration": 1.0,
+"texture": ExtResource("50_jump_right_1")
+},
+{
+"duration": 1.0,
+"texture": ExtResource("51_jump_right_2")
+},
+{
+"duration": 1.0,
+"texture": ExtResource("52_jump_right_3")
+}
+],
+"loop": false,
+"name": &"jump_right",
+"speed": 8.0
 }
 ]
