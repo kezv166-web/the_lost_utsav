@@ -53,6 +53,8 @@
 [ext_resource type="Texture2D" uid="uid://ccx2bhyh7em1o" path="res://assets/environment/bush_spiked_red.png" id="58_bush_spiked"]
 [ext_resource type="Texture2D" uid="uid://b8iasgcrxiddn" path="res://assets/environment/rock_spire_01.png" id="59_rock_spire1"]
 [ext_resource type="Texture2D" uid="uid://db15b1x1ugmjc" path="res://assets/environment/rock_spire_02.png" id="60_rock_spire2"]
+[ext_resource type="Texture2D" uid="uid://y8137lmjso4u" path="res://assets/environment/cliff_rock_tile.png" id="61_cliff_rock"]
+[ext_resource type="Texture2D" uid="uid://bvsowuibau3cx" path="res://assets/environment/cliff_ground_tile.png" id="62_cliff_ground"]
 
 [sub_resource type="Environment" id="Environment_outdoor"]
 background_mode = 1
@@ -85,6 +87,19 @@ texture_filter = 0
 albedo_texture = ExtResource("8_brick_wall")
 roughness = 0.9
 uv1_scale = Vector3(4, 4, 1)
+texture_filter = 0
+
+[sub_resource type="StandardMaterial3D" id="Mat_CliffRock"]
+albedo_texture = ExtResource("61_cliff_rock")
+roughness = 0.95
+uv1_scale = Vector3(0.5, 0.5, 0.5)
+uv1_triplanar = true
+texture_filter = 0
+
+[sub_resource type="StandardMaterial3D" id="Mat_CliffGround"]
+albedo_texture = ExtResource("62_cliff_ground")
+roughness = 0.92
+uv1_scale = Vector3(3, 3, 1)
 texture_filter = 0
 
 [sub_resource type="BoxShape3D" id="Shape_OverlookSideWall"]
@@ -728,17 +743,49 @@ shape = SubResource("Shape_OverlookGround")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="Overlook/Ground" unique_id=233315196]
 size = Vector3(12, 1, 8)
-material = SubResource("Mat_CobbleFloor")
+material = SubResource("Mat_CliffGround")
 
 [node name="GroundBackExtension" type="CSGBox3D" parent="Overlook" unique_id=1164454280]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 6)
 size = Vector3(16, 1, 6)
-material = SubResource("Mat_CobbleFloor")
+material = SubResource("Mat_CliffGround")
 
 [node name="Foundation" type="CSGBox3D" parent="Overlook" unique_id=1617660977]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -9, 3)
 size = Vector3(16, 16, 12)
-material = SubResource("Mat_BrickWall")
+material = SubResource("Mat_CliffRock")
+
+[node name="CliffLedges" type="Node3D" parent="Overlook"]
+
+[node name="LedgeR1" type="CSGBox3D" parent="Overlook/CliffLedges"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.3, 0.1, -3.8)
+size = Vector3(3.6, 1.4, 1.4)
+material = SubResource("Mat_CliffRock")
+
+[node name="LedgeR2" type="CSGBox3D" parent="Overlook/CliffLedges"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, -0.6, -3.8)
+size = Vector3(2.4, 2.0, 1.8)
+material = SubResource("Mat_CliffRock")
+
+[node name="LedgeR3" type="CSGBox3D" parent="Overlook/CliffLedges"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.2, -2.5, -1.0)
+size = Vector3(2.0, 5.0, 4.0)
+material = SubResource("Mat_CliffRock")
+
+[node name="LedgeL1" type="CSGBox3D" parent="Overlook/CliffLedges"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.3, 0.1, -3.8)
+size = Vector3(3.6, 1.4, 1.4)
+material = SubResource("Mat_CliffRock")
+
+[node name="LedgeL2" type="CSGBox3D" parent="Overlook/CliffLedges"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, -0.6, -3.8)
+size = Vector3(2.4, 2.0, 1.8)
+material = SubResource("Mat_CliffRock")
+
+[node name="LedgeL3" type="CSGBox3D" parent="Overlook/CliffLedges"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.2, -2.5, -1.0)
+size = Vector3(2.0, 5.0, 4.0)
+material = SubResource("Mat_CliffRock")
 
 [node name="LeftBoundary" type="StaticBody3D" parent="Overlook" unique_id=546637098]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.5, 0)
@@ -748,7 +795,7 @@ shape = SubResource("Shape_OverlookSideWall")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="Overlook/LeftBoundary" unique_id=1666532771]
 size = Vector3(1, 3, 8)
-material = SubResource("Mat_BrickWall")
+material = SubResource("Mat_CliffRock")
 
 [node name="CliffLeft" type="Sprite3D" parent="Overlook/LeftBoundary" unique_id=1577044035]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, -0.2, 0)
@@ -777,7 +824,7 @@ shape = SubResource("Shape_OverlookSideWall")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="Overlook/RightBoundary" unique_id=1362635665]
 size = Vector3(1, 3, 8)
-material = SubResource("Mat_BrickWall")
+material = SubResource("Mat_CliffRock")
 
 [node name="CliffRight" type="Sprite3D" parent="Overlook/RightBoundary" unique_id=410291779]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, -0.2, 0)
@@ -807,18 +854,32 @@ texture_filter = 0
 texture = ExtResource("27_cliff_tiered")
 
 [node name="LipCliffL" type="Sprite3D" parent="Overlook" unique_id=228336008]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.6, -1.6, -3.8)
-pixel_size = 0.024
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.6, 0.45, -3.8)
+pixel_size = 0.028
 billboard = 2
 texture_filter = 0
 texture = ExtResource("26_cliff_overhang")
 
-[node name="LipCliffR" type="Sprite3D" parent="Overlook" unique_id=166636874]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.6, -1.6, -3.8)
-pixel_size = 0.024
+[node name="LipCliffL2" type="Sprite3D" parent="Overlook"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 0.45, -3.8)
+pixel_size = 0.026
 billboard = 2
 texture_filter = 0
 texture = ExtResource("28_cliff_block")
+
+[node name="LipCliffR" type="Sprite3D" parent="Overlook" unique_id=166636874]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.6, 0.45, -3.8)
+pixel_size = 0.028
+billboard = 2
+texture_filter = 0
+texture = ExtResource("28_cliff_block")
+
+[node name="LipCliffR2" type="Sprite3D" parent="Overlook"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 0.45, -3.8)
+pixel_size = 0.026
+billboard = 2
+texture_filter = 0
+texture = ExtResource("27_cliff_tiered")
 
 [node name="DeadTree" type="StaticBody3D" parent="Overlook" unique_id=1413617547]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 0, -0.5)

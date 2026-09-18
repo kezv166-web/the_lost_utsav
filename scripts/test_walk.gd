@@ -82,6 +82,16 @@ func _ready() -> void:
 		assert(keep_brazier.sprite_frames != null, "Keep brazier sprite_frames must not be null")
 		assert(keep_brazier.sprite_frames.get_frame_count("default") == 8, "Keep brazier must have 8 animated frames")
 		print("PASSED: Citadel Keep brazier AnimatedSprite3D verified (8 frames, billboard=2, filter=0)")
+
+	# Verify Overlook Cliff Materials & Tiered Ledges
+	var overlook_ground = get_parent().get_node_or_null("Overlook/Ground/CSGBox3D")
+	assert(overlook_ground != null and overlook_ground.material != null, "Overlook ground must have material")
+	var overlook_foundation = get_parent().get_node_or_null("Overlook/Foundation")
+	assert(overlook_foundation != null and overlook_foundation.material != null, "Overlook foundation must have material")
+	var cliff_ledges = get_parent().get_node_or_null("Overlook/CliffLedges")
+	assert(cliff_ledges != null and cliff_ledges.get_child_count() >= 6, "Overlook must have tiered CliffLedges")
+	print("PASSED: Overlook Cliff materials and tiered ledges verified!")
+
 	# Verify 2D Object Constraints in Outdoor Map
 	var required_constraints = [
 		"Overlook/RockClusterL",
