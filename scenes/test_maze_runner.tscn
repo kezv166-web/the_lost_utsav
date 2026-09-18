@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/levels/maze/maze.tscn" id="1_maze"]
+[ext_resource type="Script" path="res://scripts/test_maze_walk.gd" id="2_test"]
+
+[node name="TestMazeRunner" type="Node3D"]
+
+[node name="Maze" parent="." instance=ExtResource("1_maze")]
+
+[node name="TestHarness" type="Node" parent="Maze"]
+script = ExtResource("2_test")

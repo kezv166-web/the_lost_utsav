@@ -1,0 +1,218 @@
+extends Node3D
+
+@onready var player = $Player
+@onready var key_area = $Interactables/GoldenKey
+@onready var exit_area = $Interactables/MazeExit
+@onready var chest_area = $Interactables/Chest
+@onready var exit_prompt = $Interactables/MazeExit/Prompt
+@onready var exit_gate_visual = $Interactables/MazeExit/GateVisual
+@onready var key_visual = $Interactables/GoldenKey/KeyVisual
+
+@onready var hud_form = $MazeHUD/Margin/VBox/TopBar/FormBadge
+@onready var hud_objective = $MazeHUD/Margin/VBox/TopBar/ObjectiveLabel
+@onready var hud_keys = $MazeHUD/Margin/VBox/TopBar/KeyTracker
+@onready var hud_message = $MazeHUD/Margin/MessageBanner
+
+var has_key: bool = false
+var exit_unlocked: bool = false
+var player_near_exit: bool = false
+var player_near_chest: bool = false
+var flicker_timer: float = 0.0
+var key_bob_tween: Tween = null
+
+var torch_lights: Array[OmniLight3D] = []
+
+func _ready() -> void:
+	_setup_player_as_mouse()
+	_setup_camera()
+	_setup_torches()
+	_setup_interactables()
+	_setup_fade_in()
+	_update_hud()
+	_show_hud_message("Level 1: Underground Maze\nNavigate the fortress foundation. Find the Golden Key to unlock the Exit Gate.", 5.0)
+
+func _setup_fade_in() -> void:
+	var hud = get_node_or_null("MazeHUD")
+	if hud:
+		var fade = ColorRect.new()
+		fade.color = Color(0, 0, 0, 1)
+		fade.set_anchors_preset(Control.PRESET_FULL_RECT)
+		fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		hud.add_child(fade)
+		var tw = create_tween()
+		tw.tween_property(fade, "color:a", 0.0, 0.5)
+		tw.tween_callback(func():
+			if is_instance_valid(fade):
+				fade.queue_free()
+		)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("transform_1") or (event is InputEventKey and event.pressed and not event.is_echo() and (event.physical_keycode == KEY_1 or event.keycode == KEY_1)):
+		_show_hud_message("Only Mushika can navigate these narrow underground passages!", 3.0)
+
+func _setup_player_as_mouse() -> void:
+	if not player:
+		return
+	if player.current_form != player.PlayerForm.MOUSE:
+		print("Enforcing MOUSE form in underground maze.")
+	player.current_form = player.PlayerForm.MOUSE
+	player.transform_to_mouse()
+	
+	var spawn = get_node_or_null("PlayerSpawn")
+	if spawn:
+		player.global_position = spawn.global_position
+		
+	var anim: AnimatedSprite3D = player.get_node_or_null("AnimatedSprite3D")
+	if anim:
+		anim.billboard = BaseMaterial3D.BILLBOARD_DISABLED
+		anim.rotation_degrees = Vector3(-90, 0, 0)
+		anim.sorting_offset = 10.0
+		anim.render_priority = 5
+		anim.double_sided = true
+		anim.no_depth_test = true
+
+func _setup_camera() -> void:
+	var rig = get_node_or_null("CameraRig")
+	if rig and player:
+		rig.target = player
+		rig.target_offset = Vector3(0, 11.5, 0)
+		rig.follow_speed = 5.0
+		var pivot = rig.get_node_or_null("Pivot")
+		if pivot:
+			pivot.rotation_degrees = Vector3(-90, 0, 0)
+			var cam: Camera3D = pivot.get_node_or_null("Camera3D")
+			if cam:
+				cam.size = 7.5
+
+func _setup_torches() -> void:
+	var torches_node = get_node_or_null("MazeDecorations/Torches")
+	if torches_node:
+		for child in torches_node.get_children():
+			if child is OmniLight3D:
+				torch_lights.append(child)
+			elif child.has_node("OmniLight3D"):
+				torch_lights.append(child.get_node("OmniLight3D"))
+
+func _setup_interactables() -> void:
+	if key_area:
+		key_area.body_entered.connect(_on_key_body_entered)
+		if key_visual:
+			key_bob_tween = create_tween().set_loops()
+			key_bob_tween.tween_property(key_visual, "position:y", 0.35, 0.7).set_trans(Tween.TRANS_SINE)
+			key_bob_tween.tween_property(key_visual, "position:y", 0.20, 0.7).set_trans(Tween.TRANS_SINE)
+			
+	if chest_area:
+		chest_area.body_entered.connect(_on_chest_body_entered)
+		chest_area.body_exited.connect(_on_chest_body_exited)
+
+	if exit_area:
+		exit_area.body_entered.connect(_on_exit_body_entered)
+		exit_area.body_exited.connect(_on_exit_body_exited)
+		if exit_prompt:
+			exit_prompt.visible = false
+
+func _process(delta: float) -> void:
+	flicker_timer += delta * 6.0
+	var flicker = sin(flicker_timer) * 0.15 + cos(flicker_timer * 1.7) * 0.1
+	for light in torch_lights:
+		if is_instance_valid(light):
+			light.light_energy = clampf(1.5 + flicker, 1.1, 2.1)
+			
+	var rig = get_node_or_null("CameraRig")
+	if rig and player:
+		# Clamp camera position so it does not reveal empty voids outside the maze boundaries
+		rig.global_position.x = clampf(rig.global_position.x, -3.0, 3.0)
+		rig.global_position.z = clampf(rig.global_position.z, -2.6, 2.6)
+
+	if player_near_exit and Input.is_action_just_pressed("interact"):
+		_on_exit_interacted()
+
+func _on_key_body_entered(body: Node3D) -> void:
+	if has_key:
+		return
+	if body.is_in_group("player") or body == player:
+		has_key = true
+		if key_bob_tween and key_bob_tween.is_valid():
+			key_bob_tween.kill()
+		_update_hud()
+		_show_hud_message("KEY ACQUIRED!\nYou found the Fortress Skeleton Key.\nThe eastern Exit Gate can now be unlocked!", 5.0)
+		print("PASSED: Golden Key collected by Mushika!")
+		if key_visual:
+			var tw = create_tween()
+			tw.tween_property(key_visual, "scale", Vector3(1.5, 1.5, 1.5), 0.2)
+			tw.tween_property(key_visual, "modulate:a", 0.0, 0.2)
+			tw.tween_callback(func():
+				if is_instance_valid(key_area):
+					key_area.queue_free()
+			)
+
+func _on_chest_body_entered(body: Node3D) -> void:
+	if body.is_in_group("player") or body == player:
+		player_near_chest = true
+		_show_hud_message("An ancient Asur supply chest. Left undisturbed by subterranean vermin.", 3.5)
+
+func _on_chest_body_exited(body: Node3D) -> void:
+	if body.is_in_group("player") or body == player:
+		player_near_chest = false
+
+func _on_exit_body_entered(body: Node3D) -> void:
+	if body.is_in_group("player") or body == player:
+		player_near_exit = true
+		if exit_prompt:
+			exit_prompt.visible = true
+			if exit_unlocked:
+				exit_prompt.text = "Gate Opened\n[E] Enter Next Chamber"
+			elif has_key:
+				exit_prompt.text = "[E] Unlock Exit Gate with Key"
+			else:
+				exit_prompt.text = "Exit Gate (Locked)\nFind the Golden Key"
+
+func _on_exit_body_exited(body: Node3D) -> void:
+	if body.is_in_group("player") or body == player:
+		player_near_exit = false
+		if exit_prompt:
+			exit_prompt.visible = false
+
+func _on_exit_interacted() -> void:
+	if exit_unlocked:
+		_show_hud_message("The path continues deeper into the Fortress...\nTo be continued in Chapter 2!", 5.0)
+		print("PASSED: Player traversed the unlocked exit gate!")
+		return
+		
+	if has_key:
+		exit_unlocked = true
+		if exit_prompt:
+			exit_prompt.text = "Gate Opened\n[E] Enter Next Chamber"
+		if exit_gate_visual:
+			var tw = create_tween()
+			tw.tween_property(exit_gate_visual, "position:y", 1.6, 0.8).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		_show_hud_message("CLICK-CLANK! The heavy iron portcullis rises!\nThe path ahead is open.", 5.0)
+		print("PASSED: Exit gate unlocked with key and opened successfully!")
+	else:
+		_show_hud_message("The iron portcullis is locked solid.\nSearch the labyrinth corridors to find the Golden Key.", 3.5)
+
+func _update_hud() -> void:
+	if hud_form:
+		hud_form.text = "FORM: MUSHIKA"
+	if hud_objective:
+		if exit_unlocked:
+			hud_objective.text = "Objective: Proceed through the exit gate"
+		elif has_key:
+			hud_objective.text = "Objective: Reach the Exit Gate at the top-right"
+		else:
+			hud_objective.text = "Objective: Find the Golden Key hidden in the maze"
+	if hud_keys:
+		hud_keys.text = "Keys: %s / 1" % ("1" if has_key else "0")
+
+func _show_hud_message(msg: String, duration: float) -> void:
+	if hud_message:
+		hud_message.text = msg
+		hud_message.visible = true
+		var tw = create_tween()
+		tw.tween_interval(duration)
+		tw.tween_property(hud_message, "modulate:a", 0.0, 0.8)
+		tw.tween_callback(func():
+			if is_instance_valid(hud_message):
+				hud_message.visible = false
+				hud_message.modulate.a = 1.0
+		)

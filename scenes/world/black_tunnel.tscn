@@ -1,0 +1,38 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/black_tunnel.gd" id="1_tunnel"]
+[ext_resource type="Texture2D" path="res://assets/environment/mouse_hole_broken.png" id="2_hole_tex"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_tunnel"]
+height = 1.2
+radius = 0.75
+
+[node name="BlackTunnel" type="Area3D"]
+script = ExtResource("1_tunnel")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("CylinderShape3D_tunnel")
+
+[node name="HoleVisual" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.015, 0)
+pixel_size = 0.0125
+texture_filter = 0
+texture = ExtResource("2_hole_tex")
+
+[node name="DraftLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+light_color = Color(1, 0.55, 0.25, 1)
+light_energy = 0.8
+omni_range = 1.6
+
+[node name="PromptLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+visible = false
+billboard = 1
+text = "Press E to Enter Tunnel"
+font_size = 22
+outline_size = 5
+
+[node name="SpawnPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0.2)
