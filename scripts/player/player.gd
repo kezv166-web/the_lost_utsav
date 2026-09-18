@@ -7,13 +7,22 @@ enum Direction {
 	RIGHT
 }
 
+enum State {
+	IDLE_WALK,
+	JUMPING,
+	ATTACKING
+}
+
 @export var speed: float = 4.5
 @export var acceleration: float = 24.0
 @export var friction: float = 30.0
 @export var gravity: float = 18.0
 @export var jump_velocity: float = 6.8
 
+var current_state: State = State.IDLE_WALK
 var current_direction: Direction = Direction.UP
+var last_horizontal_facing: Direction = Direction.RIGHT
+var current_attack_type: String = ""
 var is_walking: bool = false
 var is_jumping: bool = false
 
@@ -21,6 +30,8 @@ var is_jumping: bool = false
 
 func _ready() -> void:
 	_setup_inputs()
+	if anim_sprite:
+		anim_sprite.animation_finished.connect(_on_animation_finished)
 	_update_animation()
 
 func _setup_inputs() -> void:
@@ -29,8 +40,16 @@ func _setup_inputs() -> void:
 	_add_key_binding("move_up", KEY_W, KEY_UP)
 	_add_key_binding("move_down", KEY_S, KEY_DOWN)
 	_add_key_binding("jump", KEY_SPACE)
+	_add_key_binding("attack_axe", KEY_Q)
+	_add_key_binding("attack_rope", KEY_E)
 	_add_key_binding("interact", KEY_E)
 	_add_key_binding("pause", KEY_ESCAPE)
+
+func _on_animation_finished() -> void:
+	if current_state == State.ATTACKING:
+		current_state = State.IDLE_WALK
+		current_attack_type = ""
+		_update_animation()
 
 func _add_key_binding(action_name: String, primary_key: Key, secondary_key: Key = KEY_NONE) -> void:
 	if not InputMap.has_action(action_name):
@@ -50,45 +69,85 @@ func _add_key_binding(action_name: String, primary_key: Key, secondary_key: Key 
 func _physics_process(delta: float) -> void:
 	# Jump & Gravity
 	if is_on_floor():
-		if Input.is_action_just_pressed("jump"):
+		if current_state != State.ATTACKING and Input.is_action_just_pressed("jump"):
 			velocity.y = jump_velocity
 			is_jumping = true
+			current_state = State.JUMPING
 		else:
 			is_jumping = false
 			velocity.y = 0.0
+			if current_state == State.JUMPING:
+				current_state = State.IDLE_WALK
 	else:
 		velocity.y -= gravity * delta
 
-	# 2.5D X/Z plane movement
-	var input_vec = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	var move_dir = Vector3(input_vec.x, 0.0, input_vec.y).normalized()
+	# Combat attack triggers (allowed on ground when not already attacking)
+	if is_on_floor() and current_state != State.ATTACKING:
+		if Input.is_action_just_pressed("attack_axe"):
+			current_state = State.ATTACKING
+			current_attack_type = "axe"
+			is_walking = false
+			_play_attack_animation()
+		elif Input.is_action_just_pressed("attack_rope"):
+			current_state = State.ATTACKING
+			current_attack_type = "rope"
+			is_walking = false
+			_play_attack_animation()
 
-	if move_dir.length_squared() > 0.001:
-		is_walking = true
-		velocity.x = move_toward(velocity.x, move_dir.x * speed, acceleration * delta)
-		velocity.z = move_toward(velocity.z, move_dir.z * speed, acceleration * delta)
-		
-		# Determine dominant direction
-		if abs(input_vec.y) > abs(input_vec.x):
-			if input_vec.y > 0.05:
-				current_direction = Direction.DOWN
-			elif input_vec.y < -0.05:
-				current_direction = Direction.UP
-		else:
-			if input_vec.x > 0.05:
-				current_direction = Direction.RIGHT
-			elif input_vec.x < -0.05:
-				current_direction = Direction.LEFT
-	else:
-		is_walking = false
+	if current_state == State.ATTACKING:
+		# Smoothly decelerate into the strike
 		velocity.x = move_toward(velocity.x, 0.0, friction * delta)
 		velocity.z = move_toward(velocity.z, 0.0, friction * delta)
+	else:
+		# 2.5D X/Z plane movement
+		var input_vec = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+		var move_dir = Vector3(input_vec.x, 0.0, input_vec.y).normalized()
 
-	_update_animation()
+		if move_dir.length_squared() > 0.001:
+			is_walking = true
+			velocity.x = move_toward(velocity.x, move_dir.x * speed, acceleration * delta)
+			velocity.z = move_toward(velocity.z, move_dir.z * speed, acceleration * delta)
+			
+			# Determine dominant direction and update last horizontal facing
+			if abs(input_vec.y) > abs(input_vec.x):
+				if input_vec.y > 0.05:
+					current_direction = Direction.DOWN
+				elif input_vec.y < -0.05:
+					current_direction = Direction.UP
+			else:
+				if input_vec.x > 0.05:
+					current_direction = Direction.RIGHT
+					last_horizontal_facing = Direction.RIGHT
+				elif input_vec.x < -0.05:
+					current_direction = Direction.LEFT
+					last_horizontal_facing = Direction.LEFT
+		else:
+			is_walking = false
+			velocity.x = move_toward(velocity.x, 0.0, friction * delta)
+			velocity.z = move_toward(velocity.z, 0.0, friction * delta)
+
+		_update_animation()
+
 	move_and_slide()
 
-func _update_animation() -> void:
+func _play_attack_animation() -> void:
 	if not anim_sprite:
+		return
+	var facing_str: String = "right"
+	if current_direction == Direction.LEFT:
+		facing_str = "left"
+	elif current_direction == Direction.RIGHT:
+		facing_str = "right"
+	else:
+		# Up or Down facing: strike in the last horizontal direction
+		facing_str = "left" if last_horizontal_facing == Direction.LEFT else "right"
+
+	var anim_name = "attack_" + current_attack_type + "_" + facing_str
+	anim_sprite.speed_scale = 1.0
+	anim_sprite.play(anim_name)
+
+func _update_animation() -> void:
+	if not anim_sprite or current_state == State.ATTACKING:
 		return
 		
 	var dir_str: String

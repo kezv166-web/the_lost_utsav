@@ -116,6 +116,37 @@ static func extract_assets_now() -> void:
 				var px = crop.get_pixel(cx, cy)
 				if px.a < 0.04:
 					crop.set_pixel(cx, cy, Color(0, 0, 0, 0))
+
+		# Clean stray adjacent tileset fragments (floating rocks, corner walls, etc.)
+		if file_name == "asur_hanging_banner_large.png":
+			for cy in range(115, ch):
+				for cx in range(cw):
+					if cx < 17 or cx > 47:
+						crop.set_pixel(cx, cy, Color(0, 0, 0, 0))
+					elif cy >= 135 and (cx < 19 or cx > 36):
+						crop.set_pixel(cx, cy, Color(0, 0, 0, 0))
+					elif cy >= 150 and (cx < 21 or cx > 33):
+						crop.set_pixel(cx, cy, Color(0, 0, 0, 0))
+		elif file_name == "asur_hanging_banner_sigil.png":
+			for cy in range(115, ch):
+				for cx in range(cw):
+					if cx < 18 or cx > 48:
+						crop.set_pixel(cx, cy, Color(0, 0, 0, 0))
+					elif cy >= 133 and (cx < 20 or cx > 38):
+						crop.set_pixel(cx, cy, Color(0, 0, 0, 0))
+					elif cy >= 150 and (cx < 22 or cx > 35):
+						crop.set_pixel(cx, cy, Color(0, 0, 0, 0))
+					elif cy >= 155 and cx < 15:
+						crop.set_pixel(cx, cy, Color(0, 0, 0, 0))
+		elif file_name == "bridge_post_tall.png":
+			for cy in range(0, 42):
+				for cx in range(0, 32):
+					crop.set_pixel(cx, cy, Color(0, 0, 0, 0))
+		elif file_name == "bridge_post_banner.png":
+			for cy in range(0, 35):
+				for cx in range(0, 32):
+					crop.set_pixel(cx, cy, Color(0, 0, 0, 0))
+
 		var used = crop.get_used_rect()
 		if used.size.x > 0 and used.size.y > 0 and file_name in ["sealed_gate_portal_barrier.png", "cliff_massive_03.png", "asur_sigil_shrine.png"]:
 			crop = crop.get_region(used)

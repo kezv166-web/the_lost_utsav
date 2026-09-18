@@ -68,6 +68,10 @@ fog_density = 0.006
 [sub_resource type="StandardMaterial3D" id="Mat_AbyssFloor"]
 albedo_color = Color(0.015, 0.008, 0.02, 1)
 
+[sub_resource type="StandardMaterial3D" id="Mat_BlackOcclusion"]
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 1)
+
 [sub_resource type="BoxShape3D" id="Shape_OverlookGround"]
 size = Vector3(12, 1, 8)
 
@@ -89,6 +93,9 @@ size = Vector3(1, 3, 8)
 [sub_resource type="BoxShape3D" id="Shape_OverlookBackWall"]
 size = Vector3(12, 3, 1)
 
+[sub_resource type="BoxShape3D" id="Shape_OverlookChasmConstraint"]
+size = Vector3(3.5, 5, 1)
+
 [sub_resource type="BoxShape3D" id="Shape_BridgeWalkway"]
 size = Vector3(5, 1, 24)
 
@@ -99,7 +106,10 @@ uv1_scale = Vector3(5, 24, 1)
 texture_filter = 0
 
 [sub_resource type="BoxShape3D" id="Shape_BridgeRail"]
-size = Vector3(0.6, 1.2, 24)
+size = Vector3(0.6, 5, 24)
+
+[sub_resource type="BoxShape3D" id="Shape_PlazaSouthRail"]
+size = Vector3(6.5, 5, 0.8)
 
 [sub_resource type="StandardMaterial3D" id="Mat_Balustrade"]
 albedo_texture = ExtResource("8_brick_wall")
@@ -111,7 +121,7 @@ texture_filter = 0
 size = Vector3(18, 1, 14)
 
 [sub_resource type="BoxShape3D" id="Shape_PlazaSideWall"]
-size = Vector3(1, 4, 14)
+size = Vector3(1.5, 8, 16)
 
 [sub_resource type="BoxShape3D" id="Shape_RampartWall"]
 size = Vector3(7, 7, 2)
@@ -121,7 +131,33 @@ height = 9.0
 radius = 2.0
 
 [sub_resource type="BoxShape3D" id="Shape_GateDoor"]
-size = Vector3(4, 5, 1)
+size = Vector3(4.5, 6, 1.2)
+[sub_resource type="BoxShape3D" id="Shape_RockCluster"]
+size = Vector3(2.2, 3.5, 1.6)
+
+[sub_resource type="CylinderShape3D" id="Shape_RockSmall"]
+height = 2.5
+radius = 0.55
+
+[sub_resource type="CylinderShape3D" id="Shape_DeadTreeTrunk"]
+height = 4.0
+radius = 0.45
+
+[sub_resource type="BoxShape3D" id="Shape_BrazierBox"]
+size = Vector3(1.2, 3.5, 1.2)
+
+[sub_resource type="BoxShape3D" id="Shape_TorchPost"]
+size = Vector3(0.9, 3.5, 0.9)
+
+[sub_resource type="BoxShape3D" id="Shape_Spikes"]
+size = Vector3(1.5, 3.5, 1.1)
+
+[sub_resource type="BoxShape3D" id="Shape_RockCorner"]
+size = Vector3(2.5, 3.5, 2.0)
+
+[sub_resource type="BoxShape3D" id="Shape_StatueBarrier"]
+size = Vector3(2.2, 6.0, 2.2)
+
 
 [sub_resource type="BoxShape3D" id="Shape_GateTrigger"]
 size = Vector3(5, 3, 4)
@@ -721,6 +757,18 @@ billboard = 2
 texture_filter = 0
 texture = ExtResource("24_cliff_tall")
 
+[node name="LeftChasmConstraint" type="StaticBody3D" parent="Overlook"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.25, 2.5, -3.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Overlook/LeftChasmConstraint"]
+shape = SubResource("Shape_OverlookChasmConstraint")
+
+[node name="RightChasmConstraint" type="StaticBody3D" parent="Overlook"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.25, 2.5, -3.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Overlook/RightChasmConstraint"]
+shape = SubResource("Shape_OverlookChasmConstraint")
+
 [node name="RightBoundary" type="StaticBody3D" parent="Overlook" unique_id=1947866570]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.5, 0)
 
@@ -772,12 +820,19 @@ billboard = 2
 texture_filter = 0
 texture = ExtResource("28_cliff_block")
 
-[node name="DeadTree" type="Sprite3D" parent="Overlook" unique_id=1413617547]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 1.6, -0.5)
+[node name="DeadTree" type="StaticBody3D" parent="Overlook" unique_id=1413617547]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 0, -0.5)
+
+[node name="Sprite" type="Sprite3D" parent="Overlook/DeadTree"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 pixel_size = 0.026
 billboard = 2
 texture_filter = 0
 texture = ExtResource("32_dead_tree")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Overlook/DeadTree"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("Shape_DeadTreeTrunk")
 
 [node name="LargeAsurBanner" type="Sprite3D" parent="Overlook" unique_id=457897244]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.4, 1.6, -1.8)
@@ -786,28 +841,77 @@ billboard = 2
 texture_filter = 0
 texture = ExtResource("41_banner_large")
 
-[node name="RockClusterL" type="Sprite3D" parent="Overlook" unique_id=1110187409]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0.3, 1.2)
+[node name="RockClusterL" type="StaticBody3D" parent="Overlook" unique_id=1110187409]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0, 1.2)
+
+[node name="Sprite" type="Sprite3D" parent="Overlook/RockClusterL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
 pixel_size = 0.022
 billboard = 2
 texture_filter = 0
 texture = ExtResource("29_rock_sharp")
 
-[node name="RockClusterR" type="Sprite3D" parent="Overlook" unique_id=1057273415]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.2, 0.3, 1.2)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Overlook/RockClusterL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+shape = SubResource("Shape_RockCluster")
+
+[node name="RockClusterR" type="StaticBody3D" parent="Overlook" unique_id=1057273415]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.2, 0, 1.2)
+
+[node name="Sprite" type="Sprite3D" parent="Overlook/RockClusterR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
 pixel_size = 0.022
 billboard = 2
 texture_filter = 0
 texture = ExtResource("27_cliff_tiered")
 
-[node name="RockSmall" type="Sprite3D" parent="Overlook" unique_id=1293396127]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.6, 0.2, -1)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Overlook/RockClusterR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+shape = SubResource("Shape_RockCluster")
+
+[node name="RockSmall" type="StaticBody3D" parent="Overlook" unique_id=1293396127]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.6, 0, -1)
+
+[node name="Sprite" type="Sprite3D" parent="Overlook/RockSmall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
 pixel_size = 0.02
 billboard = 2
 texture_filter = 0
 texture = ExtResource("31_rock_small")
 
-[node name="OverlookBrazierL" type="Node3D" parent="Overlook" unique_id=1883355177]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Overlook/RockSmall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
+shape = SubResource("Shape_RockSmall")
+
+[node name="OverlookSpikesL" type="StaticBody3D" parent="Overlook"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 0, -2.5)
+
+[node name="Sprite" type="Sprite3D" parent="Overlook/OverlookSpikesL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+pixel_size = 0.022
+billboard = 2
+texture_filter = 0
+texture = ExtResource("58_bush_spiked")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Overlook/OverlookSpikesL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+shape = SubResource("Shape_Spikes")
+
+[node name="OverlookSpikesR" type="StaticBody3D" parent="Overlook"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.8, 0, -2.5)
+
+[node name="Sprite" type="Sprite3D" parent="Overlook/OverlookSpikesR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+pixel_size = 0.022
+billboard = 2
+texture_filter = 0
+texture = ExtResource("58_bush_spiked")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Overlook/OverlookSpikesR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+shape = SubResource("Shape_Spikes")
+
+[node name="OverlookBrazierL" type="StaticBody3D" parent="Overlook" unique_id=1883355177]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 0, -3.2)
 
 [node name="Sprite" type="AnimatedSprite3D" parent="Overlook/OverlookBrazierL" unique_id=1714087009]
@@ -823,7 +927,11 @@ light_color = Color(1, 0.62, 0.22, 1)
 light_energy = 2.2
 omni_range = 6.0
 
-[node name="OverlookBrazierR" type="Node3D" parent="Overlook" unique_id=113107768]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Overlook/OverlookBrazierL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+shape = SubResource("Shape_BrazierBox")
+
+[node name="OverlookBrazierR" type="StaticBody3D" parent="Overlook" unique_id=113107768]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0, -3.2)
 
 [node name="Sprite" type="AnimatedSprite3D" parent="Overlook/OverlookBrazierR" unique_id=834586196]
@@ -838,6 +946,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 light_color = Color(1, 0.62, 0.22, 1)
 light_energy = 2.2
 omni_range = 6.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Overlook/OverlookBrazierR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+shape = SubResource("Shape_BrazierBox")
 
 [node name="Bridge" type="Node3D" parent="." unique_id=998462978]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
@@ -856,6 +968,7 @@ material = SubResource("Mat_StoneFloor")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.6, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Bridge/LeftBalustrade" unique_id=121626231]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)
 shape = SubResource("Shape_BridgeRail")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="Bridge/LeftBalustrade" unique_id=1003984320]
@@ -866,6 +979,7 @@ material = SubResource("Mat_Balustrade")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0.6, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Bridge/RightBalustrade" unique_id=518532854]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)
 shape = SubResource("Shape_BridgeRail")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="Bridge/RightBalustrade" unique_id=29900358]
@@ -884,55 +998,49 @@ material = SubResource("Mat_BrickWall")
 
 [node name="PostsAndTorches" type="Node3D" parent="Bridge" unique_id=664895067]
 
-[node name="TorchL1" type="Node3D" parent="Bridge/PostsAndTorches" unique_id=1316260745]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.55, 1.1, 7)
-
-[node name="PillarSprite" type="Sprite3D" parent="Bridge/PostsAndTorches/TorchL1" unique_id=1779135992]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
-pixel_size = 0.02
-billboard = 2
-texture_filter = 0
-texture = ExtResource("44_bridge_post")
+[node name="TorchL1" type="StaticBody3D" parent="Bridge/PostsAndTorches" unique_id=1316260745]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.55, 1.2, 7)
 
 [node name="FlameSprite" type="AnimatedSprite3D" parent="Bridge/PostsAndTorches/TorchL1" unique_id=1474851803]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
-pixel_size = 0.012
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+pixel_size = 0.011
 billboard = 2
 texture_filter = 0
-sprite_frames = ExtResource("51_flame_frames")
+sprite_frames = ExtResource("50_brazier_frames")
 autoplay = "default"
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Bridge/PostsAndTorches/TorchL1" unique_id=369897835]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 light_color = Color(1, 0.65, 0.25, 1)
 light_energy = 2.2
 omni_range = 7.0
 
-[node name="TorchR1" type="Node3D" parent="Bridge/PostsAndTorches" unique_id=1031480113]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.55, 1.1, 7)
-
-[node name="PillarSprite" type="Sprite3D" parent="Bridge/PostsAndTorches/TorchR1" unique_id=459673104]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bridge/PostsAndTorches/TorchL1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
-pixel_size = 0.02
-billboard = 2
-texture_filter = 0
-texture = ExtResource("44_bridge_post")
+shape = SubResource("Shape_BrazierBox")
+
+[node name="TorchR1" type="StaticBody3D" parent="Bridge/PostsAndTorches" unique_id=1031480113]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.55, 1.2, 7)
 
 [node name="FlameSprite" type="AnimatedSprite3D" parent="Bridge/PostsAndTorches/TorchR1" unique_id=78386981]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
-pixel_size = 0.012
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+pixel_size = 0.011
 billboard = 2
 texture_filter = 0
-sprite_frames = ExtResource("51_flame_frames")
+sprite_frames = ExtResource("50_brazier_frames")
 autoplay = "default"
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Bridge/PostsAndTorches/TorchR1" unique_id=1329125189]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 light_color = Color(1, 0.65, 0.25, 1)
 light_energy = 2.2
 omni_range = 7.0
 
-[node name="PostMidL" type="Node3D" parent="Bridge/PostsAndTorches" unique_id=1039777720]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bridge/PostsAndTorches/TorchR1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+shape = SubResource("Shape_BrazierBox")
+
+[node name="PostMidL" type="StaticBody3D" parent="Bridge/PostsAndTorches" unique_id=1039777720]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.55, 1.1, 1)
 
 [node name="PillarSprite" type="Sprite3D" parent="Bridge/PostsAndTorches/PostMidL" unique_id=650598668]
@@ -949,7 +1057,11 @@ billboard = 2
 texture_filter = 0
 texture = ExtResource("42_banner_sigil")
 
-[node name="PostMidR" type="Node3D" parent="Bridge/PostsAndTorches" unique_id=1878370470]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bridge/PostsAndTorches/PostMidL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+shape = SubResource("Shape_TorchPost")
+
+[node name="PostMidR" type="StaticBody3D" parent="Bridge/PostsAndTorches" unique_id=1878370470]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.55, 1.1, 1)
 
 [node name="PillarSprite" type="Sprite3D" parent="Bridge/PostsAndTorches/PostMidR" unique_id=1011514121]
@@ -966,53 +1078,51 @@ billboard = 2
 texture_filter = 0
 texture = ExtResource("42_banner_sigil")
 
-[node name="TorchL2" type="Node3D" parent="Bridge/PostsAndTorches" unique_id=862156565]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.55, 1.1, -5)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bridge/PostsAndTorches/PostMidR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+shape = SubResource("Shape_TorchPost")
 
-[node name="PillarSprite" type="Sprite3D" parent="Bridge/PostsAndTorches/TorchL2" unique_id=1335753719]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
-pixel_size = 0.02
-billboard = 2
-texture_filter = 0
-texture = ExtResource("44_bridge_post")
+[node name="TorchL2" type="StaticBody3D" parent="Bridge/PostsAndTorches" unique_id=862156565]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.55, 1.2, -5)
 
 [node name="FlameSprite" type="AnimatedSprite3D" parent="Bridge/PostsAndTorches/TorchL2" unique_id=696957769]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
-pixel_size = 0.012
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+pixel_size = 0.011
 billboard = 2
 texture_filter = 0
-sprite_frames = ExtResource("51_flame_frames")
+sprite_frames = ExtResource("50_brazier_frames")
 autoplay = "default"
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Bridge/PostsAndTorches/TorchL2" unique_id=2139959079]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 light_color = Color(1, 0.65, 0.25, 1)
 light_energy = 2.2
 omni_range = 7.0
 
-[node name="TorchR2" type="Node3D" parent="Bridge/PostsAndTorches" unique_id=1759097412]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.55, 1.1, -5)
-
-[node name="PillarSprite" type="Sprite3D" parent="Bridge/PostsAndTorches/TorchR2" unique_id=544957327]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bridge/PostsAndTorches/TorchL2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
-pixel_size = 0.02
-billboard = 2
-texture_filter = 0
-texture = ExtResource("44_bridge_post")
+shape = SubResource("Shape_BrazierBox")
+
+[node name="TorchR2" type="StaticBody3D" parent="Bridge/PostsAndTorches" unique_id=1759097412]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.55, 1.2, -5)
 
 [node name="FlameSprite" type="AnimatedSprite3D" parent="Bridge/PostsAndTorches/TorchR2" unique_id=95031179]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
-pixel_size = 0.012
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+pixel_size = 0.011
 billboard = 2
 texture_filter = 0
-sprite_frames = ExtResource("51_flame_frames")
+sprite_frames = ExtResource("50_brazier_frames")
 autoplay = "default"
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Bridge/PostsAndTorches/TorchR2" unique_id=1804910078]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 light_color = Color(1, 0.65, 0.25, 1)
 light_energy = 2.2
 omni_range = 7.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bridge/PostsAndTorches/TorchR2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+shape = SubResource("Shape_BrazierBox")
 
 [node name="BridgeChains" type="Node3D" parent="Bridge" unique_id=406858962]
 
@@ -1077,38 +1187,60 @@ size = Vector3(20, 16, 16)
 material = SubResource("Mat_BrickWall")
 
 [node name="LeftWall" type="StaticBody3D" parent="Plaza" unique_id=1443317463]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 4, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Plaza/LeftWall" unique_id=643963318]
 shape = SubResource("Shape_PlazaSideWall")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="Plaza/LeftWall" unique_id=119629487]
-size = Vector3(1, 4, 14)
+size = Vector3(1.5, 8, 16)
 material = SubResource("Mat_BrickWall")
 
+[node name="PlazaLeftBalustrade" type="StaticBody3D" parent="Plaza"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.75, 0.6, 6.7)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Plaza/PlazaLeftBalustrade"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)
+shape = SubResource("Shape_PlazaSouthRail")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Plaza/PlazaLeftBalustrade"]
+size = Vector3(6.5, 1.2, 0.6)
+material = SubResource("Mat_Balustrade")
+
 [node name="RightWall" type="StaticBody3D" parent="Plaza" unique_id=492255748]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 4, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Plaza/RightWall" unique_id=98992018]
 shape = SubResource("Shape_PlazaSideWall")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="Plaza/RightWall" unique_id=368628052]
-size = Vector3(1, 4, 14)
+size = Vector3(1.5, 8, 16)
 material = SubResource("Mat_BrickWall")
 
+[node name="PlazaRightBalustrade" type="StaticBody3D" parent="Plaza"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 0.6, 6.7)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Plaza/PlazaRightBalustrade"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)
+shape = SubResource("Shape_PlazaSouthRail")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Plaza/PlazaRightBalustrade"]
+size = Vector3(6.5, 1.2, 0.6)
+material = SubResource("Mat_Balustrade")
+
 [node name="PlazaBannerL" type="Sprite3D" parent="Plaza" unique_id=1891016651]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -8.48, 2.4, 0)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -8.22, 3.5, 0)
 pixel_size = 0.024
 texture_filter = 0
 texture = ExtResource("41_banner_large")
 
 [node name="PlazaBannerR" type="Sprite3D" parent="Plaza" unique_id=2020691951]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 8.48, 2.4, 0)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 8.22, 3.5, 0)
 pixel_size = 0.024
 texture_filter = 0
 texture = ExtResource("41_banner_large")
 
-[node name="PlazaBrazierL" type="Node3D" parent="Plaza" unique_id=2024959179]
+[node name="PlazaBrazierL" type="StaticBody3D" parent="Plaza" unique_id=2024959179]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 0)
 
 [node name="Sprite" type="AnimatedSprite3D" parent="Plaza/PlazaBrazierL" unique_id=1316301867]
@@ -1125,7 +1257,11 @@ light_color = Color(1, 0.65, 0.25, 1)
 light_energy = 2.2
 omni_range = 7.0
 
-[node name="PlazaBrazierR" type="Node3D" parent="Plaza" unique_id=1760807108]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Plaza/PlazaBrazierL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+shape = SubResource("Shape_BrazierBox")
+
+[node name="PlazaBrazierR" type="StaticBody3D" parent="Plaza" unique_id=1760807108]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 0)
 
 [node name="Sprite" type="AnimatedSprite3D" parent="Plaza/PlazaBrazierR" unique_id=469875338]
@@ -1142,19 +1278,65 @@ light_color = Color(1, 0.65, 0.25, 1)
 light_energy = 2.2
 omni_range = 7.0
 
-[node name="PlazaRockCornerL" type="Sprite3D" parent="Plaza" unique_id=1512585113]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0.4, -4.5)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Plaza/PlazaBrazierR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+shape = SubResource("Shape_BrazierBox")
+
+[node name="PlazaRockCornerL" type="StaticBody3D" parent="Plaza" unique_id=1512585113]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0, -4.5)
+
+[node name="Sprite" type="Sprite3D" parent="Plaza/PlazaRockCornerL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
 pixel_size = 0.022
 billboard = 2
 texture_filter = 0
 texture = ExtResource("29_rock_sharp")
 
-[node name="PlazaRockCornerR" type="Sprite3D" parent="Plaza" unique_id=644447812]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0.4, -4.5)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Plaza/PlazaRockCornerL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+shape = SubResource("Shape_RockCorner")
+
+[node name="PlazaRockCornerR" type="StaticBody3D" parent="Plaza" unique_id=644447812]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -4.5)
+
+[node name="Sprite" type="Sprite3D" parent="Plaza/PlazaRockCornerR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
 pixel_size = 0.022
 billboard = 2
 texture_filter = 0
 texture = ExtResource("27_cliff_tiered")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Plaza/PlazaRockCornerR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+shape = SubResource("Shape_RockCorner")
+
+[node name="PlazaSpikesL" type="StaticBody3D" parent="Plaza"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0, 3.5)
+
+[node name="Sprite" type="Sprite3D" parent="Plaza/PlazaSpikesL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+pixel_size = 0.024
+billboard = 2
+texture_filter = 0
+texture = ExtResource("58_bush_spiked")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Plaza/PlazaSpikesL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+shape = SubResource("Shape_Spikes")
+
+[node name="PlazaSpikesR" type="StaticBody3D" parent="Plaza"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, 3.5)
+
+[node name="Sprite" type="Sprite3D" parent="Plaza/PlazaSpikesR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+pixel_size = 0.024
+billboard = 2
+texture_filter = 0
+texture = ExtResource("58_bush_spiked")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Plaza/PlazaSpikesR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+shape = SubResource("Shape_Spikes")
 
 [node name="Fortress" type="Node3D" parent="." unique_id=651958571]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -25)
@@ -1276,10 +1458,27 @@ omni_range = 10.0
 [node name="SealedGate" type="Node3D" parent="Fortress" unique_id=319193864]
 
 [node name="GateDoor" type="StaticBody3D" parent="Fortress/SealedGate" unique_id=153379894]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.012356, 7.6357503, 25.351643)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.0, 1.2)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Fortress/SealedGate/GateDoor" unique_id=799085031]
 shape = SubResource("Shape_GateDoor")
+
+[node name="GateBlackScreen" type="CSGBox3D" parent="Fortress/SealedGate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0.4)
+size = Vector3(3.9, 5.2, 0.2)
+material = SubResource("Mat_BlackOcclusion")
+
+[node name="StatueBarrierL" type="StaticBody3D" parent="Fortress/SealedGate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.85, 3.0, 1.2)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Fortress/SealedGate/StatueBarrierL"]
+shape = SubResource("Shape_StatueBarrier")
+
+[node name="StatueBarrierR" type="StaticBody3D" parent="Fortress/SealedGate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85, 3.0, 1.2)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Fortress/SealedGate/StatueBarrierR"]
+shape = SubResource("Shape_StatueBarrier")
 
 [node name="GatePlinthL" type="CSGBox3D" parent="Fortress/SealedGate" unique_id=1576891968]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.85, 0.9, 1.1)
@@ -1344,7 +1543,7 @@ pixel_size = 0.025
 texture_filter = 0
 texture = ExtResource("39_sigil_shrine")
 
-[node name="GateBrazierL" type="Node3D" parent="Fortress/SealedGate" unique_id=1817138012]
+[node name="GateBrazierL" type="StaticBody3D" parent="Fortress/SealedGate" unique_id=1817138012]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 0, 1.7)
 
 [node name="Sprite" type="AnimatedSprite3D" parent="Fortress/SealedGate/GateBrazierL" unique_id=1904944317]
@@ -1360,7 +1559,11 @@ light_color = Color(1, 0.55, 0.15, 1)
 light_energy = 2.4
 omni_range = 6.0
 
-[node name="GateBrazierR" type="Node3D" parent="Fortress/SealedGate" unique_id=898218012]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Fortress/SealedGate/GateBrazierL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+shape = SubResource("Shape_BrazierBox")
+
+[node name="GateBrazierR" type="StaticBody3D" parent="Fortress/SealedGate" unique_id=898218012]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 0, 1.7)
 
 [node name="Sprite" type="AnimatedSprite3D" parent="Fortress/SealedGate/GateBrazierR" unique_id=540032799]
@@ -1375,6 +1578,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 light_color = Color(1, 0.55, 0.15, 1)
 light_energy = 2.4
 omni_range = 6.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Fortress/SealedGate/GateBrazierR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+shape = SubResource("Shape_BrazierBox")
 
 [node name="GateChainL" type="Sprite3D" parent="Fortress/SealedGate" unique_id=387510356]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 3.2, 1.1)

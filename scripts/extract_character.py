@@ -164,7 +164,93 @@ def extract_character_frames():
             canvas.save(jump_file)
             total_saved += 1
 
+    # --- Combat Attack Frames Extraction ---
+    attack_sheet_path = os.path.join(out_dir, "attack_animation.png")
+    if os.path.exists(attack_sheet_path):
+        print(f"Extracting attack frames from {attack_sheet_path}...")
+        im_atk = Image.open(attack_sheet_path).convert("RGB")
+        arr_atk = np.array(im_atk)
+        atk_H, atk_W, _ = arr_atk.shape
+        
+        ar = arr_atk[:, :, 0].astype(int)
+        ag = arr_atk[:, :, 1].astype(int)
+        ab = arr_atk[:, :, 2].astype(int)
+        adiff = np.maximum.reduce([ar, ag, ab]) - np.minimum.reduce([ar, ag, ab])
+        amean = (ar + ag + ab) / 3.0
+        
+        afg = ((adiff > 12) | (amean > 52)) & ~((ar < 55) & (ag < 55) & (ab < 55) & (adiff < 8))
+        
+        # True scale factor: hero height in character-tileset is 105px (hair top to feet)
+        # In attack sheet, character height is 165px. 105.0 / 165.0 yields exact 1:1 character proportions!
+        scale_factor = 105.0 / 165.0
+        
+        # Extended canvas for weapon arcs, keeping ground baseline and center aligned with 80x115 walk frames:
+        # In 80x115 walk frames: Center_X = 40 (CW/2), Ground_Y = 111 (offset from center = 111 - 57.5 = +53.5px).
+        # In 300x205 attack frames: Center_X = 150 (CW/2), Ground_Y = 156 (offset from center = 156 - 102.5 = +53.5px).
+        ATK_CW = 300
+        ATK_CH = 205
+        ATK_GROUND_Y = 156
+        ATK_TARGET_X = 150
+        
+        # Clear isolated ribbon noise above sheet Y=235 in Axe slot 0:
+        afg[:235, :250] = False
+        
+        def extract_weapon(name, x_splits, y_min, y_max):
+            nonlocal total_saved
+            for idx in range(len(x_splits) - 1):
+                x1_slot, x2_slot = x_splits[idx], x_splits[idx+1]
+                sub_fg = afg[y_min:y_max+1, x1_slot:x2_slot]
+                ys, xs = np.where(sub_fg)
+                if len(xs) == 0:
+                    continue
+                min_x = xs.min() + x1_slot
+                max_x = xs.max() + x1_slot
+                min_y = ys.min() + y_min
+                max_y = ys.max() + y_min
+                
+                f_rgb = arr_atk[min_y:max_y+1, min_x:max_x+1]
+                f_mask = afg[min_y:max_y+1, min_x:max_x+1]
+                
+                f_rgba = np.zeros((f_rgb.shape[0], f_rgb.shape[1], 4), dtype=np.uint8)
+                f_rgba[:, :, :3] = f_rgb
+                f_rgba[:, :, 3] = np.where(f_mask, 255, 0)
+                
+                raw_p = Image.fromarray(f_rgba)
+                nw = max(1, int(round(raw_p.width * scale_factor)))
+                nh = max(1, int(round(raw_p.height * scale_factor)))
+                scaled_p = raw_p.resize((nw, nh), Image.Resampling.LANCZOS)
+                
+                s_arr = np.array(scaled_p)
+                s_ys, s_xs = np.where(s_arr[:, :, 3] > 100)
+                if len(s_ys) == 0:
+                    continue
+                
+                feet_y = s_ys.max()
+                bottom_y = feet_y
+                t_hi = max(0, bottom_y - int(round(65 * scale_factor)))
+                t_lo = max(0, bottom_y - int(round(25 * scale_factor)))
+                _, t_xs = np.where(s_arr[t_hi:t_lo, :, 3] > 100)
+                body_center_x = float(np.mean(t_xs)) if len(t_xs) > 0 else float(np.mean(s_xs))
+                
+                c_right = Image.new("RGBA", (ATK_CW, ATK_CH), (0, 0, 0, 0))
+                px = int(round(ATK_TARGET_X - body_center_x))
+                py = int(round(ATK_GROUND_Y - feet_y))
+                c_right.paste(scaled_p, (px, py), scaled_p)
+                
+                c_left = c_right.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+                
+                f_right_path = os.path.join(out_dir, f"attack_{name}_right_{idx}.png")
+                f_left_path = os.path.join(out_dir, f"attack_{name}_left_{idx}.png")
+                c_right.save(f_right_path)
+                c_left.save(f_left_path)
+                total_saved += 2
+                print(f"Extracted attack_{name} frame {idx} (right and left at scale {scale_factor:.4f})")
+        
+        extract_weapon("axe", [0, 250, 530, 805, 1190, 1520, atk_W], 170, 404)
+        extract_weapon("rope", [0, 225, 450, 780, 1170, 1520, atk_W], 585, 761)
+
     print(f"Extraction complete! Total saved frames: {total_saved} in {out_dir}")
 
 if __name__ == "__main__":
     extract_character_frames()
+

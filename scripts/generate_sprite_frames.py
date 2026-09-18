@@ -13,7 +13,11 @@ def generate():
         'jump_down': [(f'jump_down_{i}.png', 1.0) for i in range(4)],
         'jump_up': [(f'jump_up_{i}.png', 1.0) for i in range(4)],
         'jump_left': [(f'jump_left_{i}.png', 1.0) for i in range(4)],
-        'jump_right': [(f'jump_right_{i}.png', 1.0) for i in range(4)]
+        'jump_right': [(f'jump_right_{i}.png', 1.0) for i in range(4)],
+        'attack_axe_right': [(f'attack_axe_right_{i}.png', 1.0) for i in range(6)],
+        'attack_axe_left': [(f'attack_axe_left_{i}.png', 1.0) for i in range(6)],
+        'attack_rope_right': [(f'attack_rope_right_{i}.png', 1.0) for i in range(6)],
+        'attack_rope_left': [(f'attack_rope_left_{i}.png', 1.0) for i in range(6)]
     }
 
     tex_files = []
@@ -40,6 +44,9 @@ def generate():
             is_loop = True
         elif 'jump' in anim_name:
             speed = 8.0
+            is_loop = False
+        elif 'attack' in anim_name:
+            speed = 13.0
             is_loop = False
         else:
             speed = 5.0
