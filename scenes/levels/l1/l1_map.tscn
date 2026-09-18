@@ -1,0 +1,595 @@
+[gd_scene load_steps=33 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/l1_controller.gd" id="1_controller"]
+[ext_resource type="Texture2D" path="res://assets/environment/l1_map_clean.png" id="2_map_texture"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://scenes/world/camera_rig.tscn" id="4_camera"]
+[ext_resource type="Texture2D" path="res://assets/environment/lever_up.png" id="5_lever_up"]
+[ext_resource type="Texture2D" path="res://assets/environment/lever_mid.png" id="6_lever_mid"]
+[ext_resource type="Texture2D" path="res://assets/environment/lever_down.png" id="7_lever_down"]
+[ext_resource type="Texture2D" path="res://assets/environment/mouse_hole_broken.png" id="8_hole_broken"]
+[ext_resource type="Texture2D" path="res://assets/vfx/golden_om.png" id="10_om"]
+[ext_resource type="Texture2D" path="res://assets/vfx/golden_lotus.png" id="11_lotus"]
+[ext_resource type="Texture2D" path="res://assets/character/frames/player_kneel.png" id="12_kneel"]
+[ext_resource type="Texture2D" path="res://assets/vfx/soft_energy_ring.png" id="13_ring"]
+[ext_resource type="Texture2D" path="res://assets/vfx/divine_flash.png" id="14_flash"]
+
+[sub_resource type="Environment" id="Environment_dungeon"]
+background_mode = 1
+background_color = Color(0.04, 0.02, 0.04, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.35, 0.22, 0.32, 1)
+ambient_light_energy = 0.85
+tonemap_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="Mat_InvisibleFloor"]
+transparency = 1
+albedo_color = Color(0, 0, 0, 0)
+
+[sub_resource type="BoxShape3D" id="Shape_Floor"]
+size = Vector3(24, 1, 16)
+
+[sub_resource type="BoxShape3D" id="Shape_NorthWall"]
+size = Vector3(14, 4, 1)
+
+[sub_resource type="BoxShape3D" id="Shape_SouthWall"]
+size = Vector3(6, 4, 1)
+
+[sub_resource type="BoxShape3D" id="Shape_SideWall"]
+size = Vector3(1, 4, 8)
+
+[sub_resource type="BoxShape3D" id="Shape_CornerWall"]
+size = Vector3(3.2, 4, 1)
+
+[sub_resource type="BoxShape3D" id="Shape_Dais"]
+size = Vector3(3.8, 2, 2.1)
+
+[sub_resource type="CylinderShape3D" id="Shape_Pillar"]
+height = 4.0
+radius = 0.75
+
+[sub_resource type="BoxShape3D" id="Shape_Desk"]
+size = Vector3(1.5, 2, 1.2)
+
+[sub_resource type="BoxShape3D" id="Shape_Crates"]
+size = Vector3(0.7, 2.0, 1.4)
+
+[sub_resource type="BoxShape3D" id="Shape_AlcoveWall"]
+size = Vector3(0.6, 3.0, 1.4)
+
+[sub_resource type="BoxShape3D" id="Shape_ShrineTable"]
+size = Vector3(0.7, 2.0, 1.3)
+
+[sub_resource type="BoxShape3D" id="Shape_Statue"]
+size = Vector3(1.1, 3, 1.1)
+
+[sub_resource type="BoxShape3D" id="Shape_LeverTrigger"]
+size = Vector3(2.8, 2.5, 2.8)
+
+[sub_resource type="BoxShape3D" id="Shape_CrystalTrigger"]
+size = Vector3(4.6, 2.5, 3.2)
+
+[sub_resource type="BoxShape3D" id="Shape_ExitTrigger"]
+size = Vector3(3.2, 2.5, 2.2)
+
+[sub_resource type="BoxShape3D" id="Shape_MousePassage"]
+size = Vector3(2.0, 2.0, 2.0)
+
+[sub_resource type="BoxShape3D" id="Shape_ExitBackWall"]
+size = Vector3(3.0, 4.0, 0.6)
+
+[sub_resource type="BoxShape3D" id="Shape_Bookshelf"]
+size = Vector3(2.0, 2.0, 1.0)
+
+[sub_resource type="BoxShape3D" id="Shape_Barrels"]
+size = Vector3(1.4, 1.5, 1.2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_Dialogue"]
+bg_color = Color(0.08, 0.08, 0.14, 0.95)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.88, 0.72, 0.35, 1.0)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 4
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_Lever"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_lever_up")
+}],
+"loop": false,
+"name": &"up",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_lever_up")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_lever_mid")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_lever_down")
+}],
+"loop": false,
+"name": &"pull",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7_lever_down")
+}],
+"loop": false,
+"name": &"down",
+"speed": 5.0
+}]
+
+[node name="L1Map" type="Node3D"]
+script = ExtResource("1_controller")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_dungeon")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.25, 0.433013, 0, 0.866025, 0.5, -0.5, -0.433013, 0.75, 0, 15, 0)
+light_color = Color(0.85, 0.75, 0.9, 1)
+light_energy = 0.5
+shadow_enabled = true
+
+[node name="DungeonVisual" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.01, 0)
+pixel_size = 0.0125
+texture_filter = 0
+sorting_offset = -10.0
+texture = ExtResource("2_map_texture")
+
+[node name="FloorGround" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FloorGround"]
+shape = SubResource("Shape_Floor")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="FloorGround"]
+size = Vector3(24, 1, 16)
+material = SubResource("Mat_InvisibleFloor")
+
+[node name="Collisions" type="Node3D" parent="."]
+
+[node name="NorthWall" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -4.9)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/NorthWall"]
+shape = SubResource("Shape_NorthWall")
+
+[node name="SouthWallL" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.0, 2, 4.4)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/SouthWallL"]
+shape = SubResource("Shape_SouthWall")
+
+[node name="SouthWallR" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0, 2, 4.4)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/SouthWallR"]
+shape = SubResource("Shape_SouthWall")
+
+[node name="WestWall" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.8, 2, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/WestWall"]
+shape = SubResource("Shape_SideWall")
+
+[node name="EastWall" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.1, 2, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/EastWall"]
+shape = SubResource("Shape_SideWall")
+
+[node name="NWCorner" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -6.5, 2, -3.8)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/NWCorner"]
+shape = SubResource("Shape_CornerWall")
+
+
+[node name="SWCorner" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, -6.8, 2, 3.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/SWCorner"]
+shape = SubResource("Shape_CornerWall")
+
+[node name="SECorner" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 6.8, 2, 3.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/SECorner"]
+shape = SubResource("Shape_CornerWall")
+
+[node name="AltarDais" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -2.85)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/AltarDais"]
+shape = SubResource("Shape_Dais")
+
+[node name="PillarNW" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 2, -0.78)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/PillarNW"]
+shape = SubResource("Shape_Pillar")
+
+[node name="PillarNE" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 2, -0.78)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/PillarNE"]
+shape = SubResource("Shape_Pillar")
+
+[node name="PillarSW" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.73, 2, 2.6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/PillarSW"]
+shape = SubResource("Shape_Pillar")
+
+[node name="PillarSE" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.78, 2, 2.6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/PillarSE"]
+shape = SubResource("Shape_Pillar")
+
+[node name="Desk" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.35, 1, -1.65)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/Desk"]
+shape = SubResource("Shape_Desk")
+
+[node name="Crates" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.4, 1, -3.95)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/Crates"]
+shape = SubResource("Shape_Crates")
+
+[node name="AlcoveWallL" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.35, 1.5, -3.9)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/AlcoveWallL"]
+shape = SubResource("Shape_AlcoveWall")
+
+[node name="ShrineTableNE" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.65, 1, -1.35)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/ShrineTableNE"]
+shape = SubResource("Shape_ShrineTable")
+
+[node name="KnightL" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 1.5, -3.53)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/KnightL"]
+shape = SubResource("Shape_Statue")
+
+[node name="KnightR" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 1.5, -3.53)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/KnightR"]
+shape = SubResource("Shape_Statue")
+
+[node name="SouthExitBackWall" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 5.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/SouthExitBackWall"]
+shape = SubResource("Shape_ExitBackWall")
+
+[node name="BookshelfNW" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.8, 1, -4.2)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/BookshelfNW"]
+shape = SubResource("Shape_Bookshelf")
+
+[node name="BarrelsSW" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 1, 3.2)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/BarrelsSW"]
+shape = SubResource("Shape_Barrels")
+
+[node name="BarrelsSE" type="StaticBody3D" parent="Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 1, 3.2)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/BarrelsSE"]
+shape = SubResource("Shape_Barrels")
+
+[node name="Lights" type="Node3D" parent="."]
+
+[node name="CrystalLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, -3.9)
+light_color = Color(1, 0.1, 0.15, 1)
+light_energy = 3.2
+omni_range = 8.0
+
+[node name="AltarBrazierL" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.8, -2.5)
+light_color = Color(1, 0.6, 0.2, 1)
+light_energy = 2.2
+omni_range = 5.0
+
+[node name="AltarBrazierR" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.8, -2.5)
+light_color = Color(1, 0.6, 0.2, 1)
+light_energy = 2.2
+omni_range = 5.0
+
+[node name="TorchNW" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 1.0, -4.5)
+light_color = Color(1, 0.55, 0.18, 1)
+light_energy = 2.0
+omni_range = 6.0
+
+[node name="TorchNE" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 1.0, -4.5)
+light_color = Color(1, 0.55, 0.18, 1)
+light_energy = 2.0
+omni_range = 6.0
+
+[node name="TorchW" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.2, 1.0, -1.2)
+light_color = Color(1, 0.55, 0.18, 1)
+light_energy = 1.8
+omni_range = 5.5
+
+[node name="TorchE" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.2, 1.0, -1.2)
+light_color = Color(1, 0.55, 0.18, 1)
+light_energy = 1.8
+omni_range = 5.5
+
+[node name="TorchSW" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 0.8, 3.5)
+light_color = Color(1, 0.55, 0.18, 1)
+light_energy = 1.8
+omni_range = 5.0
+
+[node name="TorchSE" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 0.8, 3.5)
+light_color = Color(1, 0.55, 0.18, 1)
+light_energy = 1.8
+omni_range = 5.0
+
+[node name="DeskCandle" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 0.6, -2.0)
+light_color = Color(1, 0.7, 0.3, 1)
+light_energy = 1.4
+omni_range = 3.5
+
+[node name="VFX" type="Node3D" parent="."]
+
+[node name="CrystalEmbers" type="CPUParticles3D" parent="VFX"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, -3.9)
+amount = 25
+lifetime = 2.5
+emission_shape = 1
+emission_sphere_radius = 0.6
+gravity = Vector3(0, 1.2, 0)
+initial_velocity_min = 0.3
+initial_velocity_max = 1.0
+color = Color(1, 0.2, 0.15, 0.85)
+
+[node name="CutsceneVFX" type="Node3D" parent="VFX"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.8, 0.0, -3.2)
+
+[node name="OmSprite" type="Sprite3D" parent="VFX/CutsceneVFX"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.25, -0.9)
+visible = false
+pixel_size = 0.0125
+texture_filter = 0
+texture = ExtResource("10_om")
+
+[node name="LotusSprite" type="Sprite3D" parent="VFX/CutsceneVFX"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.25, -0.7)
+visible = false
+pixel_size = 0.0125
+texture_filter = 0
+texture = ExtResource("11_lotus")
+
+[node name="AuraLight" type="OmniLight3D" parent="VFX/CutsceneVFX"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+light_color = Color(1.0, 0.82, 0.45, 1)
+light_energy = 0.0
+omni_range = 1.8
+
+[node name="EnergyRing" type="Sprite3D" parent="VFX/CutsceneVFX"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.03, 0)
+visible = false
+pixel_size = 0.0125
+texture_filter = 0
+texture = ExtResource("13_ring")
+
+[node name="DivineFlash" type="Sprite3D" parent="VFX/CutsceneVFX"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.28, 0)
+visible = false
+pixel_size = 0.0125
+texture_filter = 0
+texture = ExtResource("14_flash")
+
+[node name="DivineParticles" type="CPUParticles3D" parent="VFX/CutsceneVFX"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+emitting = false
+amount = 14
+lifetime = 1.2
+emission_shape = 1
+emission_sphere_radius = 0.35
+gravity = Vector3(0, 0.5, 0)
+initial_velocity_min = 0.1
+initial_velocity_max = 0.35
+scale_amount_min = 0.02
+scale_amount_max = 0.04
+color = Color(1.0, 0.85, 0.45, 0.55)
+
+[node name="Interactables" type="Node3D" parent="."]
+
+[node name="PuzzleLever" type="Area3D" parent="Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.9, 0.5, -3.9)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactables/PuzzleLever"]
+shape = SubResource("Shape_LeverTrigger")
+
+[node name="Prompt" type="Label3D" parent="Interactables/PuzzleLever"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.5, 0)
+billboard = 1
+text = "[E] Pull Ancient Lever"
+font_size = 26
+outline_size = 5
+
+[node name="LeverSprite" type="AnimatedSprite3D" parent="Interactables/PuzzleLever"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.41, 0.02, -0.12)
+pixel_size = 0.0125
+texture_filter = 0
+sprite_frames = SubResource("SpriteFrames_Lever")
+animation = &"up"
+
+[node name="AltarCrystal" type="Area3D" parent="Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -3.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactables/AltarCrystal"]
+shape = SubResource("Shape_CrystalTrigger")
+
+[node name="Prompt" type="Label3D" parent="Interactables/AltarCrystal"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.5, 0)
+billboard = 1
+text = "[E] Inspect Asur Crystal"
+font_size = 26
+outline_size = 5
+
+[node name="MousePassage" type="Area3D" parent="Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.73, 0.05, -1.93)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactables/MousePassage"]
+shape = SubResource("Shape_MousePassage")
+
+[node name="Prompt" type="Label3D" parent="Interactables/MousePassage"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.5, 0)
+visible = false
+billboard = 1
+text = "[E] Inspect Mouse Passage"
+font_size = 24
+outline_size = 5
+
+[node name="HoleVisual" type="Sprite3D" parent="Interactables/MousePassage"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.01, 0)
+visible = false
+pixel_size = 0.0125
+texture_filter = 0
+texture = ExtResource("8_hole_broken")
+
+[node name="RubbleDust" type="CPUParticles3D" parent="Interactables/MousePassage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+emitting = false
+one_shot = true
+explosiveness = 0.8
+amount = 35
+lifetime = 1.4
+emission_shape = 1
+emission_sphere_radius = 0.5
+direction = Vector3(0, 1, 0)
+spread = 60.0
+initial_velocity_min = 1.0
+initial_velocity_max = 2.5
+scale_amount_min = 0.04
+scale_amount_max = 0.12
+color = Color(0.75, 0.6, 0.5, 0.9)
+
+[node name="DraftLight" type="OmniLight3D" parent="Interactables/MousePassage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+light_color = Color(1.0, 0.45, 0.2, 1)
+light_energy = 0.0
+omni_range = 2.5
+
+
+[node name="SouthExit" type="Area3D" parent="Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 4.35)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactables/SouthExit"]
+shape = SubResource("Shape_ExitTrigger")
+
+[node name="Prompt" type="Label3D" parent="Interactables/SouthExit"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.5, 0)
+billboard = 1
+text = "[E] Return to Castle Exterior"
+font_size = 26
+outline_size = 5
+
+[node name="Player" parent="." groups=["player"] instance=ExtResource("3_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 2.0)
+
+[node name="CameraRig" parent="." instance=ExtResource("4_camera")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.0)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="HUD" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="MessageBanner" type="Label" parent="UI/HUD"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 24.0
+offset_bottom = 80.0
+grow_horizontal = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 20
+text = "Level 1: The Asur's Fortress - Inner Sanctum"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DialogueBox" type="PanelContainer" parent="UI/HUD"]
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -340.0
+offset_top = -140.0
+offset_right = 340.0
+offset_bottom = -25.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBox_Dialogue")
+
+[node name="Margin" type="MarginContainer" parent="UI/HUD/DialogueBox"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 15
+
+[node name="DialogueLabel" type="Label" parent="UI/HUD/DialogueBox/Margin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.94, 0.82, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 20
+text = "ॐ गं गणपतये नमः ..."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Indicator" type="Label" parent="UI/HUD/DialogueBox"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+theme_override_colors/font_color = Color(0.95, 0.78, 0.35, 1)
+theme_override_font_sizes/font_size = 18
+text = "▼  "

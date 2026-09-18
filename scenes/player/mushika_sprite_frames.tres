@@ -1,0 +1,650 @@
+[gd_resource type="SpriteFrames" load_steps=57 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_idle_down_0.png" id="1_mouse_idle_d"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_idle_up_0.png" id="2_mouse_idle_u"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_idle_left_0.png" id="3_mouse_idle_l"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_idle_right_0.png" id="4_mouse_idle_r"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_walk_down_0.png" id="5_mouse_walk_d"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_walk_down_1.png" id="6_mouse_walk_d"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_walk_down_2.png" id="7_mouse_walk_d"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_walk_down_3.png" id="8_mouse_walk_d"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_walk_up_0.png" id="9_mouse_walk_u"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_walk_up_1.png" id="10_mouse_walk_u"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_walk_up_2.png" id="11_mouse_walk_u"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_walk_up_3.png" id="12_mouse_walk_u"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_walk_up_4.png" id="12_mouse_walk_u4"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_walk_left_0.png" id="13_mouse_walk_l"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_walk_left_1.png" id="14_mouse_walk_l"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_walk_left_2.png" id="15_mouse_walk_l"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_walk_left_3.png" id="16_mouse_walk_l"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_walk_right_0.png" id="17_mouse_walk_r"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_walk_right_1.png" id="18_mouse_walk_r"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_walk_right_2.png" id="19_mouse_walk_r"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_walk_right_3.png" id="20_mouse_walk_r"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_dash_0.png" id="21_mouse_dash_0"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_dash_1.png" id="22_mouse_dash_1"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_dash_2.png" id="23_mouse_dash_2"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_dash_3.png" id="24_mouse_dash_3"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_dash_4.png" id="25_mouse_dash_4"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_dash_5.png" id="26_mouse_dash_5"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_hurt_0.png" id="27_mouse_hurt_0"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_hurt_1.png" id="28_mouse_hurt_1"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_hurt_2.png" id="29_mouse_hurt_2"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_hurt_3.png" id="30_mouse_hurt_3"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_death_0.png" id="31_mouse_death_"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_death_1.png" id="32_mouse_death_"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_death_2.png" id="33_mouse_death_"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_death_3.png" id="34_mouse_death_"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_death_4.png" id="35_mouse_death_"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_death_5.png" id="36_mouse_death_"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_interact_0.png" id="37_mouse_intera"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_interact_1.png" id="38_mouse_intera"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_interact_2.png" id="39_mouse_intera"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_interact_3.png" id="40_mouse_intera"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_pickup_0.png" id="41_mouse_pickup"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_pickup_1.png" id="42_mouse_pickup"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_pickup_2.png" id="43_mouse_pickup"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_pickup_3.png" id="44_mouse_pickup"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_enter_passage_0.png" id="45_mouse_enter_"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_enter_passage_1.png" id="46_mouse_enter_"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_enter_passage_2.png" id="47_mouse_enter_"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_enter_passage_3.png" id="48_mouse_enter_"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_enter_passage_4.png" id="49_mouse_enter_"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_attack_down_0.png" id="50_mouse_attack"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_attack_up_0.png" id="51_mouse_attack"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_attack_left_0.png" id="52_mouse_attack"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_attack_left_1.png" id="53_mouse_attack"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_attack_right_0.png" id="54_mouse_attack"]
+[ext_resource type="Texture2D" path="res://assets/character/mushika/mouse_attack_right_1.png" id="55_mouse_attack"]
+
+[resource]
+animations = [{
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("1_mouse_idle_d")
+}
+],
+"loop": true,
+"name": &"idle_down",
+"speed": 5.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("1_mouse_idle_d")
+}
+],
+"loop": true,
+"name": &"mouse_idle_down",
+"speed": 5.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("2_mouse_idle_u")
+}
+],
+"loop": true,
+"name": &"idle_up",
+"speed": 5.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("2_mouse_idle_u")
+}
+],
+"loop": true,
+"name": &"mouse_idle_up",
+"speed": 5.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("3_mouse_idle_l")
+}
+],
+"loop": true,
+"name": &"idle_left",
+"speed": 5.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("3_mouse_idle_l")
+}
+],
+"loop": true,
+"name": &"mouse_idle_left",
+"speed": 5.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("4_mouse_idle_r")
+}
+],
+"loop": true,
+"name": &"idle_right",
+"speed": 5.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("4_mouse_idle_r")
+}
+],
+"loop": true,
+"name": &"mouse_idle_right",
+"speed": 5.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("5_mouse_walk_d")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_mouse_walk_d")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_mouse_walk_d")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_mouse_walk_d")
+}
+],
+"loop": true,
+"name": &"walk_down",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("5_mouse_walk_d")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_mouse_walk_d")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_mouse_walk_d")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_mouse_walk_d")
+}
+],
+"loop": true,
+"name": &"mouse_walk_down",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("9_mouse_walk_u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_mouse_walk_u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_mouse_walk_u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_mouse_walk_u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_mouse_walk_u4")
+}
+],
+"loop": true,
+"name": &"walk_up",
+"speed": 9.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("9_mouse_walk_u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_mouse_walk_u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_mouse_walk_u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_mouse_walk_u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_mouse_walk_u4")
+}
+],
+"loop": true,
+"name": &"mouse_walk_up",
+"speed": 9.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("13_mouse_walk_l")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_mouse_walk_l")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_mouse_walk_l")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_mouse_walk_l")
+}
+],
+"loop": true,
+"name": &"walk_left",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("13_mouse_walk_l")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_mouse_walk_l")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_mouse_walk_l")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_mouse_walk_l")
+}
+],
+"loop": true,
+"name": &"mouse_walk_left",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("17_mouse_walk_r")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_mouse_walk_r")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_mouse_walk_r")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_mouse_walk_r")
+}
+],
+"loop": true,
+"name": &"walk_right",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("17_mouse_walk_r")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_mouse_walk_r")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_mouse_walk_r")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_mouse_walk_r")
+}
+],
+"loop": true,
+"name": &"mouse_walk_right",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("21_mouse_dash_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_mouse_dash_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_mouse_dash_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_mouse_dash_3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_mouse_dash_4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_mouse_dash_5")
+}
+],
+"loop": true,
+"name": &"dash",
+"speed": 10.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("21_mouse_dash_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_mouse_dash_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_mouse_dash_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_mouse_dash_3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_mouse_dash_4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_mouse_dash_5")
+}
+],
+"loop": true,
+"name": &"mouse_dash",
+"speed": 10.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("27_mouse_hurt_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("28_mouse_hurt_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_mouse_hurt_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30_mouse_hurt_3")
+}
+],
+"loop": false,
+"name": &"hurt",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("27_mouse_hurt_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("28_mouse_hurt_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_mouse_hurt_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30_mouse_hurt_3")
+}
+],
+"loop": false,
+"name": &"mouse_hurt",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("31_mouse_death_")
+}, {
+"duration": 1.0,
+"texture": ExtResource("32_mouse_death_")
+}, {
+"duration": 1.0,
+"texture": ExtResource("33_mouse_death_")
+}, {
+"duration": 1.0,
+"texture": ExtResource("34_mouse_death_")
+}, {
+"duration": 1.0,
+"texture": ExtResource("35_mouse_death_")
+}, {
+"duration": 1.0,
+"texture": ExtResource("36_mouse_death_")
+}
+],
+"loop": false,
+"name": &"death",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("31_mouse_death_")
+}, {
+"duration": 1.0,
+"texture": ExtResource("32_mouse_death_")
+}, {
+"duration": 1.0,
+"texture": ExtResource("33_mouse_death_")
+}, {
+"duration": 1.0,
+"texture": ExtResource("34_mouse_death_")
+}, {
+"duration": 1.0,
+"texture": ExtResource("35_mouse_death_")
+}, {
+"duration": 1.0,
+"texture": ExtResource("36_mouse_death_")
+}
+],
+"loop": false,
+"name": &"mouse_death",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("37_mouse_intera")
+}, {
+"duration": 1.0,
+"texture": ExtResource("38_mouse_intera")
+}, {
+"duration": 1.0,
+"texture": ExtResource("39_mouse_intera")
+}, {
+"duration": 1.0,
+"texture": ExtResource("40_mouse_intera")
+}
+],
+"loop": false,
+"name": &"interact",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("37_mouse_intera")
+}, {
+"duration": 1.0,
+"texture": ExtResource("38_mouse_intera")
+}, {
+"duration": 1.0,
+"texture": ExtResource("39_mouse_intera")
+}, {
+"duration": 1.0,
+"texture": ExtResource("40_mouse_intera")
+}
+],
+"loop": false,
+"name": &"mouse_interact",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("41_mouse_pickup")
+}, {
+"duration": 1.0,
+"texture": ExtResource("42_mouse_pickup")
+}, {
+"duration": 1.0,
+"texture": ExtResource("43_mouse_pickup")
+}, {
+"duration": 1.0,
+"texture": ExtResource("44_mouse_pickup")
+}
+],
+"loop": false,
+"name": &"pickup",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("41_mouse_pickup")
+}, {
+"duration": 1.0,
+"texture": ExtResource("42_mouse_pickup")
+}, {
+"duration": 1.0,
+"texture": ExtResource("43_mouse_pickup")
+}, {
+"duration": 1.0,
+"texture": ExtResource("44_mouse_pickup")
+}
+],
+"loop": false,
+"name": &"mouse_pickup",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("45_mouse_enter_")
+}, {
+"duration": 1.0,
+"texture": ExtResource("46_mouse_enter_")
+}, {
+"duration": 1.0,
+"texture": ExtResource("47_mouse_enter_")
+}, {
+"duration": 1.0,
+"texture": ExtResource("48_mouse_enter_")
+}, {
+"duration": 1.0,
+"texture": ExtResource("49_mouse_enter_")
+}
+],
+"loop": false,
+"name": &"enter_passage",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("45_mouse_enter_")
+}, {
+"duration": 1.0,
+"texture": ExtResource("46_mouse_enter_")
+}, {
+"duration": 1.0,
+"texture": ExtResource("47_mouse_enter_")
+}, {
+"duration": 1.0,
+"texture": ExtResource("48_mouse_enter_")
+}, {
+"duration": 1.0,
+"texture": ExtResource("49_mouse_enter_")
+}
+],
+"loop": false,
+"name": &"mouse_enter_passage",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("50_mouse_attack")
+}
+],
+"loop": false,
+"name": &"attack_down",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("50_mouse_attack")
+}
+],
+"loop": false,
+"name": &"mouse_attack_down",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("51_mouse_attack")
+}
+],
+"loop": false,
+"name": &"attack_up",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("51_mouse_attack")
+}
+],
+"loop": false,
+"name": &"mouse_attack_up",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("52_mouse_attack")
+}, {
+"duration": 1.0,
+"texture": ExtResource("53_mouse_attack")
+}
+],
+"loop": false,
+"name": &"attack_left",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("52_mouse_attack")
+}, {
+"duration": 1.0,
+"texture": ExtResource("53_mouse_attack")
+}
+],
+"loop": false,
+"name": &"mouse_attack_left",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("54_mouse_attack")
+}, {
+"duration": 1.0,
+"texture": ExtResource("55_mouse_attack")
+}
+],
+"loop": false,
+"name": &"attack_right",
+"speed": 8.0
+}, {
+"frames": [
+{
+"duration": 1.0,
+"texture": ExtResource("54_mouse_attack")
+}, {
+"duration": 1.0,
+"texture": ExtResource("55_mouse_attack")
+}
+],
+"loop": false,
+"name": &"mouse_attack_right",
+"speed": 8.0
+}
+]
