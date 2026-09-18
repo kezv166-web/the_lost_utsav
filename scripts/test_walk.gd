@@ -24,6 +24,10 @@ func _save_screenshot(filename: String) -> void:
 			if img:
 				img.save_png("res://assets/temp/" + filename)
 
+const GLOBAL_TIMEOUT: float = 20.0
+var log_timer: float = 0.0
+var current_test_name: String = "INIT"
+
 const AssetExtractor = preload("res://scripts/extract_assets.gd")
 
 func _ready() -> void:
@@ -40,9 +44,33 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	timer += delta
+	log_timer += delta
 	
 	if not player:
 		return
+
+	if timer > GLOBAL_TIMEOUT:
+		push_error("FATAL TIMEOUT: Outdoor test runner exceeded global timeout of %.1fs in stage [%s]! Position: (%.2f, %.2f)" % [
+			GLOBAL_TIMEOUT, current_test_name, player.global_position.x, player.global_position.z
+		])
+		get_tree().quit(1)
+		return
+
+	var is_moving = player.velocity.length() > 0.1
+	var collision_count = player.get_slide_collision_count()
+	var is_blocked = collision_count > 0 and player.velocity.length() < 0.2
+
+	if log_timer >= 0.5:
+		log_timer = 0.0
+		var col_info = "NONE"
+		if collision_count > 0:
+			var col = player.get_slide_collision(0)
+			if col and col.get_collider():
+				col_info = col.get_collider().name
+		print("[%s] Elapsed: %.1fs | Pos: (%.2f, %.2f) | Moving: %s (vel=%.2f) | Blocked: %s (Col: %s)" % [
+			current_test_name, timer, player.global_position.x, player.global_position.z,
+			str(is_moving), player.velocity.length(), str(is_blocked), col_info
+		])
 		
 	var anim_node: AnimatedSprite3D = player.get_node_or_null("AnimatedSprite3D")
 	
@@ -54,6 +82,7 @@ func _physics_process(delta: float) -> void:
 	# Phase 0: Test all 4 directional animations on the overlook (0.5s to 3.0s)
 	# 0.5 - 1.0s: Walk UP
 	if timer >= 0.5 and timer < 1.0:
+		current_test_name = "TEST_ANIM_WALK_UP"
 		Input.action_press("move_up")
 		if anim_node and anim_node.animation == "walk_up" and not verified_walk_up:
 			verified_walk_up = true
@@ -61,6 +90,7 @@ func _physics_process(delta: float) -> void:
 
 	# 1.0 - 1.5s: Walk RIGHT
 	elif timer >= 1.0 and timer < 1.5:
+		current_test_name = "TEST_ANIM_WALK_RIGHT"
 		Input.action_release("move_up")
 		Input.action_press("move_right")
 		if anim_node and anim_node.animation == "walk_right" and not verified_walk_right:
@@ -69,6 +99,7 @@ func _physics_process(delta: float) -> void:
 
 	# 1.5 - 2.0s: Walk DOWN
 	elif timer >= 1.5 and timer < 2.0:
+		current_test_name = "TEST_ANIM_WALK_DOWN"
 		Input.action_release("move_right")
 		Input.action_press("move_down")
 		if anim_node and anim_node.animation == "walk_down" and not verified_walk_down:
@@ -77,6 +108,7 @@ func _physics_process(delta: float) -> void:
 
 	# 2.0 - 2.5s: IDLE after walking down
 	elif timer >= 2.0 and timer < 2.5:
+		current_test_name = "TEST_ANIM_IDLE"
 		Input.action_release("move_down")
 		if anim_node and anim_node.animation == "idle_down" and not verified_idle:
 			verified_idle = true
@@ -84,6 +116,7 @@ func _physics_process(delta: float) -> void:
 
 	# 2.5 - 3.0s: Walk LEFT
 	elif timer >= 2.5 and timer < 3.0:
+		current_test_name = "TEST_ANIM_WALK_LEFT"
 		Input.action_press("move_left")
 		if anim_node and anim_node.animation == "walk_left" and not verified_walk_left:
 			verified_walk_left = true
@@ -91,11 +124,16 @@ func _physics_process(delta: float) -> void:
 
 	# Phase 1: Walk from Overlook onto Bridge (3.0s to 6.0s)
 	elif timer >= 3.0 and timer < 6.0:
+		current_test_name = "TEST_WALK_OVERLOOK_TO_BRIDGE"
 		Input.action_release("move_left")
 		Input.action_press("move_up")
+		if timer >= 4.0 and timer < 4.1:
+			print("VERIFY SPEED: Outdoor player velocity: %.2f m/s (target 4.0)" % player.velocity.length())
+			assert(player.velocity.length() >= 3.8, "Outdoor human speed should be ~4.0 m/s!")
 
 	# Phase 2: Test Bridge Balustrade collision (6.0s to 7.5s) - Try walking Left into balustrade!
 	elif timer >= 6.0 and timer < 7.5:
+		current_test_name = "TEST_BRIDGE_BALUSTRADE_COLLISION"
 		Input.action_release("move_up")
 		Input.action_press("move_left")
 		if not balustrade_tested and timer > 7.0:
@@ -105,6 +143,7 @@ func _physics_process(delta: float) -> void:
 
 	# Phase 3: Resume walking North across Bridge into Plaza and Gate (7.5s to 14.0s)
 	elif timer >= 7.5 and timer < 14.0:
+		current_test_name = "TEST_WALK_BRIDGE_TO_GATE"
 		Input.action_release("move_left")
 		Input.action_press("move_up")
 		if timer >= 9.0 and not screenshot_bridge_taken:
@@ -113,6 +152,7 @@ func _physics_process(delta: float) -> void:
 
 	# Phase 4: Push against Sealed Gate
 	elif timer >= 14.0:
+		current_test_name = "TEST_SEALED_GATE_COLLISION"
 		print("Pushing against sealed gate door: (Z=%.2f)" % player.global_position.z)
 		Input.action_release("move_up")
 		_save_screenshot("screenshot_gate.png")

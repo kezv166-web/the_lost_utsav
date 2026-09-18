@@ -1,4 +1,5 @@
 @tool
+class_name AssetExtractor
 extends SceneTree
 
 func _init() -> void:
@@ -6,9 +7,20 @@ func _init() -> void:
 	quit(0)
 
 static func extract_assets_now() -> void:
+	# If assets are already extracted, skip extraction
+	if FileAccess.file_exists("res://assets/environment/gate_door_closed.png") and FileAccess.file_exists("res://assets/environment/cliff_massive_03.png"):
+		return
+
 	print("--- EXTRACTING ASSETS FROM outdoor-elements-tilesets.png ---")
 	var sheet_path = "res://assets/outdoor-elements-tilesets.png"
-	var img = Image.load_from_file(sheet_path)
+	var img: Image = null
+	if ResourceLoader.exists(sheet_path):
+		var res = load(sheet_path)
+		if res is Texture2D:
+			img = res.get_image()
+	if not img:
+		var global_path = ProjectSettings.globalize_path(sheet_path)
+		img = Image.load_from_file(global_path)
 	if not img:
 		printerr("FAILED to load sheet: ", sheet_path)
 		return
