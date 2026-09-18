@@ -124,8 +124,11 @@ func _process(delta: float) -> void:
 		rig.global_position.x = clampf(rig.global_position.x, -3.0, 3.0)
 		rig.global_position.z = clampf(rig.global_position.z, -2.6, 2.6)
 
-	if player_near_exit and Input.is_action_just_pressed("interact"):
-		_on_exit_interacted()
+	if player_near_exit:
+		if Input.is_action_just_pressed("interact"):
+			_on_exit_interacted()
+		elif exit_unlocked and player and player.global_position.z < -4.7 and absf(player.global_position.x - 7.27) < 0.9:
+			_transition_to_level_3()
 
 func _on_key_body_entered(body: Node3D) -> void:
 	if has_key:
@@ -155,13 +158,15 @@ func _on_chest_body_exited(body: Node3D) -> void:
 	if body.is_in_group("player") or body == player:
 		player_near_chest = false
 
+var transitioning_to_l3: bool = false
+
 func _on_exit_body_entered(body: Node3D) -> void:
 	if body.is_in_group("player") or body == player:
 		player_near_exit = true
 		if exit_prompt:
 			exit_prompt.visible = true
 			if exit_unlocked:
-				exit_prompt.text = "Gate Opened\n[E] Enter Next Chamber"
+				exit_prompt.text = "Gate Opened\n[E] Enter Level 3: Inner Castle"
 			elif has_key:
 				exit_prompt.text = "[E] Unlock Exit Gate with Key"
 			else:
@@ -175,21 +180,44 @@ func _on_exit_body_exited(body: Node3D) -> void:
 
 func _on_exit_interacted() -> void:
 	if exit_unlocked:
-		_show_hud_message("The path continues deeper into the Fortress...\nTo be continued in Chapter 2!", 5.0)
-		print("PASSED: Player traversed the unlocked exit gate!")
+		_transition_to_level_3()
 		return
 		
 	if has_key:
 		exit_unlocked = true
 		if exit_prompt:
-			exit_prompt.text = "Gate Opened\n[E] Enter Next Chamber"
+			exit_prompt.text = "Gate Opened\n[E] Enter Level 3: Inner Castle"
 		if exit_gate_visual:
 			var tw = create_tween()
 			tw.tween_property(exit_gate_visual, "position:y", 1.6, 0.8).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		_show_hud_message("CLICK-CLANK! The heavy iron portcullis rises!\nThe path ahead is open.", 5.0)
+		_show_hud_message("CLICK-CLANK! The heavy iron portcullis rises!\nPress [E] to enter the Inner Castle Sanctum!", 5.0)
 		print("PASSED: Exit gate unlocked with key and opened successfully!")
 	else:
 		_show_hud_message("The iron portcullis is locked solid.\nSearch the labyrinth corridors to find the Golden Key.", 3.5)
+
+func _transition_to_level_3() -> void:
+	if transitioning_to_l3:
+		return
+	transitioning_to_l3 = true
+	var l3_path = "res://scenes/levels/l3/l3_map.tscn"
+	if ResourceLoader.exists(l3_path):
+		_show_hud_message("Ascending to Level 3: The Inner Castle Sanctum...", 3.0)
+		var hud = get_node_or_null("MazeHUD")
+		if hud:
+			var fade = ColorRect.new()
+			fade.color = Color(0, 0, 0, 0)
+			fade.set_anchors_preset(Control.PRESET_FULL_RECT)
+			fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			hud.add_child(fade)
+			var tw = create_tween()
+			tw.tween_property(fade, "color:a", 1.0, 0.45)
+			tw.tween_callback(func():
+				get_tree().change_scene_to_file(l3_path)
+			)
+		else:
+			get_tree().change_scene_to_file(l3_path)
+	else:
+		_show_hud_message("Error: Level 3 scene file not found!", 3.0)
 
 func _update_hud() -> void:
 	if hud_form:

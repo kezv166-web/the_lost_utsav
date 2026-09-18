@@ -37,22 +37,28 @@ var transformation_in_progress: bool = false
 var pulse_time: float = 0.0
 
 func _ready() -> void:
-	# Configure player for Level 1 2.5D presentation (proportional to grand room)
+	if not InputMap.has_action("transform_1"):
+		InputMap.add_action("transform_1")
+		var ev = InputEventKey.new()
+		ev.physical_keycode = KEY_1
+		InputMap.action_add_event("transform_1", ev)
+
+	# Configure player for Level 1 (matching outdoor version size and proportions)
 	var player = get_node_or_null("Player")
 	if player:
 		var anim: AnimatedSprite3D = player.get_node_or_null("AnimatedSprite3D")
 		if anim:
 			anim.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
 			anim.rotation_degrees = Vector3.ZERO
-			anim.position = Vector3(0, 0.68, 0)
-			anim.scale = Vector3(0.98, 0.98, 0.98)
+			anim.position = Vector3(0, 0.72, 0)
+			anim.scale = Vector3(1.0, 1.0, 1.0)
 			anim.sorting_offset = 2.0
 			anim.render_priority = 2
 			anim.double_sided = true
 			anim.no_depth_test = false
 		var col: CollisionShape3D = player.get_node_or_null("CollisionShape3D")
 		if col and col.shape is CapsuleShape3D:
-			col.shape.radius = 0.24
+			col.shape.radius = 0.35
 			col.shape.height = 1.4
 			col.position = Vector3(0, 0.7, 0)
 		var shadow = player.get_node_or_null("DropShadow")
@@ -60,18 +66,22 @@ func _ready() -> void:
 			shadow.scale = Vector3(1.0, 1.0, 1.0)
 			shadow.visible = true
 
-	# Configure camera for Level 1 2.5D oblique view
+	# Configure camera for Level 1: close-up tracking view matching outdoor player scale
 	var rig = get_node_or_null("CameraRig")
 	if rig:
 		rig.target_offset = Vector3(0, 0, 0)
-		rig.follow_speed = 4.0
+		rig.follow_speed = 5.0
+		rig.min_x = -4.5
+		rig.max_x = 4.5
+		rig.min_z = -1.8
+		rig.max_z = 1.8
 		var pivot = rig.get_node_or_null("Pivot")
 		if pivot:
-			pivot.rotation_degrees = Vector3(-52, 0, 0)
+			pivot.rotation_degrees = Vector3(-50, 0, 0)
 			var cam: Camera3D = pivot.get_node_or_null("Camera3D")
 			if cam:
 				cam.projection = Camera3D.PROJECTION_ORTHOGONAL
-				cam.size = 17.5
+				cam.size = 9.2
 
 	if lever_prompt:
 		lever_prompt.visible = false

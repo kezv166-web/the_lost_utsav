@@ -1,4 +1,4 @@
-[gd_scene load_steps=54 format=3]
+[gd_scene load_steps=55 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/l1_controller.gd" id="1_controller"]
 [ext_resource type="Texture2D" path="res://assets/environment/l1_map_clean.png" id="2_map_texture"]
@@ -25,6 +25,8 @@
 [ext_resource type="Texture2D" path="res://assets/environment/barrel_wood.png" id="24_barrel"]
 [ext_resource type="Texture2D" path="res://assets/environment/crates_stacked.png" id="25_crates"]
 [ext_resource type="Texture2D" path="res://assets/environment/torch_sconce.png" id="26_sconce"]
+[ext_resource type="Texture2D" uid="uid://c3g2f45a1qj3d" path="res://assets/environment/pilar-3dassets.png" id="27_pillar_asset"]
+[ext_resource type="Texture2D" uid="uid://cmrajdo2hwk5j" path="res://assets/environment/pilar-3dassets_right.png" id="28_pillar_right"]
 
 [sub_resource type="Environment" id="Environment_dungeon"]
 background_mode = 1
@@ -212,161 +214,7 @@ material = SubResource("Mat_InvisibleFloor")
 
 [node name="Visuals3D" type="Node3D" parent="."]
 
-[node name="Walls" type="Node3D" parent="Visuals3D"]
-
-[node name="NorthWallMesh" type="CSGBox3D" parent="Visuals3D/Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, -4.9)
-size = Vector3(18.0, 3.2, 0.8)
-material = SubResource("Mat_CastleBrick")
-
-[node name="NorthWallLedge" type="CSGBox3D" parent="Visuals3D/Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, -4.85)
-size = Vector3(18.2, 0.15, 0.9)
-material = SubResource("Mat_StoneTrim")
-
-[node name="WestWallMesh" type="CSGBox3D" parent="Visuals3D/Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.8, 1.6, 0)
-size = Vector3(0.8, 3.2, 8)
-material = SubResource("Mat_CastleBrick")
-
-[node name="EastWallMesh" type="CSGBox3D" parent="Visuals3D/Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.0, 1.6, 0)
-size = Vector3(0.8, 3.2, 8)
-material = SubResource("Mat_CastleBrick")
-
-[node name="NWCornerMesh" type="CSGBox3D" parent="Visuals3D/Walls"]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -8.5, 1.6, -3.8)
-size = Vector3(3.2, 3.2, 0.8)
-material = SubResource("Mat_CastleBrick")
-
-[node name="AlcoveDivider" type="CSGBox3D" parent="Visuals3D/Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.35, 1.3, -3.9)
-size = Vector3(0.6, 2.6, 1.4)
-material = SubResource("Mat_CastleBrick")
-
-[node name="SouthWallLMesh" type="CSGBox3D" parent="Visuals3D/Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.0, 1.0, 4.4)
-size = Vector3(7.5, 2.0, 0.8)
-material = SubResource("Mat_CastleBrickDark")
-
-[node name="SouthWallRMesh" type="CSGBox3D" parent="Visuals3D/Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.0, 1.0, 4.4)
-size = Vector3(7.5, 2.0, 0.8)
-material = SubResource("Mat_CastleBrickDark")
-
-[node name="SWCornerMesh" type="CSGBox3D" parent="Visuals3D/Walls"]
-transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, -8.6, 1.0, 3.5)
-size = Vector3(3.2, 2.0, 0.8)
-material = SubResource("Mat_CastleBrickDark")
-
-[node name="SECornerMesh" type="CSGBox3D" parent="Visuals3D/Walls"]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 8.6, 1.0, 3.5)
-size = Vector3(3.2, 2.0, 0.8)
-material = SubResource("Mat_CastleBrickDark")
-
-[node name="Pillars" type="Node3D" parent="Visuals3D"]
-
-[node name="PillarNW_3D" type="Node3D" parent="Visuals3D/Pillars"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 0, -0.78)
-
-[node name="Base" type="CSGBox3D" parent="Visuals3D/Pillars/PillarNW_3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
-size = Vector3(1.4, 0.4, 1.4)
-material = SubResource("Mat_StoneTrim")
-
-[node name="Shaft" type="CSGCylinder3D" parent="Visuals3D/Pillars/PillarNW_3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
-radius = 0.62
-height = 3.2
-sides = 12
-material = SubResource("Mat_CastleBrick")
-
-[node name="Capital" type="CSGBox3D" parent="Visuals3D/Pillars/PillarNW_3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.45, 0)
-size = Vector3(1.4, 0.3, 1.4)
-material = SubResource("Mat_StoneTrim")
-
-[node name="PillarNE_3D" type="Node3D" parent="Visuals3D/Pillars"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 0, -0.78)
-
-[node name="Base" type="CSGBox3D" parent="Visuals3D/Pillars/PillarNE_3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
-size = Vector3(1.4, 0.4, 1.4)
-material = SubResource("Mat_StoneTrim")
-
-[node name="Shaft" type="CSGCylinder3D" parent="Visuals3D/Pillars/PillarNE_3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
-radius = 0.62
-height = 3.2
-sides = 12
-material = SubResource("Mat_CastleBrick")
-
-[node name="Capital" type="CSGBox3D" parent="Visuals3D/Pillars/PillarNE_3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.45, 0)
-size = Vector3(1.4, 0.3, 1.4)
-material = SubResource("Mat_StoneTrim")
-
-[node name="PillarSW_3D" type="Node3D" parent="Visuals3D/Pillars"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.73, 0, 2.6)
-
-[node name="Base" type="CSGBox3D" parent="Visuals3D/Pillars/PillarSW_3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
-size = Vector3(1.4, 0.4, 1.4)
-material = SubResource("Mat_StoneTrim")
-
-[node name="Shaft" type="CSGCylinder3D" parent="Visuals3D/Pillars/PillarSW_3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
-radius = 0.62
-height = 3.2
-sides = 12
-material = SubResource("Mat_CastleBrick")
-
-[node name="Capital" type="CSGBox3D" parent="Visuals3D/Pillars/PillarSW_3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.45, 0)
-size = Vector3(1.4, 0.3, 1.4)
-material = SubResource("Mat_StoneTrim")
-
-[node name="PillarSE_3D" type="Node3D" parent="Visuals3D/Pillars"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.78, 0, 2.6)
-
-[node name="Base" type="CSGBox3D" parent="Visuals3D/Pillars/PillarSE_3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
-size = Vector3(1.4, 0.4, 1.4)
-material = SubResource("Mat_StoneTrim")
-
-[node name="Shaft" type="CSGCylinder3D" parent="Visuals3D/Pillars/PillarSE_3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
-radius = 0.62
-height = 3.2
-sides = 12
-material = SubResource("Mat_CastleBrick")
-
-[node name="Capital" type="CSGBox3D" parent="Visuals3D/Pillars/PillarSE_3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.45, 0)
-size = Vector3(1.4, 0.3, 1.4)
-material = SubResource("Mat_StoneTrim")
-
 [node name="AltarDais" type="Node3D" parent="Visuals3D"]
-
-[node name="PlatformMain" type="CSGBox3D" parent="Visuals3D/AltarDais"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, -2.85)
-size = Vector3(3.8, 0.5, 2.1)
-material = SubResource("Mat_StoneDais")
-
-[node name="PlatformTrim" type="CSGBox3D" parent="Visuals3D/AltarDais"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.49, -2.85)
-size = Vector3(3.9, 0.04, 2.2)
-material = SubResource("Mat_StoneTrim")
-
-[node name="StepUpper" type="CSGBox3D" parent="Visuals3D/AltarDais"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.165, -1.65)
-size = Vector3(2.6, 0.33, 0.35)
-material = SubResource("Mat_StoneDais")
-
-[node name="StepLower" type="CSGBox3D" parent="Visuals3D/AltarDais"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.085, -1.35)
-size = Vector3(3.0, 0.17, 0.35)
-material = SubResource("Mat_StoneDais")
 
 [node name="DaisGlowVisual" type="Sprite3D" parent="Visuals3D/AltarDais"]
 transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 0.55, -2.85)
@@ -383,109 +231,6 @@ billboard = 2
 pixel_size = 0.011
 texture_filter = 0
 texture = ExtResource("19_crystal_ruby")
-
-[node name="Props" type="Node3D" parent="Visuals3D"]
-
-[node name="StatueL" type="Sprite3D" parent="Visuals3D/Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0, 1.45, -3.1)
-pixel_size = 0.0105
-billboard = 2
-texture_filter = 0
-texture = ExtResource("17_statue_r")
-
-[node name="StatueR" type="Sprite3D" parent="Visuals3D/Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0, 1.45, -3.1)
-pixel_size = 0.0105
-billboard = 2
-texture_filter = 0
-texture = ExtResource("18_statue_l")
-
-[node name="StatueL_Shadow" type="Sprite3D" parent="Visuals3D/Props"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -2.0, 0.51, -3.1)
-pixel_size = 0.009
-texture_filter = 0
-texture = ExtResource("23_shadow")
-modulate = Color(1, 1, 1, 0.5)
-
-[node name="StatueR_Shadow" type="Sprite3D" parent="Visuals3D/Props"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 2.0, 0.51, -3.1)
-pixel_size = 0.009
-texture_filter = 0
-texture = ExtResource("23_shadow")
-modulate = Color(1, 1, 1, 0.5)
-
-[node name="BrazierL" type="Sprite3D" parent="Visuals3D/Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.42, -1.9)
-pixel_size = 0.011
-billboard = 2
-texture_filter = 0
-texture = ExtResource("21_brazier")
-
-[node name="BrazierR" type="Sprite3D" parent="Visuals3D/Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.42, -1.9)
-pixel_size = 0.011
-billboard = 2
-texture_filter = 0
-texture = ExtResource("21_brazier")
-
-[node name="BrazierL_Shadow" type="Sprite3D" parent="Visuals3D/Props"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -1.5, 0.02, -1.9)
-pixel_size = 0.007
-texture_filter = 0
-texture = ExtResource("23_shadow")
-modulate = Color(1, 1, 1, 0.45)
-
-[node name="BrazierR_Shadow" type="Sprite3D" parent="Visuals3D/Props"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 1.5, 0.02, -1.9)
-pixel_size = 0.007
-texture_filter = 0
-texture = ExtResource("23_shadow")
-modulate = Color(1, 1, 1, 0.45)
-
-[node name="BannerNW" type="Sprite3D" parent="Visuals3D/Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 2.3, -4.48)
-pixel_size = 0.012
-texture_filter = 0
-texture = ExtResource("22_banner")
-
-[node name="BannerNE" type="Sprite3D" parent="Visuals3D/Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 2.3, -4.48)
-pixel_size = 0.012
-texture_filter = 0
-texture = ExtResource("22_banner")
-
-[node name="SconceNW" type="Sprite3D" parent="Visuals3D/Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8, 1.8, -4.48)
-pixel_size = 0.011
-texture_filter = 0
-texture = ExtResource("26_sconce")
-
-[node name="SconceNE" type="Sprite3D" parent="Visuals3D/Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 1.8, -4.48)
-pixel_size = 0.011
-texture_filter = 0
-texture = ExtResource("26_sconce")
-
-[node name="BarrelsSW" type="Sprite3D" parent="Visuals3D/Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 0.25, 3.2)
-pixel_size = 0.013
-billboard = 2
-texture_filter = 0
-texture = ExtResource("24_barrel")
-
-[node name="BarrelsSE" type="Sprite3D" parent="Visuals3D/Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 0.25, 3.2)
-pixel_size = 0.013
-billboard = 2
-texture_filter = 0
-texture = ExtResource("24_barrel")
-
-[node name="CratesNE" type="Sprite3D" parent="Visuals3D/Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.4, 0.28, -3.95)
-pixel_size = 0.013
-billboard = 2
-texture_filter = 0
-texture = ExtResource("25_crates")
 
 [node name="Collisions" type="Node3D" parent="."]
 
@@ -538,7 +283,7 @@ transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 
 shape = SubResource("Shape_CornerWall")
 
 [node name="AltarDais" type="StaticBody3D" parent="Collisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -2.85)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -3.2)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/AltarDais"]
 shape = SubResource("Shape_Dais")
@@ -592,13 +337,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.65, 1, -1.35)
 shape = SubResource("Shape_ShrineTable")
 
 [node name="KnightL" type="StaticBody3D" parent="Collisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 1.5, -3.53)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 1.5, -3.5)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/KnightL"]
 shape = SubResource("Shape_Statue")
 
 [node name="KnightR" type="StaticBody3D" parent="Collisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 1.5, -3.53)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 1.5, -3.5)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/KnightR"]
 shape = SubResource("Shape_Statue")
@@ -633,19 +378,19 @@ shape = SubResource("Shape_Barrels")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, -2.85)
 light_color = Color(1, 0.1, 0.15, 1)
 light_energy = 3.2
-omni_range = 8.0
+omni_range = 10.0
 
 [node name="AltarBrazierL" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.8, -1.9)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 0.9, -1.8)
 light_color = Color(1, 0.6, 0.2, 1)
 light_energy = 2.2
-omni_range = 5.0
+omni_range = 6.0
 
 [node name="AltarBrazierR" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.8, -1.9)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 0.9, -1.8)
 light_color = Color(1, 0.6, 0.2, 1)
 light_energy = 2.2
-omni_range = 5.0
+omni_range = 6.0
 
 [node name="TorchNW" type="OmniLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8, 1.8, -4.2)
@@ -780,7 +525,7 @@ sprite_frames = SubResource("SpriteFrames_Lever")
 animation = &"up"
 
 [node name="AltarCrystal" type="Area3D" parent="Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -3.0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -2.85)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Interactables/AltarCrystal"]
 shape = SubResource("Shape_CrystalTrigger")
