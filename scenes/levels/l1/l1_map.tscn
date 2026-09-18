@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3]
+[gd_scene load_steps=54 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/l1_controller.gd" id="1_controller"]
 [ext_resource type="Texture2D" path="res://assets/environment/l1_map_clean.png" id="2_map_texture"]
@@ -13,27 +13,77 @@
 [ext_resource type="Texture2D" path="res://assets/character/frames/player_kneel.png" id="12_kneel"]
 [ext_resource type="Texture2D" path="res://assets/vfx/soft_energy_ring.png" id="13_ring"]
 [ext_resource type="Texture2D" path="res://assets/vfx/divine_flash.png" id="14_flash"]
+[ext_resource type="Texture2D" path="res://assets/environment/castle_brick_tile.png" id="15_brick_wall"]
+[ext_resource type="Texture2D" path="res://assets/environment/stone_floor_tile.png" id="16_stone_tile"]
+[ext_resource type="Texture2D" path="res://assets/environment/l1_3d/statue_3q_right.png" id="17_statue_r"]
+[ext_resource type="Texture2D" path="res://assets/environment/l1_3d/statue_3q_left.png" id="18_statue_l"]
+[ext_resource type="Texture2D" path="res://assets/environment/l1_3d/crystal_ruby_01.png" id="19_crystal_ruby"]
+[ext_resource type="Texture2D" path="res://assets/environment/l1_3d/altar_dais_glowing.png" id="20_dais_glow"]
+[ext_resource type="Texture2D" path="res://assets/environment/brazier_flaming.png" id="21_brazier"]
+[ext_resource type="Texture2D" path="res://assets/environment/asur_hanging_banner_large.png" id="22_banner"]
+[ext_resource type="Texture2D" path="res://assets/character/drop_shadow.png" id="23_shadow"]
+[ext_resource type="Texture2D" path="res://assets/environment/barrel_wood.png" id="24_barrel"]
+[ext_resource type="Texture2D" path="res://assets/environment/crates_stacked.png" id="25_crates"]
+[ext_resource type="Texture2D" path="res://assets/environment/torch_sconce.png" id="26_sconce"]
 
 [sub_resource type="Environment" id="Environment_dungeon"]
 background_mode = 1
 background_color = Color(0.04, 0.02, 0.04, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.35, 0.22, 0.32, 1)
-ambient_light_energy = 0.85
+ambient_light_color = Color(0.35, 0.24, 0.35, 1)
+ambient_light_energy = 0.9
 tonemap_mode = 2
 
 [sub_resource type="StandardMaterial3D" id="Mat_InvisibleFloor"]
 transparency = 1
 albedo_color = Color(0, 0, 0, 0)
 
+[sub_resource type="StandardMaterial3D" id="Mat_CastleBrick"]
+albedo_texture = ExtResource("15_brick_wall")
+uv1_scale = Vector3(1.4, 1.4, 1.4)
+uv1_triplanar = true
+texture_filter = 0
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Mat_CastleBrickDark"]
+albedo_color = Color(0.68, 0.62, 0.72, 1)
+albedo_texture = ExtResource("15_brick_wall")
+uv1_scale = Vector3(1.4, 1.4, 1.4)
+uv1_triplanar = true
+texture_filter = 0
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Mat_StoneDais"]
+albedo_texture = ExtResource("16_stone_tile")
+uv1_scale = Vector3(1.5, 1.5, 1.5)
+uv1_triplanar = true
+texture_filter = 0
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_StoneTrim"]
+albedo_color = Color(0.62, 0.54, 0.65, 1)
+albedo_texture = ExtResource("16_stone_tile")
+uv1_scale = Vector3(1.0, 1.0, 1.0)
+uv1_triplanar = true
+texture_filter = 0
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="Mat_CrystalRuby"]
+albedo_color = Color(0.95, 0.12, 0.22, 0.95)
+roughness = 0.12
+metallic = 0.35
+emission_enabled = true
+emission = Color(1.0, 0.18, 0.22, 1)
+emission_energy_multiplier = 3.8
+
 [sub_resource type="BoxShape3D" id="Shape_Floor"]
-size = Vector3(24, 1, 16)
+size = Vector3(30, 1, 16)
 
 [sub_resource type="BoxShape3D" id="Shape_NorthWall"]
-size = Vector3(14, 4, 1)
+size = Vector3(18, 4, 1)
 
 [sub_resource type="BoxShape3D" id="Shape_SouthWall"]
-size = Vector3(6, 4, 1)
+size = Vector3(7.5, 4, 1)
 
 [sub_resource type="BoxShape3D" id="Shape_SideWall"]
 size = Vector3(1, 4, 8)
@@ -139,12 +189,12 @@ environment = SubResource("Environment_dungeon")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.866025, -0.25, 0.433013, 0, 0.866025, 0.5, -0.5, -0.433013, 0.75, 0, 15, 0)
-light_color = Color(0.85, 0.75, 0.9, 1)
-light_energy = 0.5
+light_color = Color(0.85, 0.78, 0.92, 1)
+light_energy = 0.65
 shadow_enabled = true
 
 [node name="DungeonVisual" type="Sprite3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.01, 0)
+transform = Transform3D(1.25, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.01, 0)
 pixel_size = 0.0125
 texture_filter = 0
 sorting_offset = -10.0
@@ -157,8 +207,285 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 shape = SubResource("Shape_Floor")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="FloorGround"]
-size = Vector3(24, 1, 16)
+size = Vector3(30, 1, 16)
 material = SubResource("Mat_InvisibleFloor")
+
+[node name="Visuals3D" type="Node3D" parent="."]
+
+[node name="Walls" type="Node3D" parent="Visuals3D"]
+
+[node name="NorthWallMesh" type="CSGBox3D" parent="Visuals3D/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, -4.9)
+size = Vector3(18.0, 3.2, 0.8)
+material = SubResource("Mat_CastleBrick")
+
+[node name="NorthWallLedge" type="CSGBox3D" parent="Visuals3D/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, -4.85)
+size = Vector3(18.2, 0.15, 0.9)
+material = SubResource("Mat_StoneTrim")
+
+[node name="WestWallMesh" type="CSGBox3D" parent="Visuals3D/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.8, 1.6, 0)
+size = Vector3(0.8, 3.2, 8)
+material = SubResource("Mat_CastleBrick")
+
+[node name="EastWallMesh" type="CSGBox3D" parent="Visuals3D/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.0, 1.6, 0)
+size = Vector3(0.8, 3.2, 8)
+material = SubResource("Mat_CastleBrick")
+
+[node name="NWCornerMesh" type="CSGBox3D" parent="Visuals3D/Walls"]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -8.5, 1.6, -3.8)
+size = Vector3(3.2, 3.2, 0.8)
+material = SubResource("Mat_CastleBrick")
+
+[node name="AlcoveDivider" type="CSGBox3D" parent="Visuals3D/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.35, 1.3, -3.9)
+size = Vector3(0.6, 2.6, 1.4)
+material = SubResource("Mat_CastleBrick")
+
+[node name="SouthWallLMesh" type="CSGBox3D" parent="Visuals3D/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.0, 1.0, 4.4)
+size = Vector3(7.5, 2.0, 0.8)
+material = SubResource("Mat_CastleBrickDark")
+
+[node name="SouthWallRMesh" type="CSGBox3D" parent="Visuals3D/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.0, 1.0, 4.4)
+size = Vector3(7.5, 2.0, 0.8)
+material = SubResource("Mat_CastleBrickDark")
+
+[node name="SWCornerMesh" type="CSGBox3D" parent="Visuals3D/Walls"]
+transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, -8.6, 1.0, 3.5)
+size = Vector3(3.2, 2.0, 0.8)
+material = SubResource("Mat_CastleBrickDark")
+
+[node name="SECornerMesh" type="CSGBox3D" parent="Visuals3D/Walls"]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 8.6, 1.0, 3.5)
+size = Vector3(3.2, 2.0, 0.8)
+material = SubResource("Mat_CastleBrickDark")
+
+[node name="Pillars" type="Node3D" parent="Visuals3D"]
+
+[node name="PillarNW_3D" type="Node3D" parent="Visuals3D/Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 0, -0.78)
+
+[node name="Base" type="CSGBox3D" parent="Visuals3D/Pillars/PillarNW_3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+size = Vector3(1.4, 0.4, 1.4)
+material = SubResource("Mat_StoneTrim")
+
+[node name="Shaft" type="CSGCylinder3D" parent="Visuals3D/Pillars/PillarNW_3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+radius = 0.62
+height = 3.2
+sides = 12
+material = SubResource("Mat_CastleBrick")
+
+[node name="Capital" type="CSGBox3D" parent="Visuals3D/Pillars/PillarNW_3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.45, 0)
+size = Vector3(1.4, 0.3, 1.4)
+material = SubResource("Mat_StoneTrim")
+
+[node name="PillarNE_3D" type="Node3D" parent="Visuals3D/Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 0, -0.78)
+
+[node name="Base" type="CSGBox3D" parent="Visuals3D/Pillars/PillarNE_3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+size = Vector3(1.4, 0.4, 1.4)
+material = SubResource("Mat_StoneTrim")
+
+[node name="Shaft" type="CSGCylinder3D" parent="Visuals3D/Pillars/PillarNE_3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+radius = 0.62
+height = 3.2
+sides = 12
+material = SubResource("Mat_CastleBrick")
+
+[node name="Capital" type="CSGBox3D" parent="Visuals3D/Pillars/PillarNE_3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.45, 0)
+size = Vector3(1.4, 0.3, 1.4)
+material = SubResource("Mat_StoneTrim")
+
+[node name="PillarSW_3D" type="Node3D" parent="Visuals3D/Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.73, 0, 2.6)
+
+[node name="Base" type="CSGBox3D" parent="Visuals3D/Pillars/PillarSW_3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+size = Vector3(1.4, 0.4, 1.4)
+material = SubResource("Mat_StoneTrim")
+
+[node name="Shaft" type="CSGCylinder3D" parent="Visuals3D/Pillars/PillarSW_3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+radius = 0.62
+height = 3.2
+sides = 12
+material = SubResource("Mat_CastleBrick")
+
+[node name="Capital" type="CSGBox3D" parent="Visuals3D/Pillars/PillarSW_3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.45, 0)
+size = Vector3(1.4, 0.3, 1.4)
+material = SubResource("Mat_StoneTrim")
+
+[node name="PillarSE_3D" type="Node3D" parent="Visuals3D/Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.78, 0, 2.6)
+
+[node name="Base" type="CSGBox3D" parent="Visuals3D/Pillars/PillarSE_3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+size = Vector3(1.4, 0.4, 1.4)
+material = SubResource("Mat_StoneTrim")
+
+[node name="Shaft" type="CSGCylinder3D" parent="Visuals3D/Pillars/PillarSE_3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+radius = 0.62
+height = 3.2
+sides = 12
+material = SubResource("Mat_CastleBrick")
+
+[node name="Capital" type="CSGBox3D" parent="Visuals3D/Pillars/PillarSE_3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.45, 0)
+size = Vector3(1.4, 0.3, 1.4)
+material = SubResource("Mat_StoneTrim")
+
+[node name="AltarDais" type="Node3D" parent="Visuals3D"]
+
+[node name="PlatformMain" type="CSGBox3D" parent="Visuals3D/AltarDais"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, -2.85)
+size = Vector3(3.8, 0.5, 2.1)
+material = SubResource("Mat_StoneDais")
+
+[node name="PlatformTrim" type="CSGBox3D" parent="Visuals3D/AltarDais"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.49, -2.85)
+size = Vector3(3.9, 0.04, 2.2)
+material = SubResource("Mat_StoneTrim")
+
+[node name="StepUpper" type="CSGBox3D" parent="Visuals3D/AltarDais"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.165, -1.65)
+size = Vector3(2.6, 0.33, 0.35)
+material = SubResource("Mat_StoneDais")
+
+[node name="StepLower" type="CSGBox3D" parent="Visuals3D/AltarDais"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.085, -1.35)
+size = Vector3(3.0, 0.17, 0.35)
+material = SubResource("Mat_StoneDais")
+
+[node name="DaisGlowVisual" type="Sprite3D" parent="Visuals3D/AltarDais"]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 0.55, -2.85)
+pixel_size = 0.013
+texture_filter = 0
+texture = ExtResource("20_dais_glow")
+
+[node name="CrystalMesh" type="Node3D" parent="Visuals3D/AltarDais"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55, -2.85)
+
+[node name="CrystalSprite" type="Sprite3D" parent="Visuals3D/AltarDais/CrystalMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+billboard = 2
+pixel_size = 0.011
+texture_filter = 0
+texture = ExtResource("19_crystal_ruby")
+
+[node name="Props" type="Node3D" parent="Visuals3D"]
+
+[node name="StatueL" type="Sprite3D" parent="Visuals3D/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0, 1.45, -3.1)
+pixel_size = 0.0105
+billboard = 2
+texture_filter = 0
+texture = ExtResource("17_statue_r")
+
+[node name="StatueR" type="Sprite3D" parent="Visuals3D/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0, 1.45, -3.1)
+pixel_size = 0.0105
+billboard = 2
+texture_filter = 0
+texture = ExtResource("18_statue_l")
+
+[node name="StatueL_Shadow" type="Sprite3D" parent="Visuals3D/Props"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -2.0, 0.51, -3.1)
+pixel_size = 0.009
+texture_filter = 0
+texture = ExtResource("23_shadow")
+modulate = Color(1, 1, 1, 0.5)
+
+[node name="StatueR_Shadow" type="Sprite3D" parent="Visuals3D/Props"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 2.0, 0.51, -3.1)
+pixel_size = 0.009
+texture_filter = 0
+texture = ExtResource("23_shadow")
+modulate = Color(1, 1, 1, 0.5)
+
+[node name="BrazierL" type="Sprite3D" parent="Visuals3D/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.42, -1.9)
+pixel_size = 0.011
+billboard = 2
+texture_filter = 0
+texture = ExtResource("21_brazier")
+
+[node name="BrazierR" type="Sprite3D" parent="Visuals3D/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.42, -1.9)
+pixel_size = 0.011
+billboard = 2
+texture_filter = 0
+texture = ExtResource("21_brazier")
+
+[node name="BrazierL_Shadow" type="Sprite3D" parent="Visuals3D/Props"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -1.5, 0.02, -1.9)
+pixel_size = 0.007
+texture_filter = 0
+texture = ExtResource("23_shadow")
+modulate = Color(1, 1, 1, 0.45)
+
+[node name="BrazierR_Shadow" type="Sprite3D" parent="Visuals3D/Props"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 1.5, 0.02, -1.9)
+pixel_size = 0.007
+texture_filter = 0
+texture = ExtResource("23_shadow")
+modulate = Color(1, 1, 1, 0.45)
+
+[node name="BannerNW" type="Sprite3D" parent="Visuals3D/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 2.3, -4.48)
+pixel_size = 0.012
+texture_filter = 0
+texture = ExtResource("22_banner")
+
+[node name="BannerNE" type="Sprite3D" parent="Visuals3D/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 2.3, -4.48)
+pixel_size = 0.012
+texture_filter = 0
+texture = ExtResource("22_banner")
+
+[node name="SconceNW" type="Sprite3D" parent="Visuals3D/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8, 1.8, -4.48)
+pixel_size = 0.011
+texture_filter = 0
+texture = ExtResource("26_sconce")
+
+[node name="SconceNE" type="Sprite3D" parent="Visuals3D/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 1.8, -4.48)
+pixel_size = 0.011
+texture_filter = 0
+texture = ExtResource("26_sconce")
+
+[node name="BarrelsSW" type="Sprite3D" parent="Visuals3D/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 0.25, 3.2)
+pixel_size = 0.013
+billboard = 2
+texture_filter = 0
+texture = ExtResource("24_barrel")
+
+[node name="BarrelsSE" type="Sprite3D" parent="Visuals3D/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 0.25, 3.2)
+pixel_size = 0.013
+billboard = 2
+texture_filter = 0
+texture = ExtResource("24_barrel")
+
+[node name="CratesNE" type="Sprite3D" parent="Visuals3D/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.4, 0.28, -3.95)
+pixel_size = 0.013
+billboard = 2
+texture_filter = 0
+texture = ExtResource("25_crates")
 
 [node name="Collisions" type="Node3D" parent="."]
 
@@ -169,44 +496,43 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -4.9)
 shape = SubResource("Shape_NorthWall")
 
 [node name="SouthWallL" type="StaticBody3D" parent="Collisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.0, 2, 4.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.0, 2, 4.4)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/SouthWallL"]
 shape = SubResource("Shape_SouthWall")
 
 [node name="SouthWallR" type="StaticBody3D" parent="Collisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0, 2, 4.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.0, 2, 4.4)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/SouthWallR"]
 shape = SubResource("Shape_SouthWall")
 
 [node name="WestWall" type="StaticBody3D" parent="Collisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.8, 2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.8, 2, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/WestWall"]
 shape = SubResource("Shape_SideWall")
 
 [node name="EastWall" type="StaticBody3D" parent="Collisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.1, 2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.0, 2, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/EastWall"]
 shape = SubResource("Shape_SideWall")
 
 [node name="NWCorner" type="StaticBody3D" parent="Collisions"]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -6.5, 2, -3.8)
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -8.5, 2, -3.8)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/NWCorner"]
 shape = SubResource("Shape_CornerWall")
 
-
 [node name="SWCorner" type="StaticBody3D" parent="Collisions"]
-transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, -6.8, 2, 3.5)
+transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, -8.6, 2, 3.5)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/SWCorner"]
 shape = SubResource("Shape_CornerWall")
 
 [node name="SECorner" type="StaticBody3D" parent="Collisions"]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 6.8, 2, 3.5)
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 8.6, 2, 3.5)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/SECorner"]
 shape = SubResource("Shape_CornerWall")
@@ -304,61 +630,61 @@ shape = SubResource("Shape_Barrels")
 [node name="Lights" type="Node3D" parent="."]
 
 [node name="CrystalLight" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, -3.9)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, -2.85)
 light_color = Color(1, 0.1, 0.15, 1)
 light_energy = 3.2
 omni_range = 8.0
 
 [node name="AltarBrazierL" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.8, -2.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.8, -1.9)
 light_color = Color(1, 0.6, 0.2, 1)
 light_energy = 2.2
 omni_range = 5.0
 
 [node name="AltarBrazierR" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.8, -2.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.8, -1.9)
 light_color = Color(1, 0.6, 0.2, 1)
 light_energy = 2.2
 omni_range = 5.0
 
 [node name="TorchNW" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 1.0, -4.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8, 1.8, -4.2)
 light_color = Color(1, 0.55, 0.18, 1)
 light_energy = 2.0
 omni_range = 6.0
 
 [node name="TorchNE" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 1.0, -4.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 1.8, -4.2)
 light_color = Color(1, 0.55, 0.18, 1)
 light_energy = 2.0
 omni_range = 6.0
 
 [node name="TorchW" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.2, 1.0, -1.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 1.5, -1.2)
 light_color = Color(1, 0.55, 0.18, 1)
 light_energy = 1.8
 omni_range = 5.5
 
 [node name="TorchE" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.2, 1.0, -1.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.4, 1.5, -1.2)
 light_color = Color(1, 0.55, 0.18, 1)
 light_energy = 1.8
 omni_range = 5.5
 
 [node name="TorchSW" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 0.8, 3.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 1.0, 3.5)
 light_color = Color(1, 0.55, 0.18, 1)
 light_energy = 1.8
 omni_range = 5.0
 
 [node name="TorchSE" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 0.8, 3.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 1.0, 3.5)
 light_color = Color(1, 0.55, 0.18, 1)
 light_energy = 1.8
 omni_range = 5.0
 
 [node name="DeskCandle" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 0.6, -2.0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 0.8, -2.0)
 light_color = Color(1, 0.7, 0.3, 1)
 light_energy = 1.4
 omni_range = 3.5
@@ -366,7 +692,7 @@ omni_range = 3.5
 [node name="VFX" type="Node3D" parent="."]
 
 [node name="CrystalEmbers" type="CPUParticles3D" parent="VFX"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, -3.9)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55, -2.85)
 amount = 25
 lifetime = 2.5
 emission_shape = 1
@@ -380,24 +706,26 @@ color = Color(1, 0.2, 0.15, 0.85)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.8, 0.0, -3.2)
 
 [node name="OmSprite" type="Sprite3D" parent="VFX/CutsceneVFX"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.25, -0.9)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, 0)
 visible = false
+billboard = 1
 pixel_size = 0.0125
 texture_filter = 0
 texture = ExtResource("10_om")
 
 [node name="LotusSprite" type="Sprite3D" parent="VFX/CutsceneVFX"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.25, -0.7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
 visible = false
+billboard = 1
 pixel_size = 0.0125
 texture_filter = 0
 texture = ExtResource("11_lotus")
 
 [node name="AuraLight" type="OmniLight3D" parent="VFX/CutsceneVFX"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 light_color = Color(1.0, 0.82, 0.45, 1)
 light_energy = 0.0
-omni_range = 1.8
+omni_range = 2.2
 
 [node name="EnergyRing" type="Sprite3D" parent="VFX/CutsceneVFX"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.03, 0)
@@ -407,14 +735,15 @@ texture_filter = 0
 texture = ExtResource("13_ring")
 
 [node name="DivineFlash" type="Sprite3D" parent="VFX/CutsceneVFX"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.28, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 visible = false
+billboard = 1
 pixel_size = 0.0125
 texture_filter = 0
 texture = ExtResource("14_flash")
 
 [node name="DivineParticles" type="CPUParticles3D" parent="VFX/CutsceneVFX"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
 emitting = false
 amount = 14
 lifetime = 1.2
@@ -436,14 +765,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.9, 0.5, -3.9)
 shape = SubResource("Shape_LeverTrigger")
 
 [node name="Prompt" type="Label3D" parent="Interactables/PuzzleLever"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
 billboard = 1
 text = "[E] Pull Ancient Lever"
 font_size = 26
 outline_size = 5
 
 [node name="LeverSprite" type="AnimatedSprite3D" parent="Interactables/PuzzleLever"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.41, 0.02, -0.12)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.41, 0.35, -0.12)
+billboard = 2
 pixel_size = 0.0125
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_Lever")
@@ -456,7 +786,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -3.0)
 shape = SubResource("Shape_CrystalTrigger")
 
 [node name="Prompt" type="Label3D" parent="Interactables/AltarCrystal"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
 billboard = 1
 text = "[E] Inspect Asur Crystal"
 font_size = 26
@@ -469,7 +799,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.73, 0.05, -1.93)
 shape = SubResource("Shape_MousePassage")
 
 [node name="Prompt" type="Label3D" parent="Interactables/MousePassage"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
 visible = false
 billboard = 1
 text = "[E] Inspect Mouse Passage"
@@ -477,8 +807,9 @@ font_size = 24
 outline_size = 5
 
 [node name="HoleVisual" type="Sprite3D" parent="Interactables/MousePassage"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.01, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
 visible = false
+billboard = 2
 pixel_size = 0.0125
 texture_filter = 0
 texture = ExtResource("8_hole_broken")
@@ -506,7 +837,6 @@ light_color = Color(1.0, 0.45, 0.2, 1)
 light_energy = 0.0
 omni_range = 2.5
 
-
 [node name="SouthExit" type="Area3D" parent="Interactables"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 4.35)
 
@@ -514,7 +844,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 4.35)
 shape = SubResource("Shape_ExitTrigger")
 
 [node name="Prompt" type="Label3D" parent="Interactables/SouthExit"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
 billboard = 1
 text = "[E] Return to Castle Exterior"
 font_size = 26

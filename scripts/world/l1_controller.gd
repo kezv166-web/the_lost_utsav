@@ -42,31 +42,36 @@ func _ready() -> void:
 	if player:
 		var anim: AnimatedSprite3D = player.get_node_or_null("AnimatedSprite3D")
 		if anim:
-			anim.billboard = BaseMaterial3D.BILLBOARD_DISABLED
-			anim.rotation_degrees = Vector3(-90, 0, 0)
-			anim.position = Vector3(0, 0.1, 0)
-			anim.scale = Vector3(0.68, 0.68, 0.68)
-			anim.sorting_offset = 10.0
-			anim.render_priority = 5
+			anim.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
+			anim.rotation_degrees = Vector3.ZERO
+			anim.position = Vector3(0, 0.68, 0)
+			anim.scale = Vector3(0.98, 0.98, 0.98)
+			anim.sorting_offset = 2.0
+			anim.render_priority = 2
 			anim.double_sided = true
-			anim.no_depth_test = true
+			anim.no_depth_test = false
 		var col: CollisionShape3D = player.get_node_or_null("CollisionShape3D")
 		if col and col.shape is CapsuleShape3D:
 			col.shape.radius = 0.24
 			col.shape.height = 1.4
 			col.position = Vector3(0, 0.7, 0)
+		var shadow = player.get_node_or_null("DropShadow")
+		if shadow:
+			shadow.scale = Vector3(1.0, 1.0, 1.0)
+			shadow.visible = true
 
-	# Configure camera for Level 1 room view
+	# Configure camera for Level 1 2.5D oblique view
 	var rig = get_node_or_null("CameraRig")
 	if rig:
-		rig.target_offset = Vector3(0, 16, 0)
-		rig.follow_speed = 3.0
+		rig.target_offset = Vector3(0, 0, 0)
+		rig.follow_speed = 4.0
 		var pivot = rig.get_node_or_null("Pivot")
 		if pivot:
-			pivot.rotation_degrees = Vector3(-90, 0, 0)
+			pivot.rotation_degrees = Vector3(-52, 0, 0)
 			var cam: Camera3D = pivot.get_node_or_null("Camera3D")
 			if cam:
-				cam.size = 14.5
+				cam.projection = Camera3D.PROJECTION_ORTHOGONAL
+				cam.size = 17.5
 
 	if lever_prompt:
 		lever_prompt.visible = false
@@ -114,6 +119,11 @@ func _process(delta: float) -> void:
 		var base_energy = 4.5 if lever_pulled else 2.8
 		crystal_light.light_energy = base_energy + sin(pulse_time) * (1.2 if lever_pulled else 0.6)
 		
+	var crystal_mesh = get_node_or_null("Visuals3D/AltarDais/CrystalMesh")
+	if crystal_mesh:
+		crystal_mesh.rotate_y(delta * (1.4 if lever_pulled else 0.6))
+		crystal_mesh.position.y = 1.45 + sin(pulse_time * 2.0) * 0.05
+
 	if transformation_in_progress:
 		return
 		
@@ -175,10 +185,10 @@ func reveal_mouse_passage() -> void:
 	var rig = get_node_or_null("CameraRig")
 	if rig:
 		var stw = create_tween()
-		stw.tween_property(rig, "target_offset", Vector3(0.08, 16, -0.06), 0.06)
-		stw.tween_property(rig, "target_offset", Vector3(-0.08, 16, 0.06), 0.06)
-		stw.tween_property(rig, "target_offset", Vector3(0.04, 16, -0.04), 0.06)
-		stw.tween_property(rig, "target_offset", Vector3(0, 16, 0), 0.1)
+		stw.tween_property(rig, "target_offset", Vector3(0.12, 0, -0.08), 0.06)
+		stw.tween_property(rig, "target_offset", Vector3(-0.12, 0, 0.08), 0.06)
+		stw.tween_property(rig, "target_offset", Vector3(0.06, 0, -0.04), 0.06)
+		stw.tween_property(rig, "target_offset", Vector3.ZERO, 0.1)
 
 	_show_hud_message("CLANK-RUMBLE! An underground mechanism shifts.\nA hollow section of the western floor collapses, revealing a narrow mouse passage!", 5.5)
 	print("PASSED: Level 1 Lever pulled, animated down, and mouse passage revealed on left side!")
@@ -240,10 +250,11 @@ func _start_transformation_cutscene() -> void:
 	var player = get_node_or_null("Player")
 	var p_anim: AnimatedSprite3D = null
 	if player:
-		player.start_transformation()
 		p_anim = player.get_node_or_null("AnimatedSprite3D")
 		if p_anim:
 			p_anim.play("idle_up")
+		player.velocity = Vector3.ZERO
+		player.is_walking = false
 
 	# Center cutscene VFX directly onto the player's ground position
 	var cutscene_vfx = get_node_or_null("VFX/CutsceneVFX")
@@ -257,132 +268,55 @@ func _start_transformation_cutscene() -> void:
 		d_tw.tween_property(dialogue_box, "modulate:a", 1.0, 0.25)
 		
 	# =========================================================================
-	# PHASE 1 — Human Chanting (0.0 – 1.0 sec)
-	# Human clearly visible at shrine, chanting mantra, subtle golden glow & minimal particles
+	# PHASE 1 — Human Chanting (0.0 – 0.9 sec)
+	# Human facing shrine, chanting mantra, warm golden glow builds
 	# =========================================================================
 	_set_dialogue_text("“ॐ गं गणपतये नमः ...”\n“ॐ गं गणपतये नमः ...”")
 	
 	if aura_light:
 		aura_light.light_color = Color(1.0, 0.82, 0.45, 1.0)
 		aura_light.light_energy = 0.0
-		aura_light.omni_range = 1.8
+		aura_light.omni_range = 2.2
 		var tw_aura1 = create_tween()
-		tw_aura1.tween_property(aura_light, "light_energy", 0.6, 0.8)
+		tw_aura1.tween_property(aura_light, "light_energy", 0.75, 0.8)
 		
 	if divine_particles:
 		divine_particles.amount = 12
 		divine_particles.restart()
 		divine_particles.emitting = true
 
-	if om_sprite:
-		om_sprite.visible = true
-		om_sprite.modulate = Color(1.0, 1.0, 1.0, 0.0)
-		om_sprite.position = Vector3(0, 0.25, -0.8)
-		var tw_om = create_tween().set_parallel(true)
-		tw_om.tween_property(om_sprite, "modulate:a", 0.7, 0.5)
-		tw_om.tween_property(om_sprite, "position:y", 0.45, 0.8)
-
 	# =========================================================================
-	# PHASE 2 — Divine Energy (1.0 – 2.0 sec)
-	# Golden lotus hovering above player, soft golden ripple ring at feet, subtle sparkles
+	# PHASE 2 — 8-Frame Divine Transformation Sequence (0.9 – 2.5 sec)
+	# Plays all 8 frames from mouse_tranformation.png:
+	# Kneeling boy -> Golden Aura -> Divine Lotus & Mouse Form -> Mushika
 	# =========================================================================
-	get_tree().create_timer(1.0).timeout.connect(func():
+	get_tree().create_timer(0.9).timeout.connect(func():
 		_set_dialogue_text("A divine energy surrounds you...")
-		
-		# Soft ripple ring gently circling around the player's feet (Panel 4 reference)
-		if energy_ring:
-			energy_ring.visible = true
-			energy_ring.modulate = Color(1.0, 1.0, 1.0, 0.0)
-			energy_ring.scale = Vector3(0.5, 0.5, 0.5)
-			energy_ring.position = Vector3(0, 0.03, 0)
-			energy_ring.rotation_degrees = Vector3(-90, 0, 0)
-			var tw_ring = create_tween().set_parallel(true)
-			tw_ring.tween_property(energy_ring, "modulate:a", 0.7, 0.4)
-			tw_ring.tween_property(energy_ring, "scale", Vector3(0.85, 0.85, 0.85), 0.9)
-			tw_ring.tween_property(energy_ring, "rotation_degrees:y", 360.0, 1.0)
-
-		# Glowing golden lotus appears hovering gracefully above the player (Panel 4 reference)
-		if lotus_sprite:
-			lotus_sprite.visible = true
-			lotus_sprite.modulate = Color(1.0, 1.0, 1.0, 0.0)
-			lotus_sprite.position = Vector3(0, 0.25, -0.55)
-			lotus_sprite.scale = Vector3(0.3, 0.3, 0.3)
-			var tw_lotus = create_tween().set_parallel(true)
-			tw_lotus.tween_property(lotus_sprite, "modulate:a", 0.85, 0.4)
-			tw_lotus.tween_property(lotus_sprite, "scale", Vector3(0.55, 0.55, 0.55), 0.8)
-
-		# Controlled, warm local candlelight glow (strictly focused around player)
-		if aura_light:
-			var tw_aura2 = create_tween()
-			tw_aura2.tween_property(aura_light, "light_energy", 0.85, 0.6)
-
-		# Player remains fully visible with a subtle warm golden rim (NOT blown out white)
-		if p_anim:
-			var tw_pglow = create_tween()
-			tw_pglow.tween_property(p_anim, "modulate", Color(1.12, 1.08, 0.96, 1.0), 0.5)
+		if player:
+			player.start_transformation()
 	)
 
-	# =========================================================================
-	# PHASE 3 — Transformation (2.0 – 2.8 sec)
-	# Controlled golden transition: human transitions to mouse smoothly, character & shrine stay visible
-	# =========================================================================
-	get_tree().create_timer(2.0).timeout.connect(func():
+	get_tree().create_timer(1.8).timeout.connect(func():
 		_set_dialogue_text("Your form begins to change...")
-		
-		# Lotus shifts softly to the side (matching Panel 5/6 reference)
-		if lotus_sprite:
-			var tw_lotus_shift = create_tween()
-			tw_lotus_shift.tween_property(lotus_sprite, "position", Vector3(-0.35, 0.25, -0.4), 0.5)
-
-		# Gentle fade of human into warm golden silhouette (subtle, no screen flash)
-		if p_anim:
-			var tw_human = create_tween().set_parallel(true)
-			tw_human.tween_property(p_anim, "modulate", Color(1.2, 1.15, 0.9, 0.0), 0.35)
-			tw_human.tween_property(p_anim, "scale", Vector3(0.4, 0.4, 0.4), 0.35)
-
-		# Form changes cleanly into Mushika
-		get_tree().create_timer(0.35).timeout.connect(func():
-			if player:
-				player.transform_to_mouse()
-				if p_anim:
-					p_anim.modulate = Color(1.15, 1.10, 0.95, 0.0)
-					p_anim.scale = Vector3(0.45, 0.45, 0.45)
-					var tw_emerge = create_tween().set_parallel(true)
-					tw_emerge.tween_property(p_anim, "scale", Vector3(0.65, 0.65, 0.65), 0.35)
-					tw_emerge.tween_property(p_anim, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.35)
-		)
 	)
 
 	# =========================================================================
-	# PHASE 4 — Mushika Awakens (2.8 – 3.8 sec)
-	# Mouse clearly visible, shrine & map clearly visible, particles & glow softly fade away
+	# PHASE 3 — Mushika Awakens (2.5 – 3.6 sec)
+	# Transformation completes into Mushika mouse, glow gently settles
 	# =========================================================================
-	get_tree().create_timer(2.8).timeout.connect(func():
+	get_tree().create_timer(2.5).timeout.connect(func():
 		_set_dialogue_text("The divine mouse form awakens.")
+		if player and player.current_form != player.PlayerForm.MOUSE:
+			player.transform_to_mouse()
 		
-		# Particles stop emitting
 		if divine_particles:
 			divine_particles.emitting = false
-
-		# Golden lotus and ripple ring fade away gently
-		if energy_ring:
-			var tw_rout = create_tween()
-			tw_rout.tween_property(energy_ring, "modulate:a", 0.0, 0.5)
-			tw_rout.tween_callback(func(): energy_ring.visible = false)
-		if lotus_sprite:
-			var tw_lout = create_tween()
-			tw_lout.tween_property(lotus_sprite, "modulate:a", 0.0, 0.5)
-			tw_lout.tween_callback(func(): lotus_sprite.visible = false)
-		if om_sprite:
-			var tw_oout = create_tween()
-			tw_oout.tween_property(om_sprite, "modulate:a", 0.0, 0.4)
-			tw_oout.tween_callback(func(): om_sprite.visible = false)
 		if aura_light:
 			var tw_aout = create_tween()
-			tw_aout.tween_property(aura_light, "light_energy", 0.0, 0.5)
+			tw_aout.tween_property(aura_light, "light_energy", 0.0, 0.6)
 	)
 
-	get_tree().create_timer(3.3).timeout.connect(func():
+	get_tree().create_timer(3.1).timeout.connect(func():
 		_set_dialogue_text("Small form. Great purpose.")
 	)
 
