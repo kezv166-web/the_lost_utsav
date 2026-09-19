@@ -89,11 +89,17 @@ func _add_key_binding(action_name: String, primary_key: Key, secondary_key: Key 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("transform_1") or (event is InputEventKey and event.pressed and not event.is_echo() and (event.physical_keycode == KEY_1 or event.keycode == KEY_1)):
-		# If level controller is handling transformation (like in Level 1 with full cutscene), let it handle it
 		var current_sc = get_tree().current_scene if get_tree() else null
+		# If Level 1 controller handles transformation (full cutscene), defer to it
 		if current_sc and current_sc.has_method("_on_transform_key_pressed"):
 			return
-		# Otherwise direct toggle
+		# Transformation is ONLY allowed in Level 1 scenes (upper/lower l1_map)
+		# Block it in outdoor_map, l3_map, maze, and all other levels
+		var scene_path: String = current_sc.scene_file_path if current_sc else ""
+		if "/l1/" not in scene_path:
+			# Not in Level 1 — transformation is locked
+			return
+		# Fallback direct toggle (if somehow in an l1 scene without the controller)
 		if current_form == PlayerForm.HUMAN:
 			transform_to_mouse()
 		elif current_form == PlayerForm.MOUSE:
