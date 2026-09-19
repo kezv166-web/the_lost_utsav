@@ -41,6 +41,9 @@ var torch_base_energies: Array[float] = []
 
 var time_passed: float = 0.0
 
+# GLB collision helper
+var _glb_collision: Node = null
+
 func _ready() -> void:
 	_ensure_l3_textures_cleaned()
 	_setup_player()
@@ -48,6 +51,7 @@ func _ready() -> void:
 	_setup_torches()
 	_setup_interactables()
 	_setup_rocks()
+	_setup_glb_collisions()
 	_setup_ui()
 
 # -------------------------------------------------------------------------
@@ -197,6 +201,21 @@ func _setup_rocks() -> void:
 			if area:
 				area.body_entered.connect(_on_rock_area_entered.bind(rock))
 				area.body_exited.connect(_on_rock_area_exited.bind(rock))
+
+# -------------------------------------------------------------------------
+# GLB 3D Model Collision Setup
+# -------------------------------------------------------------------------
+func _setup_glb_collisions() -> void:
+	var script_res = load("res://scripts/world/l3_glb_collision.gd")
+	if not script_res:
+		push_warning("[L3] Could not load l3_glb_collision.gd")
+		return
+	_glb_collision = Node.new()
+	_glb_collision.set_script(script_res)
+	add_child(_glb_collision)
+	var arena_props = get_node_or_null("ArenaProps")
+	if arena_props:
+		_glb_collision.setup_glb_collisions(arena_props)
 
 func _setup_ui() -> void:
 	if dialogue_box:

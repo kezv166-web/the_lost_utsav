@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://ykll24g03vfm"]
+
+[ext_resource type="PackedScene" path="res://scenes/levels/l3/l3_map.tscn" id="1_l3"]
+
+[node name="TestL3Runner" type="Node3D"]
+
+[node name="L3Map" parent="." instance=ExtResource("1_l3")]
