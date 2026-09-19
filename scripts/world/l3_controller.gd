@@ -3,6 +3,7 @@ extends Node3D
 # --- Node References ---
 @onready var player: CharacterBody3D = $Player
 @onready var camera_rig: Node3D = $CameraRig
+@onready var asur: CharacterBody3D = get_node_or_null("Asur")
 
 # Interactables & Prompts
 @onready var exit_prompt: Label3D = $Interactables/SouthExit/Prompt
@@ -52,6 +53,7 @@ func _ready() -> void:
 	_setup_interactables()
 	_setup_rocks()
 	_setup_glb_collisions()
+	_setup_asur()
 	_setup_ui()
 
 # -------------------------------------------------------------------------
@@ -217,6 +219,36 @@ func _setup_glb_collisions() -> void:
 	if arena_props:
 		_glb_collision.setup_glb_collisions(arena_props)
 
+func _setup_asur() -> void:
+	if asur:
+		if asur.has_method("set_player"):
+			asur.set_player(player)
+		if asur.has_signal("boss_roared"):
+			asur.boss_roared.connect(_on_asur_roared)
+		if asur.has_signal("boss_damaged"):
+			asur.boss_damaged.connect(_on_asur_damaged)
+		if asur.has_signal("boss_defeated"):
+			asur.boss_defeated.connect(_on_asur_defeated)
+
+func _on_asur_roared() -> void:
+	if camera_rig:
+		var tw = create_tween()
+		tw.tween_property(camera_rig, "target_offset", Vector3(0.15, 1.35, -2.0), 0.05)
+		tw.tween_property(camera_rig, "target_offset", Vector3(-0.15, 1.35, -2.0), 0.05)
+		tw.tween_property(camera_rig, "target_offset", Vector3(0, 1.35, -2.0), 0.08)
+
+func _on_asur_damaged(new_hp: int) -> void:
+	if camera_rig:
+		var tw = create_tween()
+		tw.tween_property(camera_rig, "target_offset", Vector3(0.2, 1.35, -1.9), 0.06)
+		tw.tween_property(camera_rig, "target_offset", Vector3(-0.2, 1.35, -2.1), 0.06)
+		tw.tween_property(camera_rig, "target_offset", Vector3(0, 1.35, -2.0), 0.08)
+
+func _on_asur_defeated() -> void:
+	if hud_objective:
+		hud_objective.text = "★ ASUR GENERAL DEFEATED! Proceed to the Sacred Murti to claim the blessing! ★"
+		hud_objective.modulate = Color(1.0, 0.85, 0.3)
+
 func _setup_ui() -> void:
 	if dialogue_box:
 		dialogue_box.visible = false
@@ -381,6 +413,19 @@ func _on_rock_impact(rock: Node3D) -> void:
 	# Re-enable collision
 	_set_rock_collision_disabled(rock, false)
 	
+	# Check impact on Asur boss
+	if asur and is_instance_valid(asur) and asur.visible:
+		var dist = rock.global_position.distance_to(asur.global_position)
+		if dist < 2.5:
+			if asur.has_method("take_damage"):
+				asur.take_damage(1)
+				if hud_action:
+					hud_action.text = "DIRECT HIT! The Asur roars in fury!"
+					get_tree().create_timer(2.5).timeout.connect(func():
+						if is_instance_valid(hud_action) and hud_action.text == "DIRECT HIT! The Asur roars in fury!":
+							hud_action.text = ""
+					)
+
 	# Spawn dust particles
 	var dust = rock.get_node_or_null("ImpactDust")
 	if dust is CPUParticles3D:
@@ -463,6 +508,8 @@ func _on_boss_trigger_entered(body: Node3D) -> void:
 		if hud_objective:
 			hud_objective.text = "Boss Arena: Use Cover (Pillars & Walls) and Throw Rocks [C] to Stagger the Asur!"
 			hud_objective.modulate = Color(1.0, 0.45, 0.35)
+		if asur and asur.has_method("roar"):
+			asur.roar()
 
 func _on_rock_area_entered(body: Node3D, rock: Node3D) -> void:
 	if body == player and not is_instance_valid(held_rock):

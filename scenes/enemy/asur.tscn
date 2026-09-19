@@ -1,0 +1,60 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/asur.gd" id="1_asur"]
+[ext_resource type="SpriteFrames" path="res://scenes/enemy/asur_sprite_frames.tres" id="2_frames"]
+[ext_resource type="Texture2D" path="res://assets/character/drop_shadow.png" id="3_shadow"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_asur"]
+radius = 0.65
+height = 2.2
+
+[sub_resource type="Curve" id="Curve_ember"]
+_data = [Vector2(0, 0.4), 0.0, 2.0, 0, 0, Vector2(0.5, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.0, 0.0, 0, 0]
+point_count = 3
+
+[node name="Asur" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_asur")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+shape = SubResource("CapsuleShape3D_asur")
+
+[node name="DropShadow" type="Sprite3D" parent="."]
+transform = Transform3D(2.2, 0, 0, 0, -9.61651e-08, 2.2, 0, -2.2, -9.61651e-08, 0, 0.02, 0)
+modulate = Color(0, 0, 0, 0.65)
+pixel_size = 0.0125
+texture_filter = 0
+texture = ExtResource("3_shadow")
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55, 0)
+sorting_offset = 2.0
+pixel_size = 0.0135
+billboard = 2
+texture_filter = 0
+sprite_frames = ExtResource("2_frames")
+animation = &"idle_down"
+
+[node name="AuraLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0.2)
+light_color = Color(1, 0.28, 0.12, 1)
+light_energy = 1.8
+omni_range = 4.5
+
+[node name="AuraParticles" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+amount = 24
+lifetime = 1.6
+emission_shape = 2
+emission_box_extents = Vector3(0.8, 0.1, 0.8)
+direction = Vector3(0, 1, 0)
+spread = 20.0
+gravity = Vector3(0, 0.5, 0)
+initial_velocity_min = 0.6
+initial_velocity_max = 1.4
+scale_amount_min = 1.5
+scale_amount_max = 3.0
+scale_amount_curve = SubResource("Curve_ember")
+color = Color(1, 0.32, 0.1, 0.8)
