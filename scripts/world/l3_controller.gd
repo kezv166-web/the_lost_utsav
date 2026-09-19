@@ -114,8 +114,9 @@ func _setup_player() -> void:
 		anim.rotation_degrees = Vector3.ZERO
 		anim.position = Vector3(0, 0.72, 0)
 		anim.scale = Vector3(1.0, 1.0, 1.0)
-		anim.sorting_offset = 2.0
-		anim.render_priority = 2
+		anim.sorting_offset = 0.0
+		anim.render_priority = 0
+		anim.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
 		anim.double_sided = true
 		anim.no_depth_test = false
 

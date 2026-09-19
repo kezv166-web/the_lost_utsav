@@ -47,7 +47,9 @@ func _ready() -> void:
 	if anim_sprite:
 		anim_sprite.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
 		anim_sprite.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
-		anim_sprite.sorting_offset = 2.0
+		anim_sprite.sorting_offset = 0.0
+		anim_sprite.render_priority = 0
+		anim_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
 		anim_sprite.pixel_size = 0.020
 		anim_sprite.position = Vector3(0, 2.30, 0)
 	
@@ -114,6 +116,9 @@ func _on_defeated() -> void:
 	var col = get_node_or_null("CollisionShape3D")
 	if col and col is CollisionShape3D:
 		col.disabled = true
+	var hurt = get_node_or_null("Hurtbox/HurtCollision")
+	if hurt and hurt is CollisionShape3D:
+		hurt.disabled = true
 	if anim_sprite:
 		var tw = create_tween()
 		tw.tween_property(anim_sprite, "modulate:a", 0.0, 1.2)

@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/levels/l3/l3_map.tscn" id="1_l3"]
+[ext_resource type="Script" path="res://scripts/test_l3_asur.gd" id="2_test"]
+
+[node name="TestL3AsurRunner" type="Node3D"]
+
+[node name="L3Map" parent="." instance=ExtResource("1_l3")]
+
+[node name="TestHarness" type="Node" parent="."]
+script = ExtResource("2_test")
