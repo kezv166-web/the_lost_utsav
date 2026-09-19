@@ -36,6 +36,10 @@ func _ready() -> void:
 	add_to_group("enemy")
 	add_to_group("boss")
 	
+	var solid_obstacle = get_node_or_null("SolidObstacle")
+	if solid_obstacle:
+		add_collision_exception_with(solid_obstacle)
+	
 	if anim_sprite:
 		anim_sprite.animation_finished.connect(_on_animation_finished)
 	
@@ -53,8 +57,7 @@ func set_player(p: Node3D) -> void:
 	player_ref = p
 
 func _physics_process(_delta: float) -> void:
-	velocity = Vector3.ZERO
-	move_and_slide()
+	pass
 
 func _process(delta: float) -> void:
 	pulse_time += delta * 3.0
