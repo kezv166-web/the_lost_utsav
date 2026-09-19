@@ -44,38 +44,26 @@ func _ready() -> void:
 		anim_sprite.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
 		anim_sprite.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 		anim_sprite.sorting_offset = 2.0
-		anim_sprite.pixel_size = 0.0135
-		anim_sprite.position = Vector3(0, 1.55, 0)
+		anim_sprite.pixel_size = 0.020
+		anim_sprite.position = Vector3(0, 2.30, 0)
 	
 	_play_anim("idle_down")
 
 func set_player(p: Node3D) -> void:
 	player_ref = p
 
+func _physics_process(_delta: float) -> void:
+	velocity = Vector3.ZERO
+	move_and_slide()
+
 func _process(delta: float) -> void:
 	pulse_time += delta * 3.0
 	if aura_light:
-		aura_light.light_energy = 1.6 + sin(pulse_time) * 0.5
+		aura_light.light_energy = 1.8 + sin(pulse_time) * 0.5
 	
-	# Face toward player if not attacking/roaring
-	if current_state == State.IDLE and is_instance_valid(player_ref):
-		var diff = player_ref.global_position - global_position
-		if abs(diff.z) > abs(diff.x):
-			current_direction = Direction.DOWN if diff.z > 0 else Direction.UP
-		else:
-			current_direction = Direction.RIGHT if diff.x > 0 else Direction.LEFT
-		_update_idle_direction()
-
-func _update_idle_direction() -> void:
-	match current_direction:
-		Direction.DOWN:
-			_play_anim("idle_down")
-		Direction.UP:
-			_play_anim("idle_up")
-		Direction.LEFT:
-			_play_anim("idle_left")
-		Direction.RIGHT:
-			_play_anim("idle_right")
+	# Front idle is default so Asur always faces the camera
+	if current_state == State.IDLE:
+		_play_anim("idle_down")
 
 func roar() -> void:
 	if current_state == State.ROAR:
@@ -117,6 +105,12 @@ func _on_defeated() -> void:
 	emit_signal("boss_defeated")
 	if aura_particles:
 		aura_particles.emitting = false
+	var solid = get_node_or_null("SolidObstacle/SolidCollision")
+	if solid and solid is CollisionShape3D:
+		solid.disabled = true
+	var col = get_node_or_null("CollisionShape3D")
+	if col and col is CollisionShape3D:
+		col.disabled = true
 	if anim_sprite:
 		var tw = create_tween()
 		tw.tween_property(anim_sprite, "modulate:a", 0.0, 1.2)
@@ -140,4 +134,4 @@ func _get_dir_str() -> String:
 func _on_animation_finished() -> void:
 	if current_state in [State.ROAR, State.ATTACK, State.STAGGER]:
 		current_state = State.IDLE
-		_update_idle_direction()
+		_play_anim("idle_down")
