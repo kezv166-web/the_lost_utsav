@@ -32,6 +32,7 @@ var last_horizontal_facing: Direction = Direction.RIGHT
 var current_attack_type: String = ""
 var is_walking: bool = false
 var is_jumping: bool = false
+var is_carrying: bool = false
 
 var human_frames: SpriteFrames = preload("res://scenes/player/player_sprite_frames.tres")
 var mouse_frames: SpriteFrames = preload("res://scenes/player/mushika_sprite_frames.tres")
@@ -50,8 +51,8 @@ func _setup_inputs() -> void:
 	_add_key_binding("move_up", KEY_W, KEY_UP)
 	_add_key_binding("move_down", KEY_S, KEY_DOWN)
 	_add_key_binding("jump", KEY_SPACE)
-	# Attacks on K and L (and legacy Q support for axe)
-	_add_key_binding("attack_axe", KEY_K, KEY_Q)
+	# Attacks on K (axe) and L (rope) only
+	_add_key_binding("attack_axe", KEY_K)
 	_add_key_binding("attack_rope", KEY_L)
 	_add_key_binding("interact", KEY_E)
 	_add_key_binding("transform_1", KEY_1)
@@ -59,7 +60,7 @@ func _setup_inputs() -> void:
 
 func _on_animation_finished() -> void:
 	if current_state == State.ATTACKING:
-		current_state = State.IDLE_WALK
+		current_state = State.IDLE_WALK if is_on_floor() else State.JUMPING
 		current_attack_type = ""
 		_update_animation()
 
@@ -118,8 +119,8 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.y -= gravity * delta
 
-	# Combat attack triggers (allowed on ground when in human form and not already attacking)
-	if is_on_floor() and current_state != State.ATTACKING and current_form == PlayerForm.HUMAN:
+	# Combat attack triggers (allowed on ground or airborne when in human form and not already attacking)
+	if current_state != State.ATTACKING and current_form == PlayerForm.HUMAN:
 		if Input.is_action_just_pressed("attack_axe"):
 			current_state = State.ATTACKING
 			current_attack_type = "axe"
@@ -132,9 +133,14 @@ func _physics_process(delta: float) -> void:
 			_play_attack_animation()
 
 	if current_state == State.ATTACKING:
-		# Smoothly decelerate into the strike
-		velocity.x = move_toward(velocity.x, 0.0, friction * delta)
-		velocity.z = move_toward(velocity.z, 0.0, friction * delta)
+		if is_on_floor():
+			# Smoothly decelerate into the strike on ground
+			velocity.x = move_toward(velocity.x, 0.0, friction * delta)
+			velocity.z = move_toward(velocity.z, 0.0, friction * delta)
+		else:
+			# Mid-air attack: preserve momentum with slight air resistance
+			velocity.x = move_toward(velocity.x, 0.0, friction * 0.25 * delta)
+			velocity.z = move_toward(velocity.z, 0.0, friction * 0.25 * delta)
 	else:
 		# 2.5D X/Z plane movement
 		var input_vec = Input.get_vector("move_left", "move_right", "move_up", "move_down")
@@ -170,16 +176,20 @@ func _physics_process(delta: float) -> void:
 func _play_attack_animation() -> void:
 	if not anim_sprite:
 		return
-	var facing_str: String = "right"
-	if current_direction == Direction.LEFT:
-		facing_str = "left"
-	elif current_direction == Direction.RIGHT:
-		facing_str = "right"
-	else:
-		# Up or Down facing: strike in the last horizontal direction
-		facing_str = "left" if last_horizontal_facing == Direction.LEFT else "right"
+	var dir_str: String
+	match current_direction:
+		Direction.LEFT:
+			dir_str = "left"
+		Direction.RIGHT:
+			dir_str = "right"
+		Direction.UP, Direction.DOWN:
+			dir_str = "left" if last_horizontal_facing == Direction.LEFT else "right"
 
-	var anim_name = "attack_" + current_attack_type + "_" + facing_str
+	var anim_name = "attack_" + current_attack_type + "_" + dir_str
+	if anim_sprite.sprite_frames and not anim_sprite.sprite_frames.has_animation(anim_name):
+		var fallback_dir = "left" if (current_direction == Direction.LEFT or last_horizontal_facing == Direction.LEFT) else "right"
+		anim_name = "attack_" + current_attack_type + "_" + fallback_dir
+
 	anim_sprite.speed_scale = 1.0
 	anim_sprite.play(anim_name)
 
@@ -199,7 +209,10 @@ func _update_animation() -> void:
 			dir_str = "right"
 			
 	var target_anim: String
-	if not is_on_floor() or is_jumping:
+	if is_carrying and anim_sprite.sprite_frames and anim_sprite.sprite_frames.has_animation("carry_rock"):
+		target_anim = "carry_rock"
+		anim_sprite.speed_scale = 1.0
+	elif not is_on_floor() or is_jumping:
 		if anim_sprite.sprite_frames and anim_sprite.sprite_frames.has_animation("jump_" + dir_str):
 			target_anim = "jump_" + dir_str
 		else:

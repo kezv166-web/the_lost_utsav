@@ -1,122 +1,57 @@
-[gd_resource type="SpriteFrames" load_steps=49 format=3]
+[gd_resource type="SpriteFrames" format=3 uid="uid://86yn3qrtvk5g"]
 
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_idle_down_0.png" id="1_mouse_idle_down_0"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_idle_down_1.png" id="2_mouse_idle_down_1"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_idle_down_2.png" id="3_mouse_idle_down_2"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_idle_down_3.png" id="4_mouse_idle_down_3"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_down_0.png" id="5_mouse_walk_down_0"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_down_1.png" id="6_mouse_walk_down_1"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_down_2.png" id="7_mouse_walk_down_2"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_down_3.png" id="8_mouse_walk_down_3"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_down_4.png" id="9_mouse_walk_down_4"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_down_5.png" id="10_mouse_walk_down_5"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_idle_up_0.png" id="11_mouse_idle_up_0"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_idle_up_1.png" id="12_mouse_idle_up_1"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_idle_up_2.png" id="13_mouse_idle_up_2"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_idle_up_3.png" id="14_mouse_idle_up_3"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_up_0.png" id="15_mouse_walk_up_0"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_up_1.png" id="16_mouse_walk_up_1"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_up_2.png" id="17_mouse_walk_up_2"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_up_3.png" id="18_mouse_walk_up_3"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_up_4.png" id="19_mouse_walk_up_4"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_up_5.png" id="20_mouse_walk_up_5"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_idle_left_0.png" id="21_mouse_idle_left_0"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_idle_left_1.png" id="22_mouse_idle_left_1"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_idle_left_2.png" id="23_mouse_idle_left_2"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_idle_left_3.png" id="24_mouse_idle_left_3"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_left_0.png" id="25_mouse_walk_left_0"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_left_1.png" id="26_mouse_walk_left_1"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_left_2.png" id="27_mouse_walk_left_2"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_left_3.png" id="28_mouse_walk_left_3"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_left_4.png" id="29_mouse_walk_left_4"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_left_5.png" id="30_mouse_walk_left_5"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_idle_right_0.png" id="31_mouse_idle_right_0"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_idle_right_1.png" id="32_mouse_idle_right_1"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_idle_right_2.png" id="33_mouse_idle_right_2"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_idle_right_3.png" id="34_mouse_idle_right_3"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_right_0.png" id="35_mouse_walk_right_0"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_right_1.png" id="36_mouse_walk_right_1"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_right_2.png" id="37_mouse_walk_right_2"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_right_3.png" id="38_mouse_walk_right_3"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_right_4.png" id="39_mouse_walk_right_4"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/frames/mouse_walk_right_5.png" id="40_mouse_walk_right_5"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/transformation/mushika_transform_0.png" id="41_mushika_transform_0"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/transformation/mushika_transform_1.png" id="42_mushika_transform_1"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/transformation/mushika_transform_2.png" id="43_mushika_transform_2"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/transformation/mushika_transform_3.png" id="44_mushika_transform_3"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/transformation/mushika_transform_4.png" id="45_mushika_transform_4"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/transformation/mushika_transform_5.png" id="46_mushika_transform_5"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/transformation/mushika_transform_6.png" id="47_mushika_transform_6"]
-[ext_resource type="Texture2D" path="res://assets/character/mushika/transformation/mushika_transform_7.png" id="48_mushika_transform_7"]
+[ext_resource type="Texture2D" uid="uid://1cyta7sya3uh" path="res://assets/character/mushika/frames/mouse_idle_down_0.png" id="1_mouse_idle_down_0"]
+[ext_resource type="Texture2D" uid="uid://8jvafudqflpa" path="res://assets/character/mushika/frames/mouse_idle_down_1.png" id="2_mouse_idle_down_1"]
+[ext_resource type="Texture2D" uid="uid://c5h5xkqb4vjrf" path="res://assets/character/mushika/frames/mouse_idle_down_2.png" id="3_mouse_idle_down_2"]
+[ext_resource type="Texture2D" uid="uid://bany1xrvp505g" path="res://assets/character/mushika/frames/mouse_idle_down_3.png" id="4_mouse_idle_down_3"]
+[ext_resource type="Texture2D" uid="uid://dho6n82vwfe6n" path="res://assets/character/mushika/frames/mouse_walk_down_0.png" id="5_mouse_walk_down_0"]
+[ext_resource type="Texture2D" uid="uid://deyh247vuoksi" path="res://assets/character/mushika/frames/mouse_walk_down_1.png" id="6_mouse_walk_down_1"]
+[ext_resource type="Texture2D" uid="uid://b1kgh8f0l5h3l" path="res://assets/character/mushika/frames/mouse_walk_down_2.png" id="7_mouse_walk_down_2"]
+[ext_resource type="Texture2D" uid="uid://vl8mlxwip3jx" path="res://assets/character/mushika/frames/mouse_walk_down_3.png" id="8_mouse_walk_down_3"]
+[ext_resource type="Texture2D" uid="uid://brdy33m46uagw" path="res://assets/character/mushika/frames/mouse_walk_down_4.png" id="9_mouse_walk_down_4"]
+[ext_resource type="Texture2D" uid="uid://b1m6q6fsx08r6" path="res://assets/character/mushika/frames/mouse_walk_down_5.png" id="10_mouse_walk_down_5"]
+[ext_resource type="Texture2D" uid="uid://cvmtf22estq82" path="res://assets/character/mushika/frames/mouse_idle_up_0.png" id="11_mouse_idle_up_0"]
+[ext_resource type="Texture2D" uid="uid://d03xnpudxhddi" path="res://assets/character/mushika/frames/mouse_idle_up_1.png" id="12_mouse_idle_up_1"]
+[ext_resource type="Texture2D" uid="uid://cd0kvi1kmhqon" path="res://assets/character/mushika/frames/mouse_idle_up_2.png" id="13_mouse_idle_up_2"]
+[ext_resource type="Texture2D" uid="uid://ds3hanxccl25j" path="res://assets/character/mushika/frames/mouse_idle_up_3.png" id="14_mouse_idle_up_3"]
+[ext_resource type="Texture2D" uid="uid://dasltyacbqyk0" path="res://assets/character/mushika/frames/mouse_walk_up_0.png" id="15_mouse_walk_up_0"]
+[ext_resource type="Texture2D" uid="uid://bsqsvqg5bea5o" path="res://assets/character/mushika/frames/mouse_walk_up_1.png" id="16_mouse_walk_up_1"]
+[ext_resource type="Texture2D" uid="uid://bd4k7cpmq8hw0" path="res://assets/character/mushika/frames/mouse_walk_up_2.png" id="17_mouse_walk_up_2"]
+[ext_resource type="Texture2D" uid="uid://ql0y4oo4end8" path="res://assets/character/mushika/frames/mouse_walk_up_3.png" id="18_mouse_walk_up_3"]
+[ext_resource type="Texture2D" uid="uid://bdwi045hkohee" path="res://assets/character/mushika/frames/mouse_walk_up_4.png" id="19_mouse_walk_up_4"]
+[ext_resource type="Texture2D" uid="uid://ds2iwxweyayb6" path="res://assets/character/mushika/frames/mouse_walk_up_5.png" id="20_mouse_walk_up_5"]
+[ext_resource type="Texture2D" uid="uid://xpr4tat5yhg3" path="res://assets/character/mushika/frames/mouse_idle_left_0.png" id="21_mouse_idle_left_0"]
+[ext_resource type="Texture2D" uid="uid://c286v2fkxqgip" path="res://assets/character/mushika/frames/mouse_idle_left_1.png" id="22_mouse_idle_left_1"]
+[ext_resource type="Texture2D" uid="uid://ck1r473hnsnku" path="res://assets/character/mushika/frames/mouse_idle_left_2.png" id="23_mouse_idle_left_2"]
+[ext_resource type="Texture2D" uid="uid://bptyqljvrlnjf" path="res://assets/character/mushika/frames/mouse_idle_left_3.png" id="24_mouse_idle_left_3"]
+[ext_resource type="Texture2D" uid="uid://dlpsie2vth07y" path="res://assets/character/mushika/frames/mouse_walk_left_0.png" id="25_mouse_walk_left_0"]
+[ext_resource type="Texture2D" uid="uid://dp1ebb2rjl4an" path="res://assets/character/mushika/frames/mouse_walk_left_1.png" id="26_mouse_walk_left_1"]
+[ext_resource type="Texture2D" uid="uid://bapkts2b72w26" path="res://assets/character/mushika/frames/mouse_walk_left_2.png" id="27_mouse_walk_left_2"]
+[ext_resource type="Texture2D" uid="uid://dt5qvw6w1qmv7" path="res://assets/character/mushika/frames/mouse_walk_left_3.png" id="28_mouse_walk_left_3"]
+[ext_resource type="Texture2D" uid="uid://6hyylv35ta8q" path="res://assets/character/mushika/frames/mouse_walk_left_4.png" id="29_mouse_walk_left_4"]
+[ext_resource type="Texture2D" uid="uid://b8nsrbbpvwc7j" path="res://assets/character/mushika/frames/mouse_walk_left_5.png" id="30_mouse_walk_left_5"]
+[ext_resource type="Texture2D" uid="uid://ckxj60n0wcg7d" path="res://assets/character/mushika/frames/mouse_idle_right_0.png" id="31_mouse_idle_right_0"]
+[ext_resource type="Texture2D" uid="uid://cb8abri4u4b36" path="res://assets/character/mushika/frames/mouse_idle_right_1.png" id="32_mouse_idle_right_1"]
+[ext_resource type="Texture2D" uid="uid://ixdfhqfby33s" path="res://assets/character/mushika/frames/mouse_idle_right_2.png" id="33_mouse_idle_right_2"]
+[ext_resource type="Texture2D" uid="uid://bv3oag4ypqhif" path="res://assets/character/mushika/frames/mouse_idle_right_3.png" id="34_mouse_idle_right_3"]
+[ext_resource type="Texture2D" uid="uid://drwi1pskr33p4" path="res://assets/character/mushika/frames/mouse_walk_right_0.png" id="35_mouse_walk_right_0"]
+[ext_resource type="Texture2D" uid="uid://bxh42hxl1agtw" path="res://assets/character/mushika/frames/mouse_walk_right_1.png" id="36_mouse_walk_right_1"]
+[ext_resource type="Texture2D" uid="uid://db0utgn7178w7" path="res://assets/character/mushika/frames/mouse_walk_right_2.png" id="37_mouse_walk_right_2"]
+[ext_resource type="Texture2D" uid="uid://vwh8g0qh16dy" path="res://assets/character/mushika/frames/mouse_walk_right_3.png" id="38_mouse_walk_right_3"]
+[ext_resource type="Texture2D" uid="uid://c2twygoya5nmm" path="res://assets/character/mushika/frames/mouse_walk_right_4.png" id="39_mouse_walk_right_4"]
+[ext_resource type="Texture2D" uid="uid://dtiqec3u75st5" path="res://assets/character/mushika/frames/mouse_walk_right_5.png" id="40_mouse_walk_right_5"]
+[ext_resource type="Texture2D" uid="uid://drsx53ga1twf7" path="res://assets/character/mushika/transformation/mushika_transform_0.png" id="41_mushika_transform_0"]
+[ext_resource type="Texture2D" uid="uid://cej62f6mgh4nu" path="res://assets/character/mushika/transformation/mushika_transform_1.png" id="42_mushika_transform_1"]
+[ext_resource type="Texture2D" uid="uid://c2breyemjs5to" path="res://assets/character/mushika/transformation/mushika_transform_2.png" id="43_mushika_transform_2"]
+[ext_resource type="Texture2D" uid="uid://c57a87rlnaag2" path="res://assets/character/mushika/transformation/mushika_transform_3.png" id="44_mushika_transform_3"]
+[ext_resource type="Texture2D" uid="uid://b2g2baiw8syir" path="res://assets/character/mushika/transformation/mushika_transform_4.png" id="45_mushika_transform_4"]
+[ext_resource type="Texture2D" uid="uid://chv1e3xjxdbax" path="res://assets/character/mushika/transformation/mushika_transform_5.png" id="46_mushika_transform_5"]
+[ext_resource type="Texture2D" uid="uid://ltkag45onl8m" path="res://assets/character/mushika/transformation/mushika_transform_6.png" id="47_mushika_transform_6"]
+[ext_resource type="Texture2D" uid="uid://cupi03l26j4ny" path="res://assets/character/mushika/transformation/mushika_transform_7.png" id="48_mushika_transform_7"]
 
 [resource]
-animations = [
-{
-"frames": [
-{
-"duration": 1.0,
-"texture": ExtResource("1_mouse_idle_down_0")
-}, {
-"duration": 1.0,
-"texture": ExtResource("2_mouse_idle_down_1")
-}, {
-"duration": 1.0,
-"texture": ExtResource("3_mouse_idle_down_2")
-}, {
-"duration": 1.0,
-"texture": ExtResource("4_mouse_idle_down_3")
-}
-],
-"loop": true,
-"name": &"idle_down",
-"speed": 6.0
-}, {
-"frames": [
-{
-"duration": 1.0,
-"texture": ExtResource("5_mouse_walk_down_0")
-}, {
-"duration": 1.0,
-"texture": ExtResource("6_mouse_walk_down_1")
-}, {
-"duration": 1.0,
-"texture": ExtResource("7_mouse_walk_down_2")
-}, {
-"duration": 1.0,
-"texture": ExtResource("8_mouse_walk_down_3")
-}, {
-"duration": 1.0,
-"texture": ExtResource("9_mouse_walk_down_4")
-}, {
-"duration": 1.0,
-"texture": ExtResource("10_mouse_walk_down_5")
-}
-],
-"loop": true,
-"name": &"walk_down",
-"speed": 8.0
-}, {
-"frames": [
-{
-"duration": 1.0,
-"texture": ExtResource("11_mouse_idle_up_0")
-}, {
-"duration": 1.0,
-"texture": ExtResource("12_mouse_idle_up_1")
-}, {
-"duration": 1.0,
-"texture": ExtResource("13_mouse_idle_up_2")
-}, {
-"duration": 1.0,
-"texture": ExtResource("14_mouse_idle_up_3")
-}
-],
-"loop": true,
-"name": &"idle_up",
-"speed": 6.0
-}, {
-"frames": [
-{
+animations = [{
+"frames": [{
 "duration": 1.0,
 "texture": ExtResource("15_mouse_walk_up_0")
 }, {
@@ -128,20 +63,29 @@ animations = [
 }, {
 "duration": 1.0,
 "texture": ExtResource("18_mouse_walk_up_3")
+}],
+"loop": 0,
+"name": &"enter_passage",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_mouse_idle_down_0")
 }, {
 "duration": 1.0,
-"texture": ExtResource("19_mouse_walk_up_4")
+"texture": ExtResource("2_mouse_idle_down_1")
 }, {
 "duration": 1.0,
-"texture": ExtResource("20_mouse_walk_up_5")
-}
-],
-"loop": true,
-"name": &"walk_up",
-"speed": 8.0
+"texture": ExtResource("3_mouse_idle_down_2")
 }, {
-"frames": [
-{
+"duration": 1.0,
+"texture": ExtResource("4_mouse_idle_down_3")
+}],
+"loop": 1,
+"name": &"idle_down",
+"speed": 6.0
+}, {
+"frames": [{
 "duration": 1.0,
 "texture": ExtResource("21_mouse_idle_left_0")
 }, {
@@ -153,39 +97,12 @@ animations = [
 }, {
 "duration": 1.0,
 "texture": ExtResource("24_mouse_idle_left_3")
-}
-],
-"loop": true,
+}],
+"loop": 1,
 "name": &"idle_left",
 "speed": 6.0
 }, {
-"frames": [
-{
-"duration": 1.0,
-"texture": ExtResource("25_mouse_walk_left_0")
-}, {
-"duration": 1.0,
-"texture": ExtResource("26_mouse_walk_left_1")
-}, {
-"duration": 1.0,
-"texture": ExtResource("27_mouse_walk_left_2")
-}, {
-"duration": 1.0,
-"texture": ExtResource("28_mouse_walk_left_3")
-}, {
-"duration": 1.0,
-"texture": ExtResource("29_mouse_walk_left_4")
-}, {
-"duration": 1.0,
-"texture": ExtResource("30_mouse_walk_left_5")
-}
-],
-"loop": true,
-"name": &"walk_left",
-"speed": 8.0
-}, {
-"frames": [
-{
+"frames": [{
 "duration": 1.0,
 "texture": ExtResource("31_mouse_idle_right_0")
 }, {
@@ -197,39 +114,29 @@ animations = [
 }, {
 "duration": 1.0,
 "texture": ExtResource("34_mouse_idle_right_3")
-}
-],
-"loop": true,
+}],
+"loop": 1,
 "name": &"idle_right",
 "speed": 6.0
 }, {
-"frames": [
-{
+"frames": [{
 "duration": 1.0,
-"texture": ExtResource("35_mouse_walk_right_0")
+"texture": ExtResource("11_mouse_idle_up_0")
 }, {
 "duration": 1.0,
-"texture": ExtResource("36_mouse_walk_right_1")
+"texture": ExtResource("12_mouse_idle_up_1")
 }, {
 "duration": 1.0,
-"texture": ExtResource("37_mouse_walk_right_2")
+"texture": ExtResource("13_mouse_idle_up_2")
 }, {
 "duration": 1.0,
-"texture": ExtResource("38_mouse_walk_right_3")
+"texture": ExtResource("14_mouse_idle_up_3")
+}],
+"loop": 1,
+"name": &"idle_up",
+"speed": 6.0
 }, {
-"duration": 1.0,
-"texture": ExtResource("39_mouse_walk_right_4")
-}, {
-"duration": 1.0,
-"texture": ExtResource("40_mouse_walk_right_5")
-}
-],
-"loop": true,
-"name": &"walk_right",
-"speed": 8.0
-}, {
-"frames": [
-{
+"frames": [{
 "duration": 1.0,
 "texture": ExtResource("41_mushika_transform_0")
 }, {
@@ -253,14 +160,81 @@ animations = [
 }, {
 "duration": 1.0,
 "texture": ExtResource("48_mushika_transform_7")
-}
-],
-"loop": false,
+}],
+"loop": 0,
 "name": &"transform",
 "speed": 5.0
 }, {
-"frames": [
-{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_mouse_walk_down_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_mouse_walk_down_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_mouse_walk_down_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_mouse_walk_down_3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_mouse_walk_down_4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_mouse_walk_down_5")
+}],
+"loop": 1,
+"name": &"walk_down",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("25_mouse_walk_left_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_mouse_walk_left_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27_mouse_walk_left_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("28_mouse_walk_left_3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_mouse_walk_left_4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30_mouse_walk_left_5")
+}],
+"loop": 1,
+"name": &"walk_left",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("35_mouse_walk_right_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("36_mouse_walk_right_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("37_mouse_walk_right_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("38_mouse_walk_right_3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("39_mouse_walk_right_4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("40_mouse_walk_right_5")
+}],
+"loop": 1,
+"name": &"walk_right",
+"speed": 8.0
+}, {
+"frames": [{
 "duration": 1.0,
 "texture": ExtResource("15_mouse_walk_up_0")
 }, {
@@ -272,10 +246,14 @@ animations = [
 }, {
 "duration": 1.0,
 "texture": ExtResource("18_mouse_walk_up_3")
-}
-],
-"loop": false,
-"name": &"enter_passage",
-"speed": 6.0
-}
-]
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_mouse_walk_up_4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_mouse_walk_up_5")
+}],
+"loop": 1,
+"name": &"walk_up",
+"speed": 8.0
+}]

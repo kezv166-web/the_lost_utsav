@@ -243,23 +243,41 @@ func _physics_process(delta: float) -> void:
 
 	# 3. Update held rock position
 	if is_instance_valid(held_rock) and is_instance_valid(player):
-		held_rock.global_position = player.global_position + Vector3(0, 1.4, 0)
+		held_rock.global_position = player.global_position + Vector3(0, 1.45, 0)
+		if "is_carrying" in player and not player.is_carrying:
+			player.is_carrying = true
+
+	# 4. Proximity detection for nearby rocks
+	if not is_instance_valid(held_rock) and is_instance_valid(player):
+		var closest_rock: Node3D = null
+		var min_dist: float = 2.4
+		var rocks_parent = get_node_or_null("ArenaProps/MovableRocks")
+		if rocks_parent:
+			for rock in rocks_parent.get_children():
+				if rock is Node3D and rock != held_rock:
+					var dist = player.global_position.distance_to(rock.global_position)
+					if dist < min_dist:
+						min_dist = dist
+						closest_rock = rock
+
+		if closest_rock != nearby_rock:
+			if is_instance_valid(nearby_rock):
+				var old_prompt = nearby_rock.get_node_or_null("Prompt")
+				if old_prompt:
+					old_prompt.visible = false
+			nearby_rock = closest_rock
+			if is_instance_valid(nearby_rock):
+				var new_prompt = nearby_rock.get_node_or_null("Prompt")
+				if new_prompt:
+					new_prompt.visible = true
+					new_prompt.text = "[C] Grab Rock"
 
 # -------------------------------------------------------------------------
 # Input Handling
 # -------------------------------------------------------------------------
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("interact") or (event is InputEventKey and event.pressed and not event.is_echo() and event.physical_keycode == KEY_E):
-		# If holding a rock, drop or throw it
-		if is_instance_valid(held_rock):
-			_throw_held_rock()
-			return
-
-		# Grab nearby rock
-		if is_instance_valid(nearby_rock) and not is_instance_valid(held_rock):
-			_grab_rock(nearby_rock)
-			return
-
+	# Altar blessing and South Exit use KEY_E
+	if event.is_action_pressed("interact") or (event is InputEventKey and event.pressed and not event.is_echo() and (event.physical_keycode == KEY_E or event.keycode == KEY_E)):
 		# Pray at Altar
 		if player_near_altar and not blessing_in_progress:
 			_reclaim_blessing()
@@ -270,14 +288,31 @@ func _unhandled_input(event: InputEvent) -> void:
 			_trigger_exit()
 			return
 
-	# Throw with attack key while carrying rock
+	# Rock pickup / throw with C key
+	var is_c_pressed = (event is InputEventKey and event.pressed and not event.is_echo() and (event.physical_keycode == KEY_C or event.keycode == KEY_C))
+	if is_c_pressed:
+		if is_instance_valid(held_rock):
+			_throw_held_rock()
+			return
+		elif is_instance_valid(nearby_rock) and not is_instance_valid(held_rock):
+			_grab_rock(nearby_rock)
+			return
+
+	# Throw with attack key while carrying rock (K or L or Space) - NO Q!
 	if is_instance_valid(held_rock):
-		if event.is_action_pressed("attack_axe") or event.is_action_pressed("attack_rope") or (event is InputEventKey and event.pressed and (event.physical_keycode in [KEY_K, KEY_L, KEY_Q, KEY_SPACE])):
+		if event.is_action_pressed("attack_axe") or event.is_action_pressed("attack_rope") or (event is InputEventKey and event.pressed and not event.is_echo() and (event.physical_keycode in [KEY_K, KEY_L, KEY_SPACE] or event.keycode in [KEY_K, KEY_L, KEY_SPACE])):
 			_throw_held_rock()
 
 # -------------------------------------------------------------------------
 # Rock Grab & Throw Mechanics (DODGE • GRAB • THROW • STRIKE)
 # -------------------------------------------------------------------------
+func _set_rock_collision_disabled(rock: Node3D, disabled: bool) -> void:
+	if not is_instance_valid(rock):
+		return
+	for child in rock.get_children():
+		if child is CollisionShape3D:
+			child.disabled = disabled
+
 func _grab_rock(rock: Node3D) -> void:
 	held_rock = rock
 	nearby_rock = null
@@ -285,13 +320,14 @@ func _grab_rock(rock: Node3D) -> void:
 	if prompt:
 		prompt.visible = false
 	
-	# Disable rock collision while holding
-	var col = rock.get_node_or_null("CollisionShape3D")
-	if col:
-		col.disabled = true
+	# Disable rock collision while holding (both CollisionShape3D and GLBCollision)
+	_set_rock_collision_disabled(rock, true)
+	
+	if "is_carrying" in player:
+		player.is_carrying = true
 	
 	if hud_action:
-		hud_action.text = "[E / Attack] Throw Rock!"
+		hud_action.text = "[C / Attack] Throw Rock!"
 
 func _throw_held_rock() -> void:
 	if not is_instance_valid(held_rock) or not is_instance_valid(player):
@@ -301,6 +337,9 @@ func _throw_held_rock() -> void:
 	held_rock = null
 	if nearby_rock == rock:
 		nearby_rock = null
+	
+	if "is_carrying" in player:
+		player.is_carrying = false
 	
 	if hud_action:
 		hud_action.text = ""
@@ -318,8 +357,8 @@ func _throw_held_rock() -> void:
 			player.Direction.RIGHT:
 				throw_dir = Vector3(1, 0, 0)
 	
-	var start_pos = player.global_position + Vector3(0, 1.2, 0)
-	var target_pos = start_pos + throw_dir * 6.5
+	var start_pos = player.global_position + Vector3(0, 1.45, 0)
+	var target_pos = start_pos + throw_dir * 7.0
 	target_pos.y = 0.35
 
 	# Smooth ballistic arc tween
@@ -340,9 +379,7 @@ func _on_rock_impact(rock: Node3D) -> void:
 	if not is_instance_valid(rock):
 		return
 	# Re-enable collision
-	var col = rock.get_node_or_null("CollisionShape3D")
-	if col:
-		col.disabled = false
+	_set_rock_collision_disabled(rock, false)
 	
 	# Spawn dust particles
 	var dust = rock.get_node_or_null("ImpactDust")
@@ -424,7 +461,7 @@ func _on_boss_trigger_entered(body: Node3D) -> void:
 	if body == player and not boss_encounter_started:
 		boss_encounter_started = true
 		if hud_objective:
-			hud_objective.text = "Boss Arena: Use Cover (Pillars & Walls) and Throw Rocks [E] to Stagger the Asur!"
+			hud_objective.text = "Boss Arena: Use Cover (Pillars & Walls) and Throw Rocks [C] to Stagger the Asur!"
 			hud_objective.modulate = Color(1.0, 0.45, 0.35)
 
 func _on_rock_area_entered(body: Node3D, rock: Node3D) -> void:

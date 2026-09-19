@@ -105,6 +105,9 @@ size = Vector3(1.5, 1.8, 1.2)
 [sub_resource type="SphereShape3D" id="Shape_Rock"]
 radius = 0.42
 
+[sub_resource type="SphereShape3D" id="Shape_RockInteract"]
+radius = 2.4
+
 [sub_resource type="StyleBoxFlat" id="StyleBox_Dialogue"]
 bg_color = Color(0.08, 0.06, 0.12, 0.95)
 border_width_left = 3
@@ -699,13 +702,13 @@ texture = ExtResource("7_shadow")
 [node name="InteractArea" type="Area3D" parent="ArenaProps/MovableRocks/Rock1" unique_id=1809369053]
 
 [node name="Col" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock1/InteractArea" unique_id=1025495277]
-shape = SubResource("Shape_Rock")
+shape = SubResource("Shape_RockInteract")
 
 [node name="Prompt" type="Label3D" parent="ArenaProps/MovableRocks/Rock1" unique_id=1659838601]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 visible = false
 billboard = 1
-text = "[E] Grab Rock"
+text = "[C] Grab Rock"
 font_size = 22
 outline_size = 4
 
@@ -743,13 +746,13 @@ texture = ExtResource("7_shadow")
 [node name="InteractArea" type="Area3D" parent="ArenaProps/MovableRocks/Rock2" unique_id=869928624]
 
 [node name="Col" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock2/InteractArea" unique_id=1264178706]
-shape = SubResource("Shape_Rock")
+shape = SubResource("Shape_RockInteract")
 
 [node name="Prompt" type="Label3D" parent="ArenaProps/MovableRocks/Rock2" unique_id=243841454]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 visible = false
 billboard = 1
-text = "[E] Grab Rock"
+text = "[C] Grab Rock"
 font_size = 22
 outline_size = 4
 
@@ -789,13 +792,13 @@ texture = ExtResource("7_shadow")
 [node name="InteractArea" type="Area3D" parent="ArenaProps/MovableRocks/Rock3" unique_id=142456126]
 
 [node name="Col" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock3/InteractArea" unique_id=842753029]
-shape = SubResource("Shape_Rock")
+shape = SubResource("Shape_RockInteract")
 
 [node name="Prompt" type="Label3D" parent="ArenaProps/MovableRocks/Rock3" unique_id=1744598570]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 visible = false
 billboard = 1
-text = "[E] Grab Rock"
+text = "[C] Grab Rock"
 font_size = 22
 outline_size = 4
 
@@ -835,13 +838,13 @@ texture = ExtResource("7_shadow")
 [node name="InteractArea" type="Area3D" parent="ArenaProps/MovableRocks/Rock4" unique_id=2069327259]
 
 [node name="Col" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock4/InteractArea" unique_id=1421725321]
-shape = SubResource("Shape_Rock")
+shape = SubResource("Shape_RockInteract")
 
 [node name="Prompt" type="Label3D" parent="ArenaProps/MovableRocks/Rock4" unique_id=964863390]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 visible = false
 billboard = 1
-text = "[E] Grab Rock"
+text = "[C] Grab Rock"
 font_size = 22
 outline_size = 4
 
@@ -881,13 +884,13 @@ texture = ExtResource("7_shadow")
 [node name="InteractArea" type="Area3D" parent="ArenaProps/MovableRocks/Rock5" unique_id=221681127]
 
 [node name="Col" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock5/InteractArea" unique_id=168419696]
-shape = SubResource("Shape_Rock")
+shape = SubResource("Shape_RockInteract")
 
 [node name="Prompt" type="Label3D" parent="ArenaProps/MovableRocks/Rock5" unique_id=1201401279]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 visible = false
 billboard = 1
-text = "[E] Grab Rock"
+text = "[C] Grab Rock"
 font_size = 22
 outline_size = 4
 
@@ -927,13 +930,13 @@ texture = ExtResource("7_shadow")
 [node name="InteractArea" type="Area3D" parent="ArenaProps/MovableRocks/Rock6" unique_id=1746214840]
 
 [node name="Col" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock6/InteractArea" unique_id=1613998889]
-shape = SubResource("Shape_Rock")
+shape = SubResource("Shape_RockInteract")
 
 [node name="Prompt" type="Label3D" parent="ArenaProps/MovableRocks/Rock6" unique_id=1776096130]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 visible = false
 billboard = 1
-text = "[E] Grab Rock"
+text = "[C] Grab Rock"
 font_size = 22
 outline_size = 4
 
