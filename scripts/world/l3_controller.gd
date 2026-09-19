@@ -80,40 +80,6 @@ func _ensure_l3_textures_cleaned() -> void:
 				var clean_tileset = Image.create_from_data(w, h, false, Image.FORMAT_RGBA8, data)
 				clean_tileset.save_png(tileset_global)
 
-	# Clean all sliced assets in res://assets/environment/l3/
-	var l3_dir_global = ProjectSettings.globalize_path("res://assets/environment/l3")
-	if DirAccess.dir_exists_absolute(l3_dir_global):
-		var dir = DirAccess.open(l3_dir_global)
-		if dir:
-			dir.list_dir_begin()
-			var file_name = dir.get_next()
-			while file_name != "":
-				if not dir.current_is_dir() and file_name.ends_with(".png"):
-					var full_path = l3_dir_global + "/" + file_name
-					var asset_img = Image.load_from_file(full_path)
-					if asset_img and not asset_img.is_empty():
-						var aw = asset_img.get_width()
-						var ah = asset_img.get_height()
-						var modified = false
-						# Ensure all 4 borders are 100% transparent
-						for x in range(aw):
-							if asset_img.get_pixel(x, 0).a > 0:
-								asset_img.set_pixel(x, 0, Color(0, 0, 0, 0))
-								modified = true
-							if asset_img.get_pixel(x, ah - 1).a > 0:
-								asset_img.set_pixel(x, ah - 1, Color(0, 0, 0, 0))
-								modified = true
-						for y in range(ah):
-							if asset_img.get_pixel(0, y).a > 0:
-								asset_img.set_pixel(0, y, Color(0, 0, 0, 0))
-								modified = true
-							if asset_img.get_pixel(aw - 1, y).a > 0:
-								asset_img.set_pixel(aw - 1, y, Color(0, 0, 0, 0))
-								modified = true
-						if modified:
-							asset_img.save_png(full_path)
-				file_name = dir.get_next()
-
 	# Ensure nearest filtering on all Sprite3D nodes to prevent edge bleeding
 	_apply_clean_sprite_settings(self)
 
@@ -168,8 +134,8 @@ func _setup_camera() -> void:
 		camera_rig.follow_speed = 5.0
 		camera_rig.min_x = -3.5
 		camera_rig.max_x = 3.5
-		camera_rig.min_z = -2.0
-		camera_rig.max_z = 6.5
+		camera_rig.min_z = -9.5
+		camera_rig.max_z = 13.0
 		
 		var pivot = camera_rig.get_node_or_null("Pivot")
 		if pivot:
