@@ -136,8 +136,8 @@ func _setup_camera() -> void:
 		camera_rig.target = player
 		camera_rig.target_offset = Vector3(0, 1.35, -2.0)
 		camera_rig.follow_speed = 5.0
-		camera_rig.min_x = -3.5
-		camera_rig.max_x = 3.5
+		camera_rig.min_x = -5.0
+		camera_rig.max_x = 5.0
 		camera_rig.min_z = -9.5
 		camera_rig.max_z = 13.0
 		

@@ -1,49 +1,40 @@
-[gd_scene load_steps=53 format=3]
+[gd_scene format=3 uid="uid://cx84hmc84ons6"]
 
-[ext_resource type="Script" path="res://scripts/world/l3_controller.gd" id="1_controller"]
-[ext_resource type="Texture2D" path="res://scenes/levels/l3/3rdlvl-bg.png" id="2_bg_texture"]
+[ext_resource type="Script" uid="uid://c4ebabuqkl15f" path="res://scripts/world/l3_controller.gd" id="1_controller"]
+[ext_resource type="Texture2D" uid="uid://cmkxqbqrc1nvu" path="res://scenes/levels/l3/3rdlvl-bg.png" id="2_bg_texture"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="3_player"]
 [ext_resource type="PackedScene" path="res://scenes/world/camera_rig.tscn" id="4_camera"]
-[ext_resource type="Texture2D" path="res://assets/environment/stone_floor_tile.png" id="5_stone_tile"]
-[ext_resource type="Texture2D" path="res://assets/environment/castle_brick_tile.png" id="6_brick_tile"]
-[ext_resource type="Texture2D" path="res://assets/character/drop_shadow.png" id="7_shadow"]
-[ext_resource type="Texture2D" path="res://assets/vfx/golden_om.png" id="8_om"]
-[ext_resource type="Texture2D" path="res://assets/vfx/golden_lotus.png" id="9_lotus"]
-[ext_resource type="Texture2D" path="res://assets/vfx/divine_flash.png" id="10_flash"]
-
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/carpet_runner_sigil.png" id="11_carpet_sigil"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/mandala_rug_round.png" id="12_mandala"]
-
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/pillar_tall_banner_left.png" id="13_pillar_tall_banner_left"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/pillar_tall_banner_right.png" id="14_pillar_tall_banner_right"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/pillar_medium_banner_left.png" id="15_pillar_medium_banner_left"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/pillar_medium_banner_right.png" id="16_pillar_medium_banner_right"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/pillar_medium_left.png" id="17_pillar_medium_left"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/pillar_medium_right.png" id="18_pillar_medium_right"]
-
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/broken_pillar_left_1.png" id="19_broken_pillar_left_1"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/broken_pillar_right_rubble.png" id="20_broken_right_rubble"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/broken_pillar_tall_rubble.png" id="21_broken_tall_rubble"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/broken_pillar_stub_right.png" id="22_broken_stub_right"]
-
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/brazier_square_fire.png" id="23_brazier_square"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/brazier_round_fire_1.png" id="24_brazier_round_1"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/brazier_round_fire_2.png" id="25_brazier_round_2"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/wall_torch_flame_1.png" id="26_wall_torch"]
-
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/cover_blocks_double.png" id="27_cover_double"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/cover_blocks_stepped_1.png" id="28_cover_stepped"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/cover_blocks_quad.png" id="29_cover_quad"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/cover_blocks_high.png" id="30_cover_high"]
-
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/rock_boulder_large.png" id="31_rock_boulder"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/rock_medium_1.png" id="32_rock_medium"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/rock_tall_jagged.png" id="33_rock_tall"]
-
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/plant_grass_tuft_1.png" id="34_grass_1"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/plant_grass_tuft_2.png" id="35_grass_2"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/stairs_4step.png" id="36_stairs_4step"]
-[ext_resource type="Texture2D" path="res://assets/environment/l3_3d/banner_tall_sigil.png" id="37_banner_tall"]
+[ext_resource type="Texture2D" uid="uid://m275sfgyfdr0" path="res://assets/environment/stone_floor_tile.png" id="5_stone_tile"]
+[ext_resource type="Texture2D" uid="uid://drrcs15x4s2nk" path="res://assets/character/drop_shadow.png" id="7_shadow"]
+[ext_resource type="Texture2D" uid="uid://btbtrheokpyi3" path="res://assets/vfx/golden_om.png" id="8_om"]
+[ext_resource type="Texture2D" uid="uid://i1iq45n10kjl" path="res://assets/vfx/golden_lotus.png" id="9_lotus"]
+[ext_resource type="Texture2D" uid="uid://btnv8asifnc16" path="res://assets/vfx/divine_flash.png" id="10_flash"]
+[ext_resource type="Texture2D" uid="uid://trx4pvhnem2o" path="res://assets/environment/l3_3d/carpet_runner_sigil.png" id="11_carpet_sigil"]
+[ext_resource type="Texture2D" uid="uid://bijpwo4442ivy" path="res://assets/environment/l3_3d/mandala_rug_round.png" id="12_mandala"]
+[ext_resource type="Texture2D" uid="uid://dl40s8461g2nn" path="res://assets/environment/l3_3d/pillar_tall_banner_left.png" id="13_pillar_tall_banner_left"]
+[ext_resource type="Texture2D" uid="uid://bkk13gbckh47b" path="res://assets/environment/l3_3d/pillar_tall_banner_right.png" id="14_pillar_tall_banner_right"]
+[ext_resource type="Texture2D" uid="uid://bw2l6cjk1o38m" path="res://assets/environment/l3_3d/pillar_medium_banner_left.png" id="15_pillar_medium_banner_left"]
+[ext_resource type="Texture2D" uid="uid://ce22bnyc14dwh" path="res://assets/environment/l3_3d/pillar_medium_banner_right.png" id="16_pillar_medium_banner_right"]
+[ext_resource type="Texture2D" uid="uid://dxq3c2lrdhtyu" path="res://assets/environment/l3_3d/pillar_medium_left.png" id="17_pillar_medium_left"]
+[ext_resource type="Texture2D" uid="uid://brxnd3ejfw5b7" path="res://assets/environment/l3_3d/pillar_medium_right.png" id="18_pillar_medium_right"]
+[ext_resource type="Texture2D" uid="uid://bx0fv6wdq18tl" path="res://assets/environment/l3_3d/broken_pillar_left_1.png" id="19_broken_pillar_left_1"]
+[ext_resource type="Texture2D" uid="uid://dt3s3dojicb6v" path="res://assets/environment/l3_3d/broken_pillar_right_rubble.png" id="20_broken_right_rubble"]
+[ext_resource type="Texture2D" uid="uid://dd1i1h1hi3td0" path="res://assets/environment/l3_3d/broken_pillar_tall_rubble.png" id="21_broken_tall_rubble"]
+[ext_resource type="Texture2D" uid="uid://dhs32sonn2xac" path="res://assets/environment/l3_3d/broken_pillar_stub_right.png" id="22_broken_stub_right"]
+[ext_resource type="Texture2D" uid="uid://day87ata1efcn" path="res://assets/environment/l3_3d/brazier_square_fire.png" id="23_brazier_square"]
+[ext_resource type="Texture2D" uid="uid://ycink0o20ulo" path="res://assets/environment/l3_3d/brazier_round_fire_1.png" id="24_brazier_round_1"]
+[ext_resource type="Texture2D" uid="uid://bewy15wuar52f" path="res://assets/environment/l3_3d/brazier_round_fire_2.png" id="25_brazier_round_2"]
+[ext_resource type="Texture2D" uid="uid://bbt50kf4ogvli" path="res://assets/environment/l3_3d/wall_torch_flame_1.png" id="26_wall_torch"]
+[ext_resource type="Texture2D" uid="uid://bwoiw5h8mw4g" path="res://assets/environment/l3_3d/cover_blocks_double.png" id="27_cover_double"]
+[ext_resource type="Texture2D" uid="uid://bq3lrtwtsdg62" path="res://assets/environment/l3_3d/cover_blocks_stepped_1.png" id="28_cover_stepped"]
+[ext_resource type="Texture2D" uid="uid://duekwtgmpia8e" path="res://assets/environment/l3_3d/cover_blocks_quad.png" id="29_cover_quad"]
+[ext_resource type="Texture2D" uid="uid://yrkye7f8uuj1" path="res://assets/environment/l3_3d/cover_blocks_high.png" id="30_cover_high"]
+[ext_resource type="Texture2D" uid="uid://cfd4u2nan42ig" path="res://assets/environment/l3_3d/rock_boulder_large.png" id="31_rock_boulder"]
+[ext_resource type="Texture2D" uid="uid://dv173w6b445u6" path="res://assets/environment/l3_3d/rock_medium_1.png" id="32_rock_medium"]
+[ext_resource type="Texture2D" uid="uid://du3yxoqwth8la" path="res://assets/environment/l3_3d/rock_tall_jagged.png" id="33_rock_tall"]
+[ext_resource type="Texture2D" uid="uid://bmokqiv4n1bte" path="res://assets/environment/l3_3d/plant_grass_tuft_1.png" id="34_grass_1"]
+[ext_resource type="Texture2D" uid="uid://dkobqxlbbl5r1" path="res://assets/environment/l3_3d/plant_grass_tuft_2.png" id="35_grass_2"]
+[ext_resource type="Texture2D" uid="uid://bmivjjv48wwig" path="res://assets/environment/l3_3d/banner_tall_sigil.png" id="37_banner_tall"]
 
 [sub_resource type="Environment" id="Environment_castle"]
 background_mode = 1
@@ -56,35 +47,17 @@ glow_enabled = true
 glow_intensity = 0.7
 glow_bloom = 0.18
 
+[sub_resource type="BoxShape3D" id="Shape_Floor"]
+size = Vector3(26, 1, 36)
+
 [sub_resource type="StandardMaterial3D" id="Mat_ReflectiveFloor"]
 albedo_color = Color(0.24, 0.2, 0.3, 1)
 albedo_texture = ExtResource("5_stone_tile")
-roughness = 0.22
 metallic = 0.18
+roughness = 0.22
 uv1_scale = Vector3(14, 1, 14)
 uv1_triplanar = true
 texture_filter = 0
-
-[sub_resource type="StandardMaterial3D" id="Mat_TempleStone"]
-albedo_color = Color(0.52, 0.46, 0.6, 1)
-albedo_texture = ExtResource("5_stone_tile")
-roughness = 0.65
-metallic = 0.1
-uv1_scale = Vector3(2, 2, 2)
-uv1_triplanar = true
-texture_filter = 0
-
-[sub_resource type="StandardMaterial3D" id="Mat_DaisTrim"]
-albedo_color = Color(0.68, 0.58, 0.42, 1)
-albedo_texture = ExtResource("5_stone_tile")
-roughness = 0.45
-metallic = 0.25
-uv1_scale = Vector3(2, 2, 2)
-uv1_triplanar = true
-texture_filter = 0
-
-[sub_resource type="BoxShape3D" id="Shape_Floor"]
-size = Vector3(26, 1, 36)
 
 [sub_resource type="BoxShape3D" id="Shape_WallNorth"]
 size = Vector3(24, 6, 1)
@@ -98,25 +71,39 @@ size = Vector3(9, 6, 1)
 [sub_resource type="BoxShape3D" id="Shape_Dais"]
 size = Vector3(7.4, 0.9, 3.2)
 
-[sub_resource type="BoxShape3D" id="Shape_PlinthLarge"]
-size = Vector3(1.5, 0.6, 1.5)
+[sub_resource type="StandardMaterial3D" id="Mat_TempleStone"]
+albedo_color = Color(0.52, 0.46, 0.6, 1)
+albedo_texture = ExtResource("5_stone_tile")
+metallic = 0.1
+roughness = 0.65
+uv1_scale = Vector3(2, 2, 2)
+uv1_triplanar = true
+texture_filter = 0
 
-[sub_resource type="BoxShape3D" id="Shape_BrokenPillar"]
-size = Vector3(1.6, 3.2, 1.5)
-
-[sub_resource type="BoxShape3D" id="Shape_PlinthBrazier"]
-size = Vector3(1.0, 1.8, 1.0)
+[sub_resource type="StandardMaterial3D" id="Mat_DaisTrim"]
+albedo_color = Color(0.68, 0.58, 0.42, 1)
+albedo_texture = ExtResource("5_stone_tile")
+metallic = 0.25
+roughness = 0.45
+uv1_scale = Vector3(2, 2, 2)
+uv1_triplanar = true
+texture_filter = 0
 
 [sub_resource type="CylinderShape3D" id="Shape_PillarCol"]
 height = 4.8
 radius = 0.65
 
+[sub_resource type="BoxShape3D" id="Shape_BrokenPillar"]
+size = Vector3(1.6, 3.2, 1.5)
+
+[sub_resource type="BoxShape3D" id="Shape_PlinthBrazier"]
+size = Vector3(1, 1.8, 1)
+
 [sub_resource type="BoxShape3D" id="Shape_CoverBlock"]
 size = Vector3(1.5, 1.8, 1.2)
 
-[sub_resource type="CylinderShape3D" id="Shape_Rock"]
-height = 2.0
-radius = 0.75
+[sub_resource type="SphereShape3D" id="Shape_Rock"]
+radius = 0.42
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_Dialogue"]
 bg_color = Color(0.08, 0.06, 0.12, 0.95)
@@ -132,709 +119,589 @@ corner_radius_bottom_left = 8
 shadow_color = Color(0, 0, 0, 0.65)
 shadow_size = 5
 
-[node name="L3Map" type="Node3D"]
+[node name="L3Map" type="Node3D" unique_id=263078924]
 script = ExtResource("1_controller")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=266627166]
 environment = SubResource("Environment_castle")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1172018802]
 transform = Transform3D(0.965926, -0.0647048, 0.25, 0, 0.965926, 0.258819, -0.258819, -0.25, 0.933013, 0, 15, -4)
 light_color = Color(0.65, 0.7, 0.85, 1)
 light_energy = 0.25
 shadow_enabled = true
 
-[node name="SanctumBackdrop" type="Sprite3D" parent="."]
+[node name="SanctumBackdrop" type="Sprite3D" parent="." unique_id=279576431]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.25, -10)
+sorting_offset = -15.0
 pixel_size = 0.0145
 texture_filter = 0
-sorting_offset = -15.0
-double_sided = true
 texture = ExtResource("2_bg_texture")
+metadata/_edit_lock_ = true
 
-[node name="FloorGround" type="StaticBody3D" parent="."]
+[node name="FloorGround" type="StaticBody3D" parent="." unique_id=749182294]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="FloorGround"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FloorGround" unique_id=1649083212]
 shape = SubResource("Shape_Floor")
 
-[node name="FloorMesh" type="CSGBox3D" parent="FloorGround"]
+[node name="FloorMesh" type="CSGBox3D" parent="FloorGround" unique_id=1915772311]
 size = Vector3(26, 1, 36)
 material = SubResource("Mat_ReflectiveFloor")
 
-[node name="Boundaries" type="Node3D" parent="."]
+[node name="Boundaries" type="Node3D" parent="." unique_id=623169324]
 
-[node name="WallNorth" type="StaticBody3D" parent="Boundaries"]
+[node name="WallNorth" type="StaticBody3D" parent="Boundaries" unique_id=1352777950]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -10.2)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Boundaries/WallNorth"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Boundaries/WallNorth" unique_id=1906955927]
 shape = SubResource("Shape_WallNorth")
 
-[node name="WallWest" type="StaticBody3D" parent="Boundaries"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, 3, 0)
+[node name="WallWest" type="StaticBody3D" parent="Boundaries" unique_id=145629294]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, 3, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Boundaries/WallWest"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Boundaries/WallWest" unique_id=564406467]
 shape = SubResource("Shape_WallSide")
 
-[node name="WallEast" type="StaticBody3D" parent="Boundaries"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, 3, 0)
+[node name="WallEast" type="StaticBody3D" parent="Boundaries" unique_id=2111708335]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 3, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Boundaries/WallEast"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Boundaries/WallEast" unique_id=306065169]
 shape = SubResource("Shape_WallSide")
 
-[node name="WallSouthLeft" type="StaticBody3D" parent="Boundaries"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, 3, 15.5)
+[node name="WallSouthLeft" type="StaticBody3D" parent="Boundaries" unique_id=1006033779]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 3, 15.5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Boundaries/WallSouthLeft"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Boundaries/WallSouthLeft" unique_id=1651695325]
 shape = SubResource("Shape_WallSouthWing")
 
-[node name="WallSouthRight" type="StaticBody3D" parent="Boundaries"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 3, 15.5)
+[node name="WallSouthRight" type="StaticBody3D" parent="Boundaries" unique_id=63163819]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 3, 15.5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Boundaries/WallSouthRight"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Boundaries/WallSouthRight" unique_id=1216562397]
 shape = SubResource("Shape_WallSouthWing")
 
-[node name="Visuals3D" type="Node3D" parent="."]
+[node name="Visuals3D" type="Node3D" parent="." unique_id=27410492]
 
-[node name="FloorMarkings" type="Node3D" parent="Visuals3D"]
+[node name="FloorMarkings" type="Node3D" parent="Visuals3D" unique_id=1776805886]
 
-[node name="CarpetRunnerSouth1" type="Sprite3D" parent="Visuals3D/FloorMarkings"]
+[node name="CarpetRunnerSouth1" type="Sprite3D" parent="Visuals3D/FloorMarkings" unique_id=2037356839]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.012, 8.5)
+sorting_offset = -8.0
 pixel_size = 0.022
 texture_filter = 0
-sorting_offset = -8.0
 texture = ExtResource("11_carpet_sigil")
 
-[node name="CarpetRunnerSouth2" type="Sprite3D" parent="Visuals3D/FloorMarkings"]
+[node name="CarpetRunnerSouth2" type="Sprite3D" parent="Visuals3D/FloorMarkings" unique_id=1408369275]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.012, 3.5)
+sorting_offset = -8.0
 pixel_size = 0.022
 texture_filter = 0
-sorting_offset = -8.0
 texture = ExtResource("11_carpet_sigil")
 
-[node name="MandalaRug" type="Sprite3D" parent="Visuals3D/FloorMarkings"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.015, -2.5)
+[node name="MandalaRug" type="Sprite3D" parent="Visuals3D/FloorMarkings" unique_id=833374730]
+transform = Transform3D(2.1069608, 0, 0, 0, 0, 1.0159752, 0, -1.4739246, 0, 0, 0.015, -2.2319381)
+sorting_offset = -7.5
 pixel_size = 0.025
 texture_filter = 0
-sorting_offset = -7.5
 texture = ExtResource("12_mandala")
 
-[node name="CarpetRunnerNorthAltar" type="Sprite3D" parent="Visuals3D/FloorMarkings"]
+[node name="CarpetRunnerNorthAltar" type="Sprite3D" parent="Visuals3D/FloorMarkings" unique_id=1402820557]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.012, -9.5)
+sorting_offset = -8.0
 pixel_size = 0.02
 texture_filter = 0
-sorting_offset = -8.0
 texture = ExtResource("11_carpet_sigil")
 
-[node name="AltarDais" type="Node3D" parent="Visuals3D"]
+[node name="AltarDais" type="Node3D" parent="Visuals3D" unique_id=544680746]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, -12.5)
 
-[node name="DaisBody" type="StaticBody3D" parent="Visuals3D/AltarDais"]
+[node name="DaisBody" type="StaticBody3D" parent="Visuals3D/AltarDais" unique_id=1383747340]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Visuals3D/AltarDais/DaisBody"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Visuals3D/AltarDais/DaisBody" unique_id=1561895517]
 shape = SubResource("Shape_Dais")
 
-[node name="DaisMesh" type="CSGBox3D" parent="Visuals3D/AltarDais/DaisBody"]
+[node name="DaisMesh" type="CSGBox3D" parent="Visuals3D/AltarDais/DaisBody" unique_id=137938150]
 size = Vector3(7.4, 0.9, 3.2)
 material = SubResource("Mat_TempleStone")
 
-[node name="DaisStep1" type="CSGBox3D" parent="Visuals3D/AltarDais/DaisBody"]
+[node name="DaisStep1" type="CSGBox3D" parent="Visuals3D/AltarDais/DaisBody" unique_id=1198528084]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 1.8)
 size = Vector3(4.6, 0.3, 0.8)
 material = SubResource("Mat_DaisTrim")
 
-[node name="DaisStep2" type="CSGBox3D" parent="Visuals3D/AltarDais/DaisBody"]
+[node name="DaisStep2" type="CSGBox3D" parent="Visuals3D/AltarDais/DaisBody" unique_id=1169475817]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 1.3)
-size = Vector3(4.0, 0.3, 0.6)
+size = Vector3(4, 0.3, 0.6)
 material = SubResource("Mat_DaisTrim")
 
-[node name="StairsVisual" type="Sprite3D" parent="Visuals3D/AltarDais"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 1.7)
-pixel_size = 0.016
-texture_filter = 0
-texture = ExtResource("36_stairs_4step")
-
-[node name="MurtiAura" type="Sprite3D" parent="Visuals3D/AltarDais"]
+[node name="MurtiAura" type="Sprite3D" parent="Visuals3D/AltarDais" unique_id=1359310125]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, -0.6)
+modulate = Color(1, 0.9, 0.4, 0.5)
 pixel_size = 0.012
 billboard = 2
 texture_filter = 0
 texture = ExtResource("9_lotus")
-modulate = Color(1, 0.9, 0.4, 0.5)
 
-[node name="ArenaProps" type="Node3D" parent="."]
+[node name="ArenaProps" type="Node3D" parent="." unique_id=705963925]
 
-[node name="Pillars" type="Node3D" parent="ArenaProps"]
+[node name="Pillars" type="Node3D" parent="ArenaProps" unique_id=1048782943]
 
-[node name="Col1_L" type="StaticBody3D" parent="ArenaProps/Pillars"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0, 11.0)
-collision_layer = 1
-collision_mask = 1
+[node name="Col1_L" type="StaticBody3D" parent="ArenaProps/Pillars" unique_id=2056820203]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, 0, 11)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col1_L"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col1_L" unique_id=695273984]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
 shape = SubResource("Shape_PillarCol")
 
-[node name="Plinth3D" type="CSGBox3D" parent="ArenaProps/Pillars/Col1_L"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
-size = Vector3(1.5, 0.6, 1.5)
-material = SubResource("Mat_TempleStone")
-
-[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col1_L"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col1_L" unique_id=1947869034]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
 pixel_size = 0.02
 texture_filter = 0
 texture = ExtResource("13_pillar_tall_banner_left")
 
-[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col1_L"]
+[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col1_L" unique_id=1540977071]
 transform = Transform3D(1.5, 0, 0, 0, 0, 1.5, 0, -1.5, 0, 0, 0.02, 0)
-pixel_size = 0.01
 texture_filter = 0
 texture = ExtResource("7_shadow")
 
-[node name="Col1_R" type="StaticBody3D" parent="ArenaProps/Pillars"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0, 11.0)
-collision_layer = 1
-collision_mask = 1
+[node name="Col1_R" type="StaticBody3D" parent="ArenaProps/Pillars" unique_id=1029402025]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 0, 11)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col1_R"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col1_R" unique_id=1999908445]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
 shape = SubResource("Shape_PillarCol")
 
-[node name="Plinth3D" type="CSGBox3D" parent="ArenaProps/Pillars/Col1_R"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
-size = Vector3(1.5, 0.6, 1.5)
-material = SubResource("Mat_TempleStone")
-
-[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col1_R"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col1_R" unique_id=931335516]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
 pixel_size = 0.02
 texture_filter = 0
 texture = ExtResource("14_pillar_tall_banner_right")
 
-[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col1_R"]
+[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col1_R" unique_id=1774016652]
 transform = Transform3D(1.5, 0, 0, 0, 0, 1.5, 0, -1.5, 0, 0, 0.02, 0)
-pixel_size = 0.01
 texture_filter = 0
 texture = ExtResource("7_shadow")
 
-[node name="Col2_L" type="StaticBody3D" parent="ArenaProps/Pillars"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0, 5.0)
-collision_layer = 1
-collision_mask = 1
+[node name="Col2_L" type="StaticBody3D" parent="ArenaProps/Pillars" unique_id=1224879294]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, 0, 5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col2_L"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col2_L" unique_id=2145459582]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 shape = SubResource("Shape_BrokenPillar")
 
-[node name="Plinth3D" type="CSGBox3D" parent="ArenaProps/Pillars/Col2_L"]
+[node name="Plinth3D" type="CSGBox3D" parent="ArenaProps/Pillars/Col2_L" unique_id=1389020824]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 size = Vector3(1.3, 0.5, 1.3)
 material = SubResource("Mat_TempleStone")
 
-[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col2_L"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col2_L" unique_id=1433941511]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
 pixel_size = 0.018
 texture_filter = 0
 texture = ExtResource("19_broken_pillar_left_1")
 
-[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col2_L"]
+[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col2_L" unique_id=1237272961]
 transform = Transform3D(1.4, 0, 0, 0, 0, 1.4, 0, -1.4, 0, 0, 0.02, 0)
-pixel_size = 0.01
 texture_filter = 0
 texture = ExtResource("7_shadow")
 
-[node name="Col2_R" type="StaticBody3D" parent="ArenaProps/Pillars"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0, 5.0)
-collision_layer = 1
-collision_mask = 1
+[node name="Col2_R" type="StaticBody3D" parent="ArenaProps/Pillars" unique_id=1165483684]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 0, 5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col2_R"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col2_R" unique_id=1976747104]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 shape = SubResource("Shape_BrokenPillar")
 
-[node name="Plinth3D" type="CSGBox3D" parent="ArenaProps/Pillars/Col2_R"]
+[node name="Plinth3D" type="CSGBox3D" parent="ArenaProps/Pillars/Col2_R" unique_id=652863854]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 size = Vector3(1.3, 0.5, 1.3)
 material = SubResource("Mat_TempleStone")
 
-[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col2_R"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col2_R" unique_id=372672150]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
 pixel_size = 0.018
 texture_filter = 0
 texture = ExtResource("20_broken_right_rubble")
 
-[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col2_R"]
+[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col2_R" unique_id=2097367298]
 transform = Transform3D(1.4, 0, 0, 0, 0, 1.4, 0, -1.4, 0, 0, 0.02, 0)
-pixel_size = 0.01
 texture_filter = 0
 texture = ExtResource("7_shadow")
 
-[node name="Col3_L" type="StaticBody3D" parent="ArenaProps/Pillars"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0, -0.5)
-collision_layer = 1
-collision_mask = 1
+[node name="Col3_L" type="StaticBody3D" parent="ArenaProps/Pillars" unique_id=1871451264]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, 0, -0.5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col3_L"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col3_L" unique_id=2021269012]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
 shape = SubResource("Shape_PillarCol")
 
-[node name="Plinth3D" type="CSGBox3D" parent="ArenaProps/Pillars/Col3_L"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
-size = Vector3(1.5, 0.6, 1.5)
-material = SubResource("Mat_TempleStone")
-
-[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col3_L"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col3_L" unique_id=1717430557]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
 pixel_size = 0.019
 texture_filter = 0
 texture = ExtResource("15_pillar_medium_banner_left")
 
-[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col3_L"]
+[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col3_L" unique_id=1834126227]
 transform = Transform3D(1.5, 0, 0, 0, 0, 1.5, 0, -1.5, 0, 0, 0.02, 0)
-pixel_size = 0.01
 texture_filter = 0
 texture = ExtResource("7_shadow")
 
-[node name="Col3_R" type="StaticBody3D" parent="ArenaProps/Pillars"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0, -0.5)
-collision_layer = 1
-collision_mask = 1
+[node name="Col3_R" type="StaticBody3D" parent="ArenaProps/Pillars" unique_id=1148595677]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 0, -0.5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col3_R"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col3_R" unique_id=1195883861]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
 shape = SubResource("Shape_PillarCol")
 
-[node name="Plinth3D" type="CSGBox3D" parent="ArenaProps/Pillars/Col3_R"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
-size = Vector3(1.5, 0.6, 1.5)
-material = SubResource("Mat_TempleStone")
-
-[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col3_R"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col3_R" unique_id=1902511843]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
 pixel_size = 0.019
 texture_filter = 0
 texture = ExtResource("16_pillar_medium_banner_right")
 
-[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col3_R"]
+[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col3_R" unique_id=459806503]
 transform = Transform3D(1.5, 0, 0, 0, 0, 1.5, 0, -1.5, 0, 0, 0.02, 0)
-pixel_size = 0.01
 texture_filter = 0
 texture = ExtResource("7_shadow")
 
-[node name="Col4_L" type="StaticBody3D" parent="ArenaProps/Pillars"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0, -6.0)
-collision_layer = 1
-collision_mask = 1
+[node name="Col4_L" type="StaticBody3D" parent="ArenaProps/Pillars" unique_id=895018187]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, 0, -6)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col4_L"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col4_L" unique_id=1636197376]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("Shape_BrokenPillar")
 
-[node name="Plinth3D" type="CSGBox3D" parent="ArenaProps/Pillars/Col4_L"]
+[node name="Plinth3D" type="CSGBox3D" parent="ArenaProps/Pillars/Col4_L" unique_id=781305141]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 size = Vector3(1.3, 0.5, 1.3)
 material = SubResource("Mat_TempleStone")
 
-[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col4_L"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col4_L" unique_id=708588406]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
 pixel_size = 0.018
 texture_filter = 0
 texture = ExtResource("21_broken_tall_rubble")
 
-[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col4_L"]
+[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col4_L" unique_id=1729285723]
 transform = Transform3D(1.4, 0, 0, 0, 0, 1.4, 0, -1.4, 0, 0, 0.02, 0)
-pixel_size = 0.01
 texture_filter = 0
 texture = ExtResource("7_shadow")
 
-[node name="Col4_R" type="StaticBody3D" parent="ArenaProps/Pillars"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0, -6.0)
-collision_layer = 1
-collision_mask = 1
+[node name="Col4_R" type="StaticBody3D" parent="ArenaProps/Pillars" unique_id=2071344318]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 0, -6)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col4_R"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col4_R" unique_id=932250542]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("Shape_BrokenPillar")
 
-[node name="Plinth3D" type="CSGBox3D" parent="ArenaProps/Pillars/Col4_R"]
+[node name="Plinth3D" type="CSGBox3D" parent="ArenaProps/Pillars/Col4_R" unique_id=1718607463]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 size = Vector3(1.3, 0.5, 1.3)
 material = SubResource("Mat_TempleStone")
 
-[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col4_R"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col4_R" unique_id=1546257193]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
 pixel_size = 0.018
 texture_filter = 0
 texture = ExtResource("22_broken_stub_right")
 
-[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col4_R"]
+[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col4_R" unique_id=294547544]
 transform = Transform3D(1.4, 0, 0, 0, 0, 1.4, 0, -1.4, 0, 0, 0.02, 0)
-pixel_size = 0.01
 texture_filter = 0
 texture = ExtResource("7_shadow")
 
-[node name="Col5_L" type="StaticBody3D" parent="ArenaProps/Pillars"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0, -11.5)
-collision_layer = 1
-collision_mask = 1
+[node name="Col5_L" type="StaticBody3D" parent="ArenaProps/Pillars" unique_id=557009701]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, 0, -11.5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col5_L"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col5_L" unique_id=1129344846]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 shape = SubResource("Shape_PillarCol")
 
-[node name="Plinth3D" type="CSGBox3D" parent="ArenaProps/Pillars/Col5_L"]
+[node name="Plinth3D" type="CSGBox3D" parent="ArenaProps/Pillars/Col5_L" unique_id=485395287]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 size = Vector3(1.3, 0.5, 1.3)
 material = SubResource("Mat_TempleStone")
 
-[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col5_L"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col5_L" unique_id=220902441]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 pixel_size = 0.019
 texture_filter = 0
 texture = ExtResource("17_pillar_medium_left")
 
-[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col5_L"]
+[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col5_L" unique_id=1343131965]
 transform = Transform3D(1.4, 0, 0, 0, 0, 1.4, 0, -1.4, 0, 0, 0.02, 0)
-pixel_size = 0.01
 texture_filter = 0
 texture = ExtResource("7_shadow")
 
-[node name="Col5_R" type="StaticBody3D" parent="ArenaProps/Pillars"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0, -11.5)
-collision_layer = 1
-collision_mask = 1
+[node name="Col5_R" type="StaticBody3D" parent="ArenaProps/Pillars" unique_id=927752219]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 0, -11.5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col5_R"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Pillars/Col5_R" unique_id=81376974]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 shape = SubResource("Shape_PillarCol")
 
-[node name="Plinth3D" type="CSGBox3D" parent="ArenaProps/Pillars/Col5_R"]
+[node name="Plinth3D" type="CSGBox3D" parent="ArenaProps/Pillars/Col5_R" unique_id=586236307]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 size = Vector3(1.3, 0.5, 1.3)
 material = SubResource("Mat_TempleStone")
 
-[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col5_R"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+[node name="Visual" type="Sprite3D" parent="ArenaProps/Pillars/Col5_R" unique_id=1839935367]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 pixel_size = 0.019
 texture_filter = 0
 texture = ExtResource("18_pillar_medium_right")
 
-[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col5_R"]
+[node name="Shadow" type="Sprite3D" parent="ArenaProps/Pillars/Col5_R" unique_id=394636575]
 transform = Transform3D(1.4, 0, 0, 0, 0, 1.4, 0, -1.4, 0, 0, 0.02, 0)
-pixel_size = 0.01
 texture_filter = 0
 texture = ExtResource("7_shadow")
 
-[node name="Braziers" type="Node3D" parent="ArenaProps"]
+[node name="Braziers" type="Node3D" parent="ArenaProps" unique_id=637933350]
 
-[node name="Brazier1_L" type="StaticBody3D" parent="ArenaProps/Braziers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 0, 10.5)
-collision_layer = 1
-collision_mask = 1
+[node name="Brazier1_L" type="StaticBody3D" parent="ArenaProps/Braziers" unique_id=346680649]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 0, 10.5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Braziers/Brazier1_L"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Braziers/Brazier1_L" unique_id=610915162]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("Shape_PlinthBrazier")
 
-[node name="Plinth" type="CSGBox3D" parent="ArenaProps/Braziers/Brazier1_L"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.275, 0)
-size = Vector3(0.65, 0.55, 0.65)
-material = SubResource("Mat_TempleStone")
-
-[node name="Visual" type="Sprite3D" parent="ArenaProps/Braziers/Brazier1_L"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/Braziers/Brazier1_L" unique_id=811184108]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
 pixel_size = 0.016
 texture_filter = 0
 texture = ExtResource("23_brazier_square")
 
-[node name="Brazier1_R" type="StaticBody3D" parent="ArenaProps/Braziers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 0, 10.5)
-collision_layer = 1
-collision_mask = 1
+[node name="Brazier1_R" type="StaticBody3D" parent="ArenaProps/Braziers" unique_id=21094974]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 0, 10.5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Braziers/Brazier1_R"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Braziers/Brazier1_R" unique_id=495496219]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("Shape_PlinthBrazier")
 
-[node name="Plinth" type="CSGBox3D" parent="ArenaProps/Braziers/Brazier1_R"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.275, 0)
-size = Vector3(0.65, 0.55, 0.65)
-material = SubResource("Mat_TempleStone")
-
-[node name="Visual" type="Sprite3D" parent="ArenaProps/Braziers/Brazier1_R"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/Braziers/Brazier1_R" unique_id=1915714325]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
 pixel_size = 0.016
 texture_filter = 0
 texture = ExtResource("23_brazier_square")
 
-[node name="Brazier2_L" type="StaticBody3D" parent="ArenaProps/Braziers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 0, 4.0)
-collision_layer = 1
-collision_mask = 1
+[node name="Brazier2_L" type="StaticBody3D" parent="ArenaProps/Braziers" unique_id=1319585733]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 0, 4)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Braziers/Brazier2_L"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Braziers/Brazier2_L" unique_id=1641409160]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("Shape_PlinthBrazier")
 
-[node name="Plinth" type="CSGBox3D" parent="ArenaProps/Braziers/Brazier2_L"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.275, 0)
-size = Vector3(0.65, 0.55, 0.65)
-material = SubResource("Mat_TempleStone")
-
-[node name="Visual" type="Sprite3D" parent="ArenaProps/Braziers/Brazier2_L"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/Braziers/Brazier2_L" unique_id=359314601]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
 pixel_size = 0.016
 texture_filter = 0
 texture = ExtResource("24_brazier_round_1")
 
-[node name="Brazier2_R" type="StaticBody3D" parent="ArenaProps/Braziers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 0, 4.0)
-collision_layer = 1
-collision_mask = 1
+[node name="Brazier2_R" type="StaticBody3D" parent="ArenaProps/Braziers" unique_id=968587710]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 0, 4)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Braziers/Brazier2_R"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Braziers/Brazier2_R" unique_id=1931856076]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("Shape_PlinthBrazier")
 
-[node name="Plinth" type="CSGBox3D" parent="ArenaProps/Braziers/Brazier2_R"]
+[node name="Plinth" type="CSGBox3D" parent="ArenaProps/Braziers/Brazier2_R" unique_id=597074818]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.275, 0)
 size = Vector3(0.65, 0.55, 0.65)
 material = SubResource("Mat_TempleStone")
 
-[node name="Visual" type="Sprite3D" parent="ArenaProps/Braziers/Brazier2_R"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/Braziers/Brazier2_R" unique_id=1103997394]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
 pixel_size = 0.016
 texture_filter = 0
 texture = ExtResource("24_brazier_round_1")
 
-[node name="Brazier4_L" type="StaticBody3D" parent="ArenaProps/Braziers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 0, -7.0)
-collision_layer = 1
-collision_mask = 1
+[node name="Brazier4_L" type="StaticBody3D" parent="ArenaProps/Braziers" unique_id=1019862165]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 0, -7)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Braziers/Brazier4_L"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Braziers/Brazier4_L" unique_id=1710633200]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("Shape_PlinthBrazier")
 
-[node name="Plinth" type="CSGBox3D" parent="ArenaProps/Braziers/Brazier4_L"]
+[node name="Plinth" type="CSGBox3D" parent="ArenaProps/Braziers/Brazier4_L" unique_id=1087845220]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.275, 0)
 size = Vector3(0.65, 0.55, 0.65)
 material = SubResource("Mat_TempleStone")
 
-[node name="Visual" type="Sprite3D" parent="ArenaProps/Braziers/Brazier4_L"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
+[node name="Visual" type="Sprite3D" parent="ArenaProps/Braziers/Brazier4_L" unique_id=1385454557]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 pixel_size = 0.016
 texture_filter = 0
 texture = ExtResource("25_brazier_round_2")
 
-[node name="Brazier4_R" type="StaticBody3D" parent="ArenaProps/Braziers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 0, -7.0)
-collision_layer = 1
-collision_mask = 1
+[node name="Brazier4_R" type="StaticBody3D" parent="ArenaProps/Braziers" unique_id=1818654106]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 0, -7)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Braziers/Brazier4_R"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Braziers/Brazier4_R" unique_id=1615991832]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("Shape_PlinthBrazier")
 
-[node name="Plinth" type="CSGBox3D" parent="ArenaProps/Braziers/Brazier4_R"]
+[node name="Plinth" type="CSGBox3D" parent="ArenaProps/Braziers/Brazier4_R" unique_id=2129618250]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.275, 0)
 size = Vector3(0.65, 0.55, 0.65)
 material = SubResource("Mat_TempleStone")
 
-[node name="Visual" type="Sprite3D" parent="ArenaProps/Braziers/Brazier4_R"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
+[node name="Visual" type="Sprite3D" parent="ArenaProps/Braziers/Brazier4_R" unique_id=1113621522]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 pixel_size = 0.016
 texture_filter = 0
 texture = ExtResource("25_brazier_round_2")
 
-[node name="BrazierDais_L" type="StaticBody3D" parent="ArenaProps/Braziers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, -6.3)
+[node name="BrazierDais_L" type="StaticBody3D" parent="ArenaProps/Braziers" unique_id=145430008]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0, -6.3)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Braziers/BrazierDais_L"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Braziers/BrazierDais_L" unique_id=254169863]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("Shape_PlinthBrazier")
 
-[node name="Plinth" type="CSGBox3D" parent="ArenaProps/Braziers/BrazierDais_L"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
-size = Vector3(0.7, 0.6, 0.7)
-material = SubResource("Mat_TempleStone")
-
-[node name="Visual" type="Sprite3D" parent="ArenaProps/Braziers/BrazierDais_L"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/Braziers/BrazierDais_L" unique_id=1494405933]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
 pixel_size = 0.016
 texture_filter = 0
 texture = ExtResource("23_brazier_square")
 
-[node name="BrazierDais_R" type="StaticBody3D" parent="ArenaProps/Braziers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, -6.3)
+[node name="BrazierDais_R" type="StaticBody3D" parent="ArenaProps/Braziers" unique_id=1258515843]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.2, 0, -6.3)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Braziers/BrazierDais_R"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/Braziers/BrazierDais_R" unique_id=1167168938]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("Shape_PlinthBrazier")
 
-[node name="Plinth" type="CSGBox3D" parent="ArenaProps/Braziers/BrazierDais_R"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
-size = Vector3(0.7, 0.6, 0.7)
-material = SubResource("Mat_TempleStone")
-
-[node name="Visual" type="Sprite3D" parent="ArenaProps/Braziers/BrazierDais_R"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/Braziers/BrazierDais_R" unique_id=1149600109]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
 pixel_size = 0.016
 texture_filter = 0
 texture = ExtResource("23_brazier_square")
 
-[node name="CoverBlocks" type="Node3D" parent="ArenaProps"]
+[node name="CoverBlocks" type="Node3D" parent="ArenaProps" unique_id=1844942556]
 
-[node name="Cover2_L" type="StaticBody3D" parent="ArenaProps/CoverBlocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 0, 6.0)
-collision_layer = 1
-collision_mask = 1
+[node name="Cover2_L" type="StaticBody3D" parent="ArenaProps/CoverBlocks" unique_id=608322045]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.8, 0, 6)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/CoverBlocks/Cover2_L"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/CoverBlocks/Cover2_L" unique_id=1525255865]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("Shape_CoverBlock")
 
-[node name="Mesh3D" type="CSGBox3D" parent="ArenaProps/CoverBlocks/Cover2_L"]
+[node name="Mesh3D" type="CSGBox3D" parent="ArenaProps/CoverBlocks/Cover2_L" unique_id=1522349348]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
 size = Vector3(1.2, 0.8, 0.8)
 material = SubResource("Mat_TempleStone")
 
-[node name="Visual" type="Sprite3D" parent="ArenaProps/CoverBlocks/Cover2_L"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/CoverBlocks/Cover2_L" unique_id=1853025785]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 pixel_size = 0.014
 texture_filter = 0
 texture = ExtResource("27_cover_double")
 
-[node name="Cover2_R" type="StaticBody3D" parent="ArenaProps/CoverBlocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 0, 6.0)
-collision_layer = 1
-collision_mask = 1
+[node name="Cover2_R" type="StaticBody3D" parent="ArenaProps/CoverBlocks" unique_id=1255536962]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.8, 0, 6)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/CoverBlocks/Cover2_R"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/CoverBlocks/Cover2_R" unique_id=256588209]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("Shape_CoverBlock")
 
-[node name="Mesh3D" type="CSGBox3D" parent="ArenaProps/CoverBlocks/Cover2_R"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
-size = Vector3(1.2, 0.8, 0.8)
-material = SubResource("Mat_TempleStone")
-
-[node name="Visual" type="Sprite3D" parent="ArenaProps/CoverBlocks/Cover2_R"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/CoverBlocks/Cover2_R" unique_id=124110737]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 pixel_size = 0.014
 texture_filter = 0
 texture = ExtResource("28_cover_stepped")
 
-[node name="Cover4_L" type="StaticBody3D" parent="ArenaProps/CoverBlocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 0, -5.0)
-collision_layer = 1
-collision_mask = 1
+[node name="Cover4_L" type="StaticBody3D" parent="ArenaProps/CoverBlocks" unique_id=1970324017]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.8, 0, -5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/CoverBlocks/Cover4_L"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/CoverBlocks/Cover4_L" unique_id=912014056]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("Shape_CoverBlock")
 
-[node name="Mesh3D" type="CSGBox3D" parent="ArenaProps/CoverBlocks/Cover4_L"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
-size = Vector3(1.2, 0.8, 0.8)
-material = SubResource("Mat_TempleStone")
-
-[node name="Visual" type="Sprite3D" parent="ArenaProps/CoverBlocks/Cover4_L"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/CoverBlocks/Cover4_L" unique_id=1500417879]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 pixel_size = 0.014
 texture_filter = 0
 texture = ExtResource("29_cover_quad")
 
-[node name="Cover4_R" type="StaticBody3D" parent="ArenaProps/CoverBlocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 0, -5.0)
-collision_layer = 1
-collision_mask = 1
+[node name="Cover4_R" type="StaticBody3D" parent="ArenaProps/CoverBlocks" unique_id=602498017]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.8, 0, -5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/CoverBlocks/Cover4_R"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/CoverBlocks/Cover4_R" unique_id=1232863824]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("Shape_CoverBlock")
 
-[node name="Mesh3D" type="CSGBox3D" parent="ArenaProps/CoverBlocks/Cover4_R"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
-size = Vector3(1.2, 0.8, 0.8)
-material = SubResource("Mat_TempleStone")
-
-[node name="Visual" type="Sprite3D" parent="ArenaProps/CoverBlocks/Cover4_R"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/CoverBlocks/Cover4_R" unique_id=6566599]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 pixel_size = 0.014
 texture_filter = 0
 texture = ExtResource("30_cover_high")
 
-[node name="DecorGrass" type="Node3D" parent="ArenaProps"]
+[node name="DecorGrass" type="Node3D" parent="ArenaProps" unique_id=1673267493]
 
-[node name="Grass2_L" type="Sprite3D" parent="ArenaProps/DecorGrass"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.7, 0.25, 5.5)
-pixel_size = 0.01
+[node name="Grass2_L" type="Sprite3D" parent="ArenaProps/DecorGrass" unique_id=263604472]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.6, 0.25, 5.5)
 texture_filter = 0
 texture = ExtResource("34_grass_1")
 
-[node name="Grass2_R" type="Sprite3D" parent="ArenaProps/DecorGrass"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.7, 0.25, 5.5)
-pixel_size = 0.01
+[node name="Grass2_R" type="Sprite3D" parent="ArenaProps/DecorGrass" unique_id=154861668]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.6, 0.25, 5.5)
 texture_filter = 0
 texture = ExtResource("35_grass_2")
 
-[node name="WallBanners" type="Node3D" parent="ArenaProps"]
+[node name="WallBanners" type="Node3D" parent="ArenaProps" unique_id=952755643]
 
-[node name="BannerWL" type="Sprite3D" parent="ArenaProps/WallBanners"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.8, 3.2, 11.0)
+[node name="BannerWL" type="Sprite3D" parent="ArenaProps/WallBanners" unique_id=438340975]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.2, 3.2, 11)
 pixel_size = 0.018
 texture_filter = 0
 texture = ExtResource("37_banner_tall")
 
-[node name="BannerWR" type="Sprite3D" parent="ArenaProps/WallBanners"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.8, 3.2, 11.0)
+[node name="BannerWR" type="Sprite3D" parent="ArenaProps/WallBanners" unique_id=522437578]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.2, 3.2, 11)
 pixel_size = 0.018
 texture_filter = 0
 texture = ExtResource("37_banner_tall")
 
-[node name="BannerMidL" type="Sprite3D" parent="ArenaProps/WallBanners"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.8, 3.2, -0.5)
+[node name="BannerMidL" type="Sprite3D" parent="ArenaProps/WallBanners" unique_id=1939080208]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.2, 3.2, -0.5)
 pixel_size = 0.018
 texture_filter = 0
 texture = ExtResource("37_banner_tall")
 
-[node name="BannerMidR" type="Sprite3D" parent="ArenaProps/WallBanners"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.8, 3.2, -0.5)
+[node name="BannerMidR" type="Sprite3D" parent="ArenaProps/WallBanners" unique_id=2012621213]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.2, 3.2, -0.5)
 pixel_size = 0.018
 texture_filter = 0
 texture = ExtResource("37_banner_tall")
 
-[node name="MovableRocks" type="Node3D" parent="ArenaProps"]
+[node name="MovableRocks" type="Node3D" parent="ArenaProps" unique_id=1466262025]
 
-[node name="Rock1" type="StaticBody3D" parent="ArenaProps/MovableRocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 0.4, 6.8)
-collision_layer = 1
-collision_mask = 1
+[node name="Rock1" type="StaticBody3D" parent="ArenaProps/MovableRocks" unique_id=2013230230]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0.4, 6.8)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock1"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock1" unique_id=385982088]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("Shape_Rock")
 
-[node name="Visual" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock1"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock1" unique_id=1811036991]
 pixel_size = 0.012
 billboard = 2
 texture_filter = 0
 texture = ExtResource("31_rock_boulder")
 
-[node name="Shadow" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock1"]
+[node name="Shadow" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock1" unique_id=552487697]
 transform = Transform3D(1.1, 0, 0, 0, 0, 1.1, 0, -1.1, 0, 0, -0.38, 0)
 pixel_size = 0.009
 texture_filter = 0
 texture = ExtResource("7_shadow")
 
-[node name="InteractArea" type="Area3D" parent="ArenaProps/MovableRocks/Rock1"]
+[node name="InteractArea" type="Area3D" parent="ArenaProps/MovableRocks/Rock1" unique_id=1809369053]
 
-[node name="Col" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock1/InteractArea"]
+[node name="Col" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock1/InteractArea" unique_id=1025495277]
 shape = SubResource("Shape_Rock")
 
-[node name="Prompt" type="Label3D" parent="ArenaProps/MovableRocks/Rock1"]
+[node name="Prompt" type="Label3D" parent="ArenaProps/MovableRocks/Rock1" unique_id=1659838601]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 visible = false
 billboard = 1
@@ -842,45 +709,43 @@ text = "[E] Grab Rock"
 font_size = 22
 outline_size = 4
 
-[node name="ImpactDust" type="CPUParticles3D" parent="ArenaProps/MovableRocks/Rock1"]
+[node name="ImpactDust" type="CPUParticles3D" parent="ArenaProps/MovableRocks/Rock1" unique_id=1336392061]
 emitting = false
-one_shot = true
-explosiveness = 0.8
 amount = 18
 lifetime = 0.6
+one_shot = true
+explosiveness = 0.8
 direction = Vector3(0, 1, 0)
 spread = 60.0
 initial_velocity_min = 1.0
 initial_velocity_max = 2.5
 color = Color(0.7, 0.6, 0.5, 0.8)
 
-[node name="Rock2" type="StaticBody3D" parent="ArenaProps/MovableRocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0.4, 6.8)
-collision_layer = 1
-collision_mask = 1
+[node name="Rock2" type="StaticBody3D" parent="ArenaProps/MovableRocks" unique_id=1505306968]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.2, 0.4, 6.8)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock2"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock2" unique_id=7841978]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("Shape_Rock")
 
-[node name="Visual" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock2"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock2" unique_id=1347969419]
 pixel_size = 0.012
 billboard = 2
 texture_filter = 0
 texture = ExtResource("31_rock_boulder")
 
-[node name="Shadow" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock2"]
-transform = Transform3D(1.0, 0, 0, 0, 0, 1.0, 0, -1.0, 0, 0, -0.38, 0)
+[node name="Shadow" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock2" unique_id=167292207]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, -0.38, 0)
 pixel_size = 0.009
 texture_filter = 0
 texture = ExtResource("7_shadow")
 
-[node name="InteractArea" type="Area3D" parent="ArenaProps/MovableRocks/Rock2"]
+[node name="InteractArea" type="Area3D" parent="ArenaProps/MovableRocks/Rock2" unique_id=869928624]
 
-[node name="Col" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock2/InteractArea"]
+[node name="Col" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock2/InteractArea" unique_id=1264178706]
 shape = SubResource("Shape_Rock")
 
-[node name="Prompt" type="Label3D" parent="ArenaProps/MovableRocks/Rock2"]
+[node name="Prompt" type="Label3D" parent="ArenaProps/MovableRocks/Rock2" unique_id=243841454]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 visible = false
 billboard = 1
@@ -888,45 +753,45 @@ text = "[E] Grab Rock"
 font_size = 22
 outline_size = 4
 
-[node name="ImpactDust" type="CPUParticles3D" parent="ArenaProps/MovableRocks/Rock2"]
+[node name="ImpactDust" type="CPUParticles3D" parent="ArenaProps/MovableRocks/Rock2" unique_id=917534834]
 emitting = false
-one_shot = true
-explosiveness = 0.8
 amount = 18
 lifetime = 0.6
+one_shot = true
+explosiveness = 0.8
 direction = Vector3(0, 1, 0)
 spread = 60.0
 initial_velocity_min = 1.0
 initial_velocity_max = 2.5
 color = Color(0.7, 0.6, 0.5, 0.8)
 
-[node name="Rock3" type="StaticBody3D" parent="ArenaProps/MovableRocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 0.4, 3.0)
+[node name="Rock3" type="StaticBody3D" parent="ArenaProps/MovableRocks" unique_id=2020528703]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 0.4, 3)
 collision_layer = 3
 collision_mask = 3
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock3"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock3" unique_id=1640055693]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("Shape_Rock")
 
-[node name="Visual" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock3"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock3" unique_id=1979103311]
 pixel_size = 0.012
 billboard = 2
 texture_filter = 0
 texture = ExtResource("32_rock_medium")
 
-[node name="Shadow" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock3"]
-transform = Transform3D(1.0, 0, 0, 0, 0, 1.0, 0, -1.0, 0, 0, -0.38, 0)
+[node name="Shadow" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock3" unique_id=890448063]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, -0.38, 0)
 pixel_size = 0.009
 texture_filter = 0
 texture = ExtResource("7_shadow")
 
-[node name="InteractArea" type="Area3D" parent="ArenaProps/MovableRocks/Rock3"]
+[node name="InteractArea" type="Area3D" parent="ArenaProps/MovableRocks/Rock3" unique_id=142456126]
 
-[node name="Col" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock3/InteractArea"]
+[node name="Col" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock3/InteractArea" unique_id=842753029]
 shape = SubResource("Shape_Rock")
 
-[node name="Prompt" type="Label3D" parent="ArenaProps/MovableRocks/Rock3"]
+[node name="Prompt" type="Label3D" parent="ArenaProps/MovableRocks/Rock3" unique_id=1744598570]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 visible = false
 billboard = 1
@@ -934,45 +799,45 @@ text = "[E] Grab Rock"
 font_size = 22
 outline_size = 4
 
-[node name="ImpactDust" type="CPUParticles3D" parent="ArenaProps/MovableRocks/Rock3"]
+[node name="ImpactDust" type="CPUParticles3D" parent="ArenaProps/MovableRocks/Rock3" unique_id=1926107582]
 emitting = false
-one_shot = true
-explosiveness = 0.8
 amount = 18
 lifetime = 0.6
+one_shot = true
+explosiveness = 0.8
 direction = Vector3(0, 1, 0)
 spread = 60.0
 initial_velocity_min = 1.0
 initial_velocity_max = 2.5
 color = Color(0.7, 0.6, 0.5, 0.8)
 
-[node name="Rock4" type="StaticBody3D" parent="ArenaProps/MovableRocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0.4, 3.0)
+[node name="Rock4" type="StaticBody3D" parent="ArenaProps/MovableRocks" unique_id=2072200260]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0.4, 3)
 collision_layer = 3
 collision_mask = 3
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock4"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock4" unique_id=2123864752]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("Shape_Rock")
 
-[node name="Visual" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock4"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock4" unique_id=1726384138]
 pixel_size = 0.012
 billboard = 2
 texture_filter = 0
 texture = ExtResource("32_rock_medium")
 
-[node name="Shadow" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock4"]
-transform = Transform3D(1.0, 0, 0, 0, 0, 1.0, 0, -1.0, 0, 0, -0.38, 0)
+[node name="Shadow" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock4" unique_id=1286122211]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, -0.38, 0)
 pixel_size = 0.009
 texture_filter = 0
 texture = ExtResource("7_shadow")
 
-[node name="InteractArea" type="Area3D" parent="ArenaProps/MovableRocks/Rock4"]
+[node name="InteractArea" type="Area3D" parent="ArenaProps/MovableRocks/Rock4" unique_id=2069327259]
 
-[node name="Col" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock4/InteractArea"]
+[node name="Col" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock4/InteractArea" unique_id=1421725321]
 shape = SubResource("Shape_Rock")
 
-[node name="Prompt" type="Label3D" parent="ArenaProps/MovableRocks/Rock4"]
+[node name="Prompt" type="Label3D" parent="ArenaProps/MovableRocks/Rock4" unique_id=964863390]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 visible = false
 billboard = 1
@@ -980,45 +845,45 @@ text = "[E] Grab Rock"
 font_size = 22
 outline_size = 4
 
-[node name="ImpactDust" type="CPUParticles3D" parent="ArenaProps/MovableRocks/Rock4"]
+[node name="ImpactDust" type="CPUParticles3D" parent="ArenaProps/MovableRocks/Rock4" unique_id=1290867763]
 emitting = false
-one_shot = true
-explosiveness = 0.8
 amount = 18
 lifetime = 0.6
+one_shot = true
+explosiveness = 0.8
 direction = Vector3(0, 1, 0)
 spread = 60.0
 initial_velocity_min = 1.0
 initial_velocity_max = 2.5
 color = Color(0.7, 0.6, 0.5, 0.8)
 
-[node name="Rock5" type="StaticBody3D" parent="ArenaProps/MovableRocks"]
+[node name="Rock5" type="StaticBody3D" parent="ArenaProps/MovableRocks" unique_id=1535120058]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 0.4, -4.5)
 collision_layer = 3
 collision_mask = 3
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock5"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock5" unique_id=1305453447]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("Shape_Rock")
 
-[node name="Visual" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock5"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock5" unique_id=691029847]
 pixel_size = 0.012
 billboard = 2
 texture_filter = 0
 texture = ExtResource("33_rock_tall")
 
-[node name="Shadow" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock5"]
-transform = Transform3D(1.0, 0, 0, 0, 0, 1.0, 0, -1.0, 0, 0, -0.38, 0)
+[node name="Shadow" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock5" unique_id=1066113344]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, -0.38, 0)
 pixel_size = 0.009
 texture_filter = 0
 texture = ExtResource("7_shadow")
 
-[node name="InteractArea" type="Area3D" parent="ArenaProps/MovableRocks/Rock5"]
+[node name="InteractArea" type="Area3D" parent="ArenaProps/MovableRocks/Rock5" unique_id=221681127]
 
-[node name="Col" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock5/InteractArea"]
+[node name="Col" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock5/InteractArea" unique_id=168419696]
 shape = SubResource("Shape_Rock")
 
-[node name="Prompt" type="Label3D" parent="ArenaProps/MovableRocks/Rock5"]
+[node name="Prompt" type="Label3D" parent="ArenaProps/MovableRocks/Rock5" unique_id=1201401279]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 visible = false
 billboard = 1
@@ -1026,45 +891,45 @@ text = "[E] Grab Rock"
 font_size = 22
 outline_size = 4
 
-[node name="ImpactDust" type="CPUParticles3D" parent="ArenaProps/MovableRocks/Rock5"]
+[node name="ImpactDust" type="CPUParticles3D" parent="ArenaProps/MovableRocks/Rock5" unique_id=703412203]
 emitting = false
-one_shot = true
-explosiveness = 0.8
 amount = 18
 lifetime = 0.6
+one_shot = true
+explosiveness = 0.8
 direction = Vector3(0, 1, 0)
 spread = 60.0
 initial_velocity_min = 1.0
 initial_velocity_max = 2.5
 color = Color(0.7, 0.6, 0.5, 0.8)
 
-[node name="Rock6" type="StaticBody3D" parent="ArenaProps/MovableRocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 0.4, -4.5)
+[node name="Rock6" type="StaticBody3D" parent="ArenaProps/MovableRocks" unique_id=1487688466]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.4, -4.5)
 collision_layer = 3
 collision_mask = 3
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock6"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock6" unique_id=500625935]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("Shape_Rock")
 
-[node name="Visual" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock6"]
+[node name="Visual" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock6" unique_id=283611208]
 pixel_size = 0.012
 billboard = 2
 texture_filter = 0
 texture = ExtResource("33_rock_tall")
 
-[node name="Shadow" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock6"]
-transform = Transform3D(1.0, 0, 0, 0, 0, 1.0, 0, -1.0, 0, 0, -0.38, 0)
+[node name="Shadow" type="Sprite3D" parent="ArenaProps/MovableRocks/Rock6" unique_id=1542279244]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, -0.38, 0)
 pixel_size = 0.009
 texture_filter = 0
 texture = ExtResource("7_shadow")
 
-[node name="InteractArea" type="Area3D" parent="ArenaProps/MovableRocks/Rock6"]
+[node name="InteractArea" type="Area3D" parent="ArenaProps/MovableRocks/Rock6" unique_id=1746214840]
 
-[node name="Col" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock6/InteractArea"]
+[node name="Col" type="CollisionShape3D" parent="ArenaProps/MovableRocks/Rock6/InteractArea" unique_id=1613998889]
 shape = SubResource("Shape_Rock")
 
-[node name="Prompt" type="Label3D" parent="ArenaProps/MovableRocks/Rock6"]
+[node name="Prompt" type="Label3D" parent="ArenaProps/MovableRocks/Rock6" unique_id=1776096130]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 visible = false
 billboard = 1
@@ -1072,120 +937,120 @@ text = "[E] Grab Rock"
 font_size = 22
 outline_size = 4
 
-[node name="ImpactDust" type="CPUParticles3D" parent="ArenaProps/MovableRocks/Rock6"]
+[node name="ImpactDust" type="CPUParticles3D" parent="ArenaProps/MovableRocks/Rock6" unique_id=1784823671]
 emitting = false
-one_shot = true
-explosiveness = 0.8
 amount = 18
 lifetime = 0.6
+one_shot = true
+explosiveness = 0.8
 direction = Vector3(0, 1, 0)
 spread = 60.0
 initial_velocity_min = 1.0
 initial_velocity_max = 2.5
 color = Color(0.7, 0.6, 0.5, 0.8)
 
-[node name="Lights" type="Node3D" parent="."]
+[node name="Lights" type="Node3D" parent="." unique_id=266496813]
 
-[node name="DivineMurtiLight" type="OmniLight3D" parent="Lights"]
+[node name="DivineMurtiLight" type="OmniLight3D" parent="Lights" unique_id=576858626]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.6, -13.5)
 light_color = Color(1, 0.82, 0.45, 1)
 light_energy = 3.4
+shadow_enabled = true
 omni_range = 11.0
-shadow_enabled = true
 
-[node name="BrazierLight_Col1L" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 1.4, 10.5)
+[node name="BrazierLight_Col1L" type="OmniLight3D" parent="Lights" unique_id=312811850]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 1.4, 10.5)
 light_color = Color(1, 0.65, 0.22, 1)
 light_energy = 2.5
-omni_range = 7.5
 shadow_enabled = true
+omni_range = 7.5
 
-[node name="BrazierLight_Col1R" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 1.4, 10.5)
+[node name="BrazierLight_Col1R" type="OmniLight3D" parent="Lights" unique_id=518565538]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 1.4, 10.5)
 light_color = Color(1, 0.65, 0.22, 1)
 light_energy = 2.5
-omni_range = 7.5
 shadow_enabled = true
+omni_range = 7.5
 
-[node name="BrazierLight_Col2L" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 1.3, 2.0)
+[node name="BrazierLight_Col2L" type="OmniLight3D" parent="Lights" unique_id=939872863]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 1.3, 2)
 light_color = Color(1, 0.65, 0.22, 1)
 light_energy = 2.4
-omni_range = 7.5
 shadow_enabled = true
+omni_range = 7.5
 
-[node name="BrazierLight_Col2R" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 1.3, 2.0)
+[node name="BrazierLight_Col2R" type="OmniLight3D" parent="Lights" unique_id=662004919]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 1.3, 2)
 light_color = Color(1, 0.65, 0.22, 1)
 light_energy = 2.4
-omni_range = 7.5
 shadow_enabled = true
+omni_range = 7.5
 
-[node name="BrazierLight_Col4L" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 1.3, -3.5)
+[node name="BrazierLight_Col4L" type="OmniLight3D" parent="Lights" unique_id=1943899652]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 1.3, -3.5)
 light_color = Color(1, 0.65, 0.22, 1)
 light_energy = 2.4
-omni_range = 7.5
 shadow_enabled = true
+omni_range = 7.5
 
-[node name="BrazierLight_Col4R" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 1.3, -3.5)
+[node name="BrazierLight_Col4R" type="OmniLight3D" parent="Lights" unique_id=1702833960]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 1.3, -3.5)
 light_color = Color(1, 0.65, 0.22, 1)
 light_energy = 2.4
-omni_range = 7.5
 shadow_enabled = true
+omni_range = 7.5
 
-[node name="BrazierLight_DaisL" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 1.6, -11.8)
+[node name="BrazierLight_DaisL" type="OmniLight3D" parent="Lights" unique_id=730715384]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 1.6, -11.8)
 light_color = Color(1, 0.7, 0.25, 1)
 light_energy = 2.6
-omni_range = 8.0
 shadow_enabled = true
+omni_range = 8.0
 
-[node name="BrazierLight_DaisR" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 1.6, -11.8)
+[node name="BrazierLight_DaisR" type="OmniLight3D" parent="Lights" unique_id=139191545]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.2, 1.6, -11.8)
 light_color = Color(1, 0.7, 0.25, 1)
 light_energy = 2.6
-omni_range = 8.0
 shadow_enabled = true
+omni_range = 8.0
 
-[node name="Decorations" type="Node3D" parent="."]
+[node name="Decorations" type="Node3D" parent="." unique_id=511062567]
 
-[node name="Torches" type="Node3D" parent="Decorations"]
+[node name="Torches" type="Node3D" parent="Decorations" unique_id=324091577]
 
-[node name="WallTorchL1" type="Sprite3D" parent="Decorations/Torches"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.6, 2.8, 10.0)
+[node name="WallTorchL1" type="Sprite3D" parent="Decorations/Torches" unique_id=329312822]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 2.8, 10)
 pixel_size = 0.016
 texture_filter = 0
 texture = ExtResource("26_wall_torch")
 
-[node name="WallTorchR1" type="Sprite3D" parent="Decorations/Torches"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.6, 2.8, 10.0)
+[node name="WallTorchR1" type="Sprite3D" parent="Decorations/Torches" unique_id=1639130225]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 2.8, 10)
 pixel_size = 0.016
 texture_filter = 0
 texture = ExtResource("26_wall_torch")
 
-[node name="WallTorchL2" type="Sprite3D" parent="Decorations/Torches"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.6, 2.8, -0.5)
+[node name="WallTorchL2" type="Sprite3D" parent="Decorations/Torches" unique_id=1897461234]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 2.8, -0.5)
 pixel_size = 0.016
 texture_filter = 0
 texture = ExtResource("26_wall_torch")
 
-[node name="WallTorchR2" type="Sprite3D" parent="Decorations/Torches"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.6, 2.8, -0.5)
+[node name="WallTorchR2" type="Sprite3D" parent="Decorations/Torches" unique_id=56412225]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 2.8, -0.5)
 pixel_size = 0.016
 texture_filter = 0
 texture = ExtResource("26_wall_torch")
 
-[node name="Interactables" type="Node3D" parent="."]
+[node name="Interactables" type="Node3D" parent="." unique_id=936803826]
 
-[node name="AltarBlessing" type="Area3D" parent="Interactables"]
+[node name="AltarBlessing" type="Area3D" parent="Interactables" unique_id=1732993979]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -10.5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactables/AltarBlessing"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactables/AltarBlessing" unique_id=470877547]
 shape = SubResource("Shape_Dais")
 
-[node name="Prompt" type="Label3D" parent="Interactables/AltarBlessing"]
+[node name="Prompt" type="Label3D" parent="Interactables/AltarBlessing" unique_id=1927910429]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
 visible = false
 billboard = 1
@@ -1193,14 +1058,14 @@ text = "[E] Pray at Sacred Murti - Reclaim Blessing"
 font_size = 28
 outline_size = 5
 
-[node name="SouthExit" type="Area3D" parent="Interactables"]
+[node name="SouthExit" type="Area3D" parent="Interactables" unique_id=1312557726]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 14.5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactables/SouthExit"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactables/SouthExit" unique_id=1568220420]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("Shape_CoverBlock")
 
-[node name="Prompt" type="Label3D" parent="Interactables/SouthExit"]
+[node name="Prompt" type="Label3D" parent="Interactables/SouthExit" unique_id=631716582]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 visible = false
 billboard = 1
@@ -1208,21 +1073,21 @@ text = "[E] Return to Castle Exterior"
 font_size = 26
 outline_size = 5
 
-[node name="BossArenaTrigger" type="Area3D" parent="Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 1.0)
+[node name="BossArenaTrigger" type="Area3D" parent="Interactables" unique_id=1698310428]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 1)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactables/BossArenaTrigger"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactables/BossArenaTrigger" unique_id=1495494324]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("Shape_WallNorth")
 
-[node name="VFX" type="Node3D" parent="."]
+[node name="VFX" type="Node3D" parent="." unique_id=1656533747]
 
-[node name="DivineMurtiParticles" type="CPUParticles3D" parent="VFX"]
+[node name="DivineMurtiParticles" type="CPUParticles3D" parent="VFX" unique_id=1215089483]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, -13.8)
 amount = 40
 lifetime = 2.5
 emission_shape = 2
-emission_box_extents = Vector3(2.5, 2, 1)
+emission_sphere_radius = 1.0
 direction = Vector3(0, 1, 0)
 spread = 35.0
 gravity = Vector3(0, 0.2, 0)
@@ -1232,7 +1097,7 @@ scale_amount_min = 0.08
 scale_amount_max = 0.22
 color = Color(1, 0.9, 0.45, 0.85)
 
-[node name="AsurAuraParticles" type="CPUParticles3D" parent="VFX"]
+[node name="AsurAuraParticles" type="CPUParticles3D" parent="VFX" unique_id=71901961]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
 emitting = false
 amount = 30
@@ -1242,36 +1107,36 @@ emission_sphere_radius = 4.0
 gravity = Vector3(0, 0.5, 0)
 color = Color(0.65, 0.15, 0.15, 0.6)
 
-[node name="BlessingVFX" type="Node3D" parent="VFX"]
+[node name="BlessingVFX" type="Node3D" parent="VFX" unique_id=2003963338]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -11.5)
 
-[node name="OmSprite" type="Sprite3D" parent="VFX/BlessingVFX"]
+[node name="OmSprite" type="Sprite3D" parent="VFX/BlessingVFX" unique_id=374812889]
 visible = false
 pixel_size = 0.012
 billboard = 1
 texture_filter = 0
 texture = ExtResource("8_om")
 
-[node name="LotusSprite" type="Sprite3D" parent="VFX/BlessingVFX"]
+[node name="LotusSprite" type="Sprite3D" parent="VFX/BlessingVFX" unique_id=1936090669]
 visible = false
 pixel_size = 0.012
 billboard = 1
 texture_filter = 0
 texture = ExtResource("9_lotus")
 
-[node name="DivineFlash" type="Sprite3D" parent="VFX/BlessingVFX"]
+[node name="DivineFlash" type="Sprite3D" parent="VFX/BlessingVFX" unique_id=92994963]
 visible = false
 pixel_size = 0.03
 billboard = 1
 texture_filter = 0
 texture = ExtResource("10_flash")
 
-[node name="BlessingParticles" type="CPUParticles3D" parent="VFX/BlessingVFX"]
+[node name="BlessingParticles" type="CPUParticles3D" parent="VFX/BlessingVFX" unique_id=1858688292]
 emitting = false
-one_shot = true
-explosiveness = 0.9
 amount = 60
 lifetime = 1.8
+one_shot = true
+explosiveness = 0.9
 direction = Vector3(0, 1, 0)
 spread = 180.0
 gravity = Vector3(0, -0.2, 0)
@@ -1281,9 +1146,9 @@ scale_amount_min = 0.15
 scale_amount_max = 0.4
 color = Color(1, 0.92, 0.5, 0.9)
 
-[node name="UI" type="CanvasLayer" parent="."]
+[node name="UI" type="CanvasLayer" parent="." unique_id=211448530]
 
-[node name="HUD" type="Control" parent="UI"]
+[node name="HUD" type="Control" parent="UI" unique_id=195839458]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -1292,7 +1157,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="TitleBanner" type="Label" parent="UI/HUD"]
+[node name="TitleBanner" type="Label" parent="UI/HUD" unique_id=333077232]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -1308,7 +1173,7 @@ theme_override_font_sizes/font_size = 24
 text = "LEVEL 3: SANCTUM OF LORD GANESHA"
 horizontal_alignment = 1
 
-[node name="ObjectiveBanner" type="Label" parent="UI/HUD"]
+[node name="ObjectiveBanner" type="Label" parent="UI/HUD" unique_id=430494018]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -1324,7 +1189,7 @@ theme_override_font_sizes/font_size = 17
 text = "Approach the Sacred Murti to Reclaim Lord Ganesha's Divine Blessing"
 horizontal_alignment = 1
 
-[node name="ActionPrompt" type="Label" parent="UI/HUD"]
+[node name="ActionPrompt" type="Label" parent="UI/HUD" unique_id=147111362]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -1341,7 +1206,7 @@ theme_override_colors/font_color = Color(1, 0.95, 0.5, 1)
 theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
 
-[node name="DialogueBox" type="PanelContainer" parent="UI/HUD"]
+[node name="DialogueBox" type="PanelContainer" parent="UI/HUD" unique_id=85150239]
 visible = false
 layout_mode = 1
 anchors_preset = 7
@@ -1357,22 +1222,21 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_styles/panel = SubResource("StyleBox_Dialogue")
 
-[node name="Margin" type="MarginContainer" parent="UI/HUD/DialogueBox"]
+[node name="Margin" type="MarginContainer" parent="UI/HUD/DialogueBox" unique_id=246107365]
 layout_mode = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 15
 
-[node name="DialogueLabel" type="Label" parent="UI/HUD/DialogueBox/Margin"]
+[node name="DialogueLabel" type="Label" parent="UI/HUD/DialogueBox/Margin" unique_id=1558035202]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.92, 0.85, 1)
 theme_override_font_sizes/font_size = 18
-text = ""
 autowrap_mode = 2
 
-[node name="Player" parent="." groups=["player"] instance=ExtResource("3_player")]
+[node name="Player" parent="." unique_id=190694912 instance=ExtResource("3_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 12.5)
 
-[node name="CameraRig" parent="." instance=ExtResource("4_camera")]
+[node name="CameraRig" parent="." unique_id=462829943 instance=ExtResource("4_camera")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12.5)
