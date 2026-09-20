@@ -62,6 +62,8 @@ const MINION_SPAWN_POINTS: Array[Vector3] = [
 ]
 
 func _ready() -> void:
+	if has_node("/root/MusicManager"):
+		MusicManager.play("l3_boss")
 	_ensure_l3_textures_cleaned()
 	_setup_player()
 	_setup_camera()

@@ -10,6 +10,8 @@ var player_inside: bool = false
 const AssetExtractor = preload("res://scripts/extract_assets.gd")
 
 func _ready() -> void:
+	if has_node("/root/MusicManager"):
+		MusicManager.play("outdoor")
 	AssetExtractor.extract_assets_now()
 	prompt_label.visible = false
 	prompt_label.text = "The Great Gate\n[E] Enter Level 1 (The Asur's Fortress)"
