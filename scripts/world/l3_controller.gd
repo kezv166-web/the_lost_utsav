@@ -45,6 +45,22 @@ var time_passed: float = 0.0
 # GLB collision helper
 var _glb_collision: Node = null
 
+# Chota Asur Minions System
+var chota_asur_scene: PackedScene = preload("res://scenes/enemy/chota_asur.tscn")
+var active_chota_asurs: Array[Node3D] = []
+var max_chota_asurs: int = 4
+var minion_spawn_timer: float = 6.0
+var minion_spawn_interval: float = 12.0
+var current_attacker: Node3D = null
+var spawn_point_index: int = 0
+
+const MINION_SPAWN_POINTS: Array[Vector3] = [
+	Vector3(-5.8, 0.1, 2.5),  # West Colonnade Flank
+	Vector3(5.8, 0.1, 2.5),   # East Colonnade Flank
+	Vector3(-4.5, 0.1, 9.5),  # South-West Gate Flank
+	Vector3(4.5, 0.1, 9.5)    # South-East Gate Flank
+]
+
 func _ready() -> void:
 	_ensure_l3_textures_cleaned()
 	_setup_player()
@@ -85,6 +101,11 @@ func _ensure_l3_textures_cleaned() -> void:
 						data[base + 3] = 0
 				var clean_tileset = Image.create_from_data(w, h, false, Image.FORMAT_RGBA8, data)
 				clean_tileset.save_png(tileset_global)
+
+	# Ensure ground cracks procedural texture exists
+	var cracks_script = load("res://scripts/enemy/asur_ground_cracks.gd")
+	if cracks_script and cracks_script.has_method("ensure_ground_cracks_texture"):
+		cracks_script.ensure_ground_cracks_texture()
 
 	# Ensure nearest filtering on all Sprite3D nodes to prevent edge bleeding
 	_apply_clean_sprite_settings(self)
@@ -236,12 +257,71 @@ func _setup_asur() -> void:
 		if asur.has_signal("boss_defeated"):
 			asur.boss_defeated.connect(_on_asur_defeated)
 
+func _on_boss_trigger_entered(body: Node3D) -> void:
+	if body == player and not boss_encounter_started:
+		boss_encounter_started = true
+		if asur and asur.has_method("roar"):
+			asur.roar()
+		if hud_objective:
+			hud_objective.text = "Boss Arena: Defeat the Asur General! Watch for minion flanks and ground shockwaves!"
+			hud_objective.modulate = Color(1.0, 0.45, 0.35)
+
+func request_attack_token(requester: Node3D) -> bool:
+	if current_attacker == null or not is_instance_valid(current_attacker):
+		current_attacker = requester
+		return true
+	if current_attacker == requester:
+		return true
+	return false
+
+func release_attack_token(requester: Node3D) -> void:
+	if current_attacker == requester:
+		current_attacker = null
+
+func spawn_chota_asur(pos: Vector3 = Vector3.ZERO) -> Node3D:
+	if active_chota_asurs.size() >= max_chota_asurs:
+		return null
+	if not chota_asur_scene:
+		return null
+		
+	var minion = chota_asur_scene.instantiate()
+	add_child(minion)
+	
+	if pos == Vector3.ZERO:
+		pos = MINION_SPAWN_POINTS[spawn_point_index % MINION_SPAWN_POINTS.size()]
+		spawn_point_index += 1
+		
+	minion.global_position = pos
+	minion.assigned_slot = active_chota_asurs.size() % 4
+	if is_instance_valid(player):
+		minion.set_player(player)
+	minion.minion_died.connect(_on_minion_died)
+	
+	active_chota_asurs.append(minion)
+	print("[L3] Spawned Chota Asur #%d at %s (Slot %d)" % [active_chota_asurs.size(), pos, minion.assigned_slot])
+	return minion
+
+func _on_minion_died(minion: Node3D) -> void:
+	if current_attacker == minion:
+		current_attacker = null
+	active_chota_asurs.erase(minion)
+	_reassign_minion_slots()
+
+func _reassign_minion_slots() -> void:
+	for i in range(active_chota_asurs.size()):
+		var m = active_chota_asurs[i]
+		if is_instance_valid(m):
+			m.assigned_slot = i % 4
+
 func _on_asur_roared() -> void:
 	if camera_rig:
 		var tw = create_tween()
 		tw.tween_property(camera_rig, "target_offset", Vector3(0.15, 1.35, -2.0), 0.05)
 		tw.tween_property(camera_rig, "target_offset", Vector3(-0.15, 1.35, -2.0), 0.05)
 		tw.tween_property(camera_rig, "target_offset", Vector3(0, 1.35, -2.0), 0.08)
+	# Roar summons reinforcements if below cap
+	if active_chota_asurs.size() < max_chota_asurs:
+		spawn_chota_asur()
 
 func _on_asur_damaged(new_hp: int) -> void:
 	if camera_rig:
@@ -249,8 +329,19 @@ func _on_asur_damaged(new_hp: int) -> void:
 		tw.tween_property(camera_rig, "target_offset", Vector3(0.2, 1.35, -1.9), 0.06)
 		tw.tween_property(camera_rig, "target_offset", Vector3(-0.2, 1.35, -2.1), 0.06)
 		tw.tween_property(camera_rig, "target_offset", Vector3(0, 1.35, -2.0), 0.08)
+		
+	# Summon reinforcements on boss damage milestones if under cap
+	if (new_hp in [750, 500, 250] or active_chota_asurs.is_empty()) and active_chota_asurs.size() < max_chota_asurs:
+		spawn_chota_asur()
 
 func _on_asur_defeated() -> void:
+	# Defeat all active minions when boss falls
+	for m in active_chota_asurs:
+		if is_instance_valid(m) and m.has_method("take_damage"):
+			m.take_damage(999)
+	active_chota_asurs.clear()
+	current_attacker = null
+
 	# Unlock path to the Sacred Murti by disabling rear barrier
 	var rear_barrier_col = get_node_or_null("Boundaries/AsurRearBarrier/CollisionShape3D")
 	if rear_barrier_col and rear_barrier_col is CollisionShape3D:
@@ -276,7 +367,7 @@ func _setup_ui() -> void:
 		if boss_bar and boss_bar.has_method("set_boss") and asur:
 			boss_bar.set_boss(asur)
 
-	_update_hp_display(3)
+	_update_hp_display(player.health if (player and "health" in player) else 250)
 
 func _on_player_damaged(hp: int) -> void:
 	if camera_rig:
@@ -313,13 +404,22 @@ func _update_hp_display(hp: int) -> void:
 	if hud:
 		var char_bar = hud.get_node_or_null("CharacterHealthBar")
 		if char_bar and char_bar.has_method("update_health"):
-			char_bar.update_health(hp, 3)
+			var max_val = player.max_health if (player and "max_health" in player) else 250
+			char_bar.update_health(hp, max_val)
 
 # -------------------------------------------------------------------------
 # Physics Process & Dynamic Loop
 # -------------------------------------------------------------------------
 func _physics_process(delta: float) -> void:
 	time_passed += delta
+
+	# Periodic Chota Asur summoning during boss encounter
+	if boss_encounter_started and is_instance_valid(asur) and asur.health > 0:
+		minion_spawn_timer -= delta
+		if minion_spawn_timer <= 0.0:
+			minion_spawn_timer = minion_spawn_interval
+			if active_chota_asurs.size() < max_chota_asurs:
+				spawn_chota_asur()
 
 	# 1. Subtle warm torch flicker
 	for i in range(torch_lights.size()):
@@ -362,37 +462,36 @@ func _physics_process(delta: float) -> void:
 				var new_prompt = nearby_rock.get_node_or_null("Prompt")
 				if new_prompt:
 					new_prompt.visible = true
-					new_prompt.text = "[C] Grab Rock"
+					new_prompt.text = "[E] Grab Rock"
 
 # -------------------------------------------------------------------------
 # Input Handling
 # -------------------------------------------------------------------------
 func _unhandled_input(event: InputEvent) -> void:
-	# Altar blessing and South Exit use KEY_E
-	if event.is_action_pressed("interact") or (event is InputEventKey and event.pressed and not event.is_echo() and (event.physical_keycode == KEY_E or event.keycode == KEY_E)):
-		# Pray at Altar
-		if player_near_altar and not blessing_in_progress:
-			_reclaim_blessing()
-			return
-
-		# South Exit
-		if player_near_exit:
-			_trigger_exit()
-			return
-
-	# Rock pickup / throw with C key
-	var is_c_pressed = (event is InputEventKey and event.pressed and not event.is_echo() and (event.physical_keycode == KEY_C or event.keycode == KEY_C))
-	if is_c_pressed:
+	# Check if interact (E or C fallback) is pressed
+	var is_interact = event.is_action_pressed("interact") or (event is InputEventKey and event.pressed and not event.is_echo() and (event.physical_keycode in [KEY_E, KEY_C] or event.keycode in [KEY_E, KEY_C]))
+	
+	if is_interact:
+		# If carrying rock, throw it with E!
 		if is_instance_valid(held_rock):
 			_throw_held_rock()
 			return
-		elif is_instance_valid(nearby_rock) and not is_instance_valid(held_rock):
+		# If near rock, grab it with E!
+		elif is_instance_valid(nearby_rock):
 			_grab_rock(nearby_rock)
 			return
+		# Pray at Altar
+		elif player_near_altar and not blessing_in_progress:
+			_reclaim_blessing()
+			return
+		# South Exit
+		elif player_near_exit:
+			_trigger_exit()
+			return
 
-	# Throw with attack key while carrying rock (K or L or Space) - NO Q!
+	# Throw with attack key while carrying rock (F, G, K, L, Space)
 	if is_instance_valid(held_rock):
-		if event.is_action_pressed("attack_axe") or event.is_action_pressed("attack_rope") or (event is InputEventKey and event.pressed and not event.is_echo() and (event.physical_keycode in [KEY_K, KEY_L, KEY_SPACE] or event.keycode in [KEY_K, KEY_L, KEY_SPACE])):
+		if event.is_action_pressed("attack_axe") or event.is_action_pressed("attack_rope") or (event is InputEventKey and event.pressed and not event.is_echo() and (event.physical_keycode in [KEY_F, KEY_G, KEY_K, KEY_L, KEY_SPACE] or event.keycode in [KEY_F, KEY_G, KEY_K, KEY_L, KEY_SPACE])):
 			_throw_held_rock()
 
 # -------------------------------------------------------------------------
@@ -419,7 +518,7 @@ func _grab_rock(rock: Node3D) -> void:
 		player.is_carrying = true
 	
 	if hud_action:
-		hud_action.text = "[C / Attack] Throw Rock!"
+		hud_action.text = "[E / F / G] Throw Rock!"
 
 func _throw_held_rock() -> void:
 	if not is_instance_valid(held_rock) or not is_instance_valid(player):
@@ -453,6 +552,17 @@ func _throw_held_rock() -> void:
 	var target_pos = start_pos + throw_dir * 7.0
 	target_pos.y = 0.35
 
+	# If throwing towards Asur within range, target him directly to prevent overshooting at close distance
+	if asur and is_instance_valid(asur) and asur.visible:
+		var to_asur = asur.global_position - start_pos
+		to_asur.y = 0.0
+		var asur_dist = to_asur.length()
+		if asur_dist <= 7.5:
+			var dot = throw_dir.dot(to_asur.normalized())
+			if dot >= 0.82:
+				target_pos = asur.global_position
+				target_pos.y = 0.35
+
 	# Smooth ballistic arc tween
 	var tw = create_tween().set_parallel(true)
 	tw.tween_property(rock, "global_position:x", target_pos.x, 0.45).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
@@ -478,9 +588,9 @@ func _on_rock_impact(rock: Node3D) -> void:
 		var dist = rock.global_position.distance_to(asur.global_position)
 		if dist < 2.5:
 			if asur.has_method("take_rock_hit"):
-				asur.take_rock_hit(1)
+				asur.take_rock_hit(85)
 			elif asur.has_method("take_damage"):
-				asur.take_damage(1)
+				asur.take_damage(85)
 			if hud_action:
 				hud_action.text = "DIRECT HIT! The Asur is STUNNED by the rock!"
 				get_tree().create_timer(2.5).timeout.connect(func():
@@ -493,6 +603,109 @@ func _on_rock_impact(rock: Node3D) -> void:
 	if dust is CPUParticles3D:
 		dust.restart()
 		dust.emitting = true
+
+# -------------------------------------------------------------------------
+# Destructible Pillars & Falling Rock Ammunition (Point A)
+# -------------------------------------------------------------------------
+var _dropped_rock_count: int = 0
+
+func smash_pillar_direct(child: StaticBody3D) -> void:
+	if not is_instance_valid(child):
+		return
+	if not ("Col1" in child.name or "Col3" in child.name or "Col5" in child.name):
+		return
+	if child.get_meta("is_broken", false):
+		return
+		
+	child.set_meta("is_broken", true)
+	if _glb_collision and _glb_collision.has_method("break_pillar"):
+		_glb_collision.break_pillar(child)
+	_spawn_rubble_burst(child.global_position)
+	# Drop rock ammunition from the temple ceiling!
+	_spawn_falling_rock(Vector3(child.global_position.x + randf_range(-0.4, 0.4), 4.5, child.global_position.z + 0.8))
+
+func smash_nearby_pillars(epicenter: Vector3, radius: float = 7.5) -> void:
+	var arena_props = get_node_or_null("ArenaProps")
+	if not arena_props:
+		return
+	var pillars_node = arena_props.get_node_or_null("Pillars")
+	if not pillars_node:
+		return
+		
+	var smashed_any = false
+	for child in pillars_node.get_children():
+		if not (child is StaticBody3D):
+			continue
+		if child.get_meta("is_broken", false):
+			continue
+			
+		var dist = Vector2(child.global_position.x - epicenter.x, child.global_position.z - epicenter.z).length()
+		if dist <= radius:
+			smash_pillar_direct(child)
+			smashed_any = true
+
+	# Robustness fallback: if no pillars remain to smash and player has fewer than 2 active rocks, drop ceiling tremor rock
+	if not smashed_any:
+		var rocks_parent = get_node_or_null("ArenaProps/MovableRocks")
+		if rocks_parent and rocks_parent.get_child_count() < 2:
+			_spawn_falling_rock(Vector3(randf_range(-2.5, 2.5), 4.5, randf_range(1.0, 5.0)))
+
+func _spawn_rubble_burst(pos: Vector3) -> void:
+	var particles := CPUParticles3D.new()
+	particles.amount = 26
+	particles.one_shot = true
+	particles.explosiveness = 0.92
+	particles.lifetime = 0.85
+	particles.direction = Vector3(0, 1, 0)
+	particles.spread = 55.0
+	particles.initial_velocity_min = 3.0
+	particles.initial_velocity_max = 6.5
+	particles.color = Color(0.78, 0.65, 0.5, 0.95)
+	add_child(particles)
+	particles.global_position = pos + Vector3(0, 0.5, 0)
+	particles.emitting = true
+	get_tree().create_timer(1.2).timeout.connect(particles.queue_free)
+
+func _spawn_falling_rock(spawn_pos: Vector3) -> void:
+	var rocks_parent = get_node_or_null("ArenaProps/MovableRocks")
+	if not rocks_parent or rocks_parent.get_child_count() == 0:
+		return
+		
+	_dropped_rock_count += 1
+	var template_rock = rocks_parent.get_child(0)
+	var new_rock = template_rock.duplicate()
+	new_rock.name = "DroppedRock_%d" % _dropped_rock_count
+	rocks_parent.add_child(new_rock)
+	
+	new_rock.global_position = spawn_pos
+	
+	if _glb_collision and _glb_collision.has_method("apply_rock_model"):
+		_glb_collision.apply_rock_model(new_rock)
+		
+	var area = new_rock.get_node_or_null("InteractArea")
+	if area:
+		for conn in area.body_entered.get_connections():
+			area.body_entered.disconnect(conn.callable)
+		for conn in area.body_exited.get_connections():
+			area.body_exited.disconnect(conn.callable)
+		area.body_entered.connect(_on_rock_area_entered.bind(new_rock))
+		area.body_exited.connect(_on_rock_area_exited.bind(new_rock))
+		
+	var prompt = new_rock.get_node_or_null("Prompt")
+	if prompt:
+		prompt.visible = false
+		
+	# Ballistic ceiling fall animation
+	var tw = create_tween()
+	tw.tween_property(new_rock, "global_position:y", 0.4, 0.45).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tw.tween_callback(func():
+		var dust = new_rock.get_node_or_null("ImpactDust")
+		if dust is CPUParticles3D:
+			dust.restart()
+			dust.emitting = true
+		if camera_rig and camera_rig.has_method("shake"):
+			camera_rig.shake(0.25, 14.0)
+	)
 
 # -------------------------------------------------------------------------
 # Sacred Murti Blessing Reclaiming
@@ -563,15 +776,6 @@ func _on_exit_exited(body: Node3D) -> void:
 		player_near_exit = false
 		if exit_prompt:
 			exit_prompt.visible = false
-
-func _on_boss_trigger_entered(body: Node3D) -> void:
-	if body == player and not boss_encounter_started:
-		boss_encounter_started = true
-		if hud_objective:
-			hud_objective.text = "Boss Arena: Use Cover (Pillars & Walls) and Throw Rocks [C] to Stagger the Asur!"
-			hud_objective.modulate = Color(1.0, 0.45, 0.35)
-		if asur and asur.has_method("roar"):
-			asur.roar()
 
 func _on_rock_area_entered(body: Node3D, rock: Node3D) -> void:
 	if body == player and not is_instance_valid(held_rock):

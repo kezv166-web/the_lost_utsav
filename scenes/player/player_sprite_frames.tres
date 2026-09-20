@@ -127,7 +127,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("6_attack_axe_left_5")
 }],
-"loop": 0,
+"loop": false,
 "name": &"attack_axe_left",
 "speed": 12.0
 }, {
@@ -150,7 +150,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("12_attack_axe_right_5")
 }],
-"loop": 0,
+"loop": false,
 "name": &"attack_axe_right",
 "speed": 12.0
 }, {
@@ -173,7 +173,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("18_attack_rope_left_5")
 }],
-"loop": 0,
+"loop": false,
 "name": &"attack_rope_left",
 "speed": 13.0
 }, {
@@ -196,7 +196,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("24_attack_rope_right_5")
 }],
-"loop": 0,
+"loop": false,
 "name": &"attack_rope_right",
 "speed": 13.0
 }, {

@@ -135,6 +135,7 @@ func _apply_glb_model(body: StaticBody3D, glb_key: String) -> void:
 	# 2. INSTANTIATE AND DISPLAY TRUE 3D MODEL
 	var prev_model = body.get_node_or_null("GLBModel")
 	if prev_model:
+		body.remove_child(prev_model)
 		prev_model.queue_free()
 
 	var glb_instance: Node3D = glb_scene.instantiate()
@@ -154,10 +155,12 @@ func _apply_glb_model(body: StaticBody3D, glb_key: String) -> void:
 	if shape:
 		var old_col = body.get_node_or_null("CollisionShape3D")
 		if old_col:
+			body.remove_child(old_col)
 			old_col.queue_free()
 
 		var prev_glb_col = body.get_node_or_null("GLBCollision")
 		if prev_glb_col:
+			body.remove_child(prev_glb_col)
 			prev_glb_col.queue_free()
 
 		var new_col := CollisionShape3D.new()
