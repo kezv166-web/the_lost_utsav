@@ -50,6 +50,11 @@ func _on_player_finished(p: AudioStreamPlayer) -> void:
 ## Play a named track.
 ## If the target path is already actively playing, seamlessly keep playing.
 func play(track_key: String) -> void:
+	if not _player_a:
+		_player_a = _make_player("MusicA")
+		_player_b = _make_player("MusicB")
+		_active = _player_a
+
 	if not TRACKS.has(track_key):
 		push_warning("[MusicManager] Unknown track key: " + track_key)
 		return
