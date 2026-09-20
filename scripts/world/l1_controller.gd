@@ -52,8 +52,9 @@ func _ready() -> void:
 			anim.rotation_degrees = Vector3.ZERO
 			anim.position = Vector3(0, 0.72, 0)
 			anim.scale = Vector3(1.0, 1.0, 1.0)
-			anim.sorting_offset = 2.0
-			anim.render_priority = 2
+			anim.sorting_offset = 0.0
+			anim.render_priority = 0
+			anim.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
 			anim.double_sided = true
 			anim.no_depth_test = false
 		var col: CollisionShape3D = player.get_node_or_null("CollisionShape3D")
@@ -243,8 +244,17 @@ func _start_revert_cutscene() -> void:
 		tw.tween_property(p_anim, "modulate", Color(1.2, 1.1, 0.9, 0.3), 0.3)
 		tw.tween_callback(func():
 			player.transform_to_human()
+			player.current_form = player.PlayerForm.TRANSFORMING
 			p_anim.modulate = Color(1.0, 1.0, 1.0, 1.0)
 		)
+		
+	# Smooth camera zoom back to human full view
+	var rig = get_node_or_null("CameraRig")
+	if rig:
+		var cam = rig.get_node_or_null("Pivot/Camera3D")
+		if cam:
+			var ctw = create_tween()
+			ctw.tween_property(cam, "size", 9.2, 0.6)
 		
 	get_tree().create_timer(0.7).timeout.connect(func():
 		if dialogue_box:
@@ -318,6 +328,15 @@ func _start_transformation_cutscene() -> void:
 		_set_dialogue_text("The divine mouse form awakens.")
 		if player and player.current_form != player.PlayerForm.MOUSE:
 			player.transform_to_mouse()
+			player.current_form = player.PlayerForm.TRANSFORMING
+		
+		# Smooth camera zoom for mouse close-up view
+		var rig = get_node_or_null("CameraRig")
+		if rig:
+			var cam = rig.get_node_or_null("Pivot/Camera3D")
+			if cam:
+				var ctw = create_tween()
+				ctw.tween_property(cam, "size", 7.8, 0.8)
 		
 		if divine_particles:
 			divine_particles.emitting = false
@@ -430,6 +449,11 @@ func _on_mouse_passage_entered(body: Node3D) -> void:
 	if body.is_in_group("player"):
 		player_near_mouse_passage = true
 		if mouse_passage_prompt and mouse_passage_revealed:
+			var player = get_node_or_null("Player")
+			if player and player.get("current_form") == player.PlayerForm.MOUSE:
+				mouse_passage_prompt.text = "[E] Enter Mouse Passage"
+			else:
+				mouse_passage_prompt.text = "[E] Inspect Mouse Passage"
 			mouse_passage_prompt.visible = true
 
 func _on_mouse_passage_exited(body: Node3D) -> void:

@@ -25,8 +25,8 @@
 [ext_resource type="Texture2D" path="res://assets/environment/barrel_wood.png" id="24_barrel"]
 [ext_resource type="Texture2D" path="res://assets/environment/crates_stacked.png" id="25_crates"]
 [ext_resource type="Texture2D" path="res://assets/environment/torch_sconce.png" id="26_sconce"]
-[ext_resource type="Texture2D" uid="uid://c3g2f45a1qj3d" path="res://assets/environment/pilar-3dassets.png" id="27_pillar_asset"]
-[ext_resource type="Texture2D" uid="uid://cmrajdo2hwk5j" path="res://assets/environment/pilar-3dassets_right.png" id="28_pillar_right"]
+[ext_resource type="Texture2D" path="res://assets/environment/l1_3d/pillar_demon_banner_nw.png" id="27_pillar_asset"]
+[ext_resource type="Texture2D" path="res://assets/environment/l1_3d/pillar_demon_banner_ne.png" id="28_pillar_right"]
 
 [sub_resource type="Environment" id="Environment_dungeon"]
 background_mode = 1
@@ -99,6 +99,9 @@ size = Vector3(3.8, 2, 2.1)
 [sub_resource type="CylinderShape3D" id="Shape_Pillar"]
 height = 4.0
 radius = 0.75
+
+[sub_resource type="BoxShape3D" id="Shape_PillarFootprint"]
+size = Vector3(1.6, 0.8, 0.9)
 
 [sub_resource type="BoxShape3D" id="Shape_Desk"]
 size = Vector3(1.5, 2, 1.2)
@@ -232,6 +235,28 @@ pixel_size = 0.011
 texture_filter = 0
 texture = ExtResource("19_crystal_ruby")
 
+[node name="Pillars" type="Node3D" parent="Visuals3D"]
+
+[node name="PillarNW" type="Node3D" parent="Visuals3D/Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 0, -0.78)
+
+[node name="Visual" type="Sprite3D" parent="Visuals3D/Pillars/PillarNW"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.06, 0)
+pixel_size = 0.015625
+texture_filter = 0
+alpha_cut = 2
+texture = ExtResource("27_pillar_asset")
+
+[node name="PillarNE" type="Node3D" parent="Visuals3D/Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 0, -0.78)
+
+[node name="Visual" type="Sprite3D" parent="Visuals3D/Pillars/PillarNE"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.06, 0)
+pixel_size = 0.015625
+texture_filter = 0
+alpha_cut = 2
+texture = ExtResource("28_pillar_right")
+
 [node name="Collisions" type="Node3D" parent="."]
 
 [node name="NorthWall" type="StaticBody3D" parent="Collisions"]
@@ -289,16 +314,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -3.2)
 shape = SubResource("Shape_Dais")
 
 [node name="PillarNW" type="StaticBody3D" parent="Collisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 2, -0.78)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 0.4, -0.78)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/PillarNW"]
-shape = SubResource("Shape_Pillar")
+shape = SubResource("Shape_PillarFootprint")
 
 [node name="PillarNE" type="StaticBody3D" parent="Collisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 2, -0.78)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 0.4, -0.78)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/PillarNE"]
-shape = SubResource("Shape_Pillar")
+shape = SubResource("Shape_PillarFootprint")
 
 [node name="PillarSW" type="StaticBody3D" parent="Collisions"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.73, 2, 2.6)
@@ -391,6 +416,18 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 0.9, -1.8)
 light_color = Color(1, 0.6, 0.2, 1)
 light_energy = 2.2
 omni_range = 6.0
+
+[node name="PillarTorchNW" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.95, 1.6, -0.75)
+light_color = Color(1, 0.62, 0.22, 1)
+light_energy = 1.8
+omni_range = 4.5
+
+[node name="PillarTorchNE" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.95, 1.6, -0.75)
+light_color = Color(1, 0.62, 0.22, 1)
+light_energy = 1.8
+omni_range = 4.5
 
 [node name="TorchNW" type="OmniLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8, 1.8, -4.2)

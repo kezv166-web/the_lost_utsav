@@ -245,6 +245,11 @@ func start_transformation() -> void:
 	is_walking = false
 	if anim_sprite and mouse_frames and mouse_frames.has_animation("transform"):
 		anim_sprite.sprite_frames = mouse_frames
+		anim_sprite.position = Vector3(0, 1.29, 0)
+		anim_sprite.pixel_size = 0.007
+		anim_sprite.sorting_offset = 2.0
+		anim_sprite.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
+		anim_sprite.no_depth_test = false
 		anim_sprite.play("transform")
 
 func transform_to_mouse() -> void:
@@ -254,18 +259,27 @@ func transform_to_mouse() -> void:
 	jump_velocity = 4.2
 	if anim_sprite and mouse_frames:
 		anim_sprite.sprite_frames = mouse_frames
-		anim_sprite.position = Vector3(0, 0.22, 0)
-		anim_sprite.pixel_size = 0.011
+		anim_sprite.pixel_size = 0.010
+		anim_sprite.position = Vector3(0, 0.76, 0)
+		anim_sprite.sorting_offset = 0.0
+		anim_sprite.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
+		anim_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
+		anim_sprite.rotation_degrees = Vector3.ZERO
+		anim_sprite.render_priority = 0
+		anim_sprite.double_sided = true
+		anim_sprite.no_depth_test = false
 		anim_sprite.play("idle_down")
 	var col = get_node_or_null("CollisionShape3D")
 	if col and col.shape is CapsuleShape3D:
-		col.shape.radius = 0.18
-		col.shape.height = 0.45
-		col.position = Vector3(0, 0.25, 0)
+		col.shape.radius = 0.38
+		col.shape.height = 0.60
+		col.position = Vector3(0, 0.30, 0)
 	var shadow = get_node_or_null("DropShadow")
 	if shadow:
-		shadow.scale = Vector3(0.4, 0.4, 0.4)
-	print("Player transformed to MOUSE (Mushika).")
+		shadow.scale = Vector3(0.5, 0.5, 0.5)
+		shadow.position = Vector3(0, 0.03, 0)
+		shadow.visible = true
+	print("Player transformed to MOUSE (Mushika) with upright 2.5D billboard.")
 
 func transform_to_human() -> void:
 	current_form = PlayerForm.HUMAN
@@ -276,6 +290,9 @@ func transform_to_human() -> void:
 		anim_sprite.sprite_frames = human_frames
 		anim_sprite.position = Vector3(0, 0.72, 0)
 		anim_sprite.pixel_size = 0.0125
+		anim_sprite.sorting_offset = 0.0
+		anim_sprite.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
+		anim_sprite.no_depth_test = false
 		anim_sprite.play("idle_down")
 	var col = get_node_or_null("CollisionShape3D")
 	if col and col.shape is CapsuleShape3D:

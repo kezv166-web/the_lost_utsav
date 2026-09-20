@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="The Lost Utsav"
-run/main_scene="res://scenes/levels/outdoor/outdoor_map.tscn"
+run/main_scene="res://scenes/ui/storyline.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 
 [display]

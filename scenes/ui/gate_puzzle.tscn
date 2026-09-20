@@ -1,0 +1,132 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/gate_puzzle.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/vfx/puzzle/gate_puzzle_bg_empty.png" id="2_bg"]
+[ext_resource type="Texture2D" path="res://assets/vfx/puzzle/complete_bappa_disc.png" id="3_disc"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_Banner"]
+bg_color = Color(0.12, 0.08, 0.05, 0.85)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.72, 0.52, 0.22, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="GatePuzzle" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_script")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="TextureRect" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="GridRoot" type="Control" parent="Control"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 223.0
+offset_top = 155.0
+offset_right = 690.0
+offset_bottom = 542.0
+
+[node name="CompleteDisc" type="TextureRect" parent="Control"]
+visible = false
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 0
+offset_left = 223.0
+offset_top = 155.0
+offset_right = 690.0
+offset_bottom = 542.0
+texture = ExtResource("3_disc")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="KeyholeMarker" type="Control" parent="Control"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 456.0
+offset_top = 592.0
+offset_right = 456.0
+offset_bottom = 592.0
+
+[node name="ControlsBar" type="HBoxContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -210.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 52.0
+grow_horizontal = 0
+theme_override_constants/separation = 12
+
+[node name="ResetBtn" type="Button" parent="Control/ControlsBar"]
+custom_minimum_size = Vector2(85, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.88, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+text = "Reset"
+
+[node name="CloseBtn" type="Button" parent="Control/ControlsBar"]
+custom_minimum_size = Vector2(85, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+text = "Exit [Esc]"
+
+[node name="VictoryBanner" type="PanelContainer" parent="Control"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -60.0
+offset_right = 280.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_Banner")
+
+[node name="VBox" type="VBoxContainer" parent="Control/VictoryBanner"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Title" type="Label" parent="Control/VictoryBanner/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.25, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "SPELL BROKEN!"
+horizontal_alignment = 1
+
+[node name="MessageLabel" type="Label" parent="Control/VictoryBanner/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.88, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_font_sizes/font_size = 15
+text = "Buddhi Siddhi Vinayak's blessing has unlocked the Great Gate!"
+horizontal_alignment = 1

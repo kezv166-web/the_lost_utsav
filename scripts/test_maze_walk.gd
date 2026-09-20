@@ -46,8 +46,8 @@ var verified_wall_col: bool = false
 var verified_key: bool = false
 var verified_exit: bool = false
 
-var key_pos = Vector3(1.75, 0.1, -3.42)
-var exit_pos = Vector3(7.27, 0.1, -4.65)
+var key_pos = Vector3(-2.25, 0.1, -13.95)
+var exit_pos = Vector3(25.2, 0.1, -16.2)
 
 func _save_screenshot(filename: String) -> void:
 	if DisplayServer.get_name() == "headless":
@@ -82,9 +82,9 @@ func _set_stage(next: TestStage) -> void:
 	_release_inputs()
 	print("\n>>> ENTERING MAZE TEST STAGE: [%s] (Total: %.1fs)" % [TestStage.keys()[current_stage], total_timer])
 	if current_stage == TestStage.NAVIGATE_TO_KEY:
-		player.global_position = Vector3(1.75, 0.1, -2.4)
+		player.global_position = Vector3(-2.25, 0.1, -12.0)
 	elif current_stage == TestStage.NAVIGATE_TO_EXIT:
-		player.global_position = Vector3(7.27, 0.1, -3.8)
+		player.global_position = Vector3(25.2, 0.1, -14.2)
 
 func _release_inputs() -> void:
 	Input.action_release("move_up")
@@ -224,12 +224,12 @@ func _physics_process(delta: float) -> void:
 				_set_stage(TestStage.TEST_WALL_COLLISION)
 
 		TestStage.TEST_WALL_COLLISION:
-			# Push into left outer boundary wall (X <= -8.4)
+			# Push into left outer boundary wall (X <= -17.0)
 			Input.action_press("move_left")
 			if stage_timer >= 0.8:
 				Input.action_release("move_left")
-				# Verify player stopped by wall (X cannot exceed -8.8)
-				if player.global_position.x > -9.2 and player.get_slide_collision_count() > 0:
+				# Verify player stopped by wall (X cannot exceed -19.0)
+				if player.global_position.x > -19.0 and player.get_slide_collision_count() > 0:
 					verified_wall_col = true
 					print("PASSED [7/11]: Solid wall collision verified! Mouse stopped cleanly at boundary X=%.2f." % player.global_position.x)
 				else:
@@ -237,17 +237,17 @@ func _physics_process(delta: float) -> void:
 				_set_stage(TestStage.TEST_WALK_THROUGH_CLEARED_GATE)
 
 		TestStage.TEST_WALK_THROUGH_CLEARED_GATE:
-			var cleared_target = Vector3(-8.16, 0.1, 0.2)
+			var cleared_target = Vector3(-30.78, 0.1, 10.0)
 			_steer_towards(cleared_target)
-			if player.global_position.z <= 0.4:
+			if player.global_position.z <= 12.0:
 				_release_inputs()
-				print("PASSED: Mushika walked cleanly through cleared gate corridor to Z=%.2f without collision!" % player.global_position.z)
+				print("PASSED: Mushika walked cleanly through start corridor to Z=%.2f without collision!" % player.global_position.z)
 				_set_stage(TestStage.TEST_NAVIGATE_TO_TUNNEL_A)
 
 		TestStage.TEST_NAVIGATE_TO_TUNNEL_A:
-			var tunnel_a_pos = Vector3(-8.16, 0.05, 2.0)
+			var tunnel_a_pos = Vector3(-30.78, 0.05, -3.15)
 			_steer_towards(tunnel_a_pos)
-			if player.global_position.distance_to(tunnel_a_pos) < 0.65:
+			if player.global_position.distance_to(tunnel_a_pos) < 2.0:
 				_release_inputs()
 				_set_stage(TestStage.TEST_TUNNEL_A_PROMPT)
 
@@ -273,7 +273,7 @@ func _physics_process(delta: float) -> void:
 				var tunnel_a = maze.get_node_or_null("MouseTunnels/BlackTunnel_A")
 				var lbl = tunnel_a.get_node_or_null("PromptLabel") as Label3D if tunnel_a else null
 				var prompt_txt = lbl.text if lbl else ""
-				if player.global_position.distance_to(Vector3(-8.16, 0.05, 2.0)) < 1.0:
+				if player.global_position.distance_to(Vector3(-30.78, 0.05, -3.15)) < 2.5:
 					print("PASSED [9/15]: Human form interaction rejected ('%s'); player not teleported." % prompt_txt)
 				else:
 					push_error("FAIL: Human was able to enter mouse tunnel!")
@@ -289,8 +289,8 @@ func _physics_process(delta: float) -> void:
 				
 			if stage_timer >= 1.2:
 				var tunnel_b = maze.get_node_or_null("MouseTunnels/BlackTunnel_B")
-				var b_pos = tunnel_b.global_position if tunnel_b else Vector3(4.5, 0.05, 2.0)
-				if player.global_position.distance_to(b_pos) < 1.2:
+				var b_pos = tunnel_b.global_position if tunnel_b else Vector3(15.3, 0.05, -3.15)
+				if player.global_position.distance_to(b_pos) < 3.0:
 					print("PASSED [10-11/15]: Mushika traversed BlackTunnel_A -> BlackTunnel_B with enter_passage animation! Emerged at (%.2f, %.2f)." % [player.global_position.x, player.global_position.z])
 				else:
 					push_error("FAIL: Player did not teleport to BlackTunnel_B! Pos: (%.2f, %.2f)" % [player.global_position.x, player.global_position.z])
@@ -310,7 +310,7 @@ func _physics_process(delta: float) -> void:
 
 		TestStage.NAVIGATE_TO_KEY:
 			_steer_towards(key_pos)
-			if maze.get("has_key") or player.global_position.distance_to(key_pos) < 0.4:
+			if maze.get("has_key") or player.global_position.distance_to(key_pos) < 0.8:
 				_release_inputs()
 				_set_stage(TestStage.PICKUP_KEY)
 
@@ -327,7 +327,7 @@ func _physics_process(delta: float) -> void:
 
 		TestStage.NAVIGATE_TO_EXIT:
 			_steer_towards(exit_pos)
-			if maze.get("player_near_exit") or player.global_position.distance_to(exit_pos) < 0.6:
+			if maze.get("player_near_exit") or player.global_position.distance_to(exit_pos) < 1.2:
 				_release_inputs()
 				_set_stage(TestStage.UNLOCK_EXIT)
 

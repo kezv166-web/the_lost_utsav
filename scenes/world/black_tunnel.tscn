@@ -15,7 +15,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("CylinderShape3D_tunnel")
 
 [node name="HoleVisual" type="Sprite3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.015, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+billboard = 1
 pixel_size = 0.0125
 texture_filter = 0
 texture = ExtResource("2_hole_tex")

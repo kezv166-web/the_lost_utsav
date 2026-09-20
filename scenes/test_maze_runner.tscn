@@ -1,11 +1,13 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://bqv15wjbuis8j"]
 
 [ext_resource type="PackedScene" path="res://scenes/levels/maze/maze.tscn" id="1_maze"]
-[ext_resource type="Script" path="res://scripts/test_maze_walk.gd" id="2_test"]
+[ext_resource type="Script" uid="uid://c6iy8ww3joo4s" path="res://scripts/test_maze_walk.gd" id="2_test"]
 
-[node name="TestMazeRunner" type="Node3D"]
+[node name="TestMazeRunner" type="Node3D" unique_id=1484727095]
 
-[node name="Maze" parent="." instance=ExtResource("1_maze")]
+[node name="Maze" parent="." unique_id=1391618838 instance=ExtResource("1_maze")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -43.829235, -8.094259, 2.734764)
+metadata/_edit_group_ = true
 
-[node name="TestHarness" type="Node" parent="Maze"]
+[node name="TestHarness" type="Node" parent="Maze" unique_id=626378568]
 script = ExtResource("2_test")

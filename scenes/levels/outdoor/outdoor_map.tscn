@@ -147,6 +147,9 @@ radius = 2.0
 
 [sub_resource type="BoxShape3D" id="Shape_GateDoor"]
 size = Vector3(4.5, 6, 1.2)
+
+[sub_resource type="BoxShape3D" id="Shape_GateRearConstraint"]
+size = Vector3(30, 12, 2)
 [sub_resource type="BoxShape3D" id="Shape_RockCluster"]
 size = Vector3(2.2, 3.5, 1.6)
 
@@ -1526,8 +1529,15 @@ shape = SubResource("Shape_GateDoor")
 
 [node name="GateBlackScreen" type="CSGBox3D" parent="Fortress/SealedGate"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0.4)
+use_collision = true
 size = Vector3(3.9, 5.2, 0.2)
 material = SubResource("Mat_BlackOcclusion")
+
+[node name="GateRearConstraint" type="StaticBody3D" parent="Fortress/SealedGate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Fortress/SealedGate/GateRearConstraint"]
+shape = SubResource("Shape_GateRearConstraint")
 
 [node name="StatueBarrierL" type="StaticBody3D" parent="Fortress/SealedGate"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.85, 3.0, 1.2)
