@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="The Lost Utsav"
-run/main_scene="res://scenes/levels/outdoor/outdoor_map.tscn"
+run/main_scene="res://scenes/ui/start_page.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 
 [display]
@@ -21,6 +21,7 @@ window/size/viewport_height=720
 window/size/window_width_override=1020
 window/size/window_height_override=720
 window/stretch/mode="viewport"
+window/stretch/aspect="keep"
 
 [rendering]
 
@@ -30,3 +31,4 @@ textures/default_filters/use_nearest_mipmap_filter=true
 [autoload]
 
 MusicManager="*res://scripts/music_manager.gd"
+GameRunManager="*res://scripts/game_run_manager.gd"

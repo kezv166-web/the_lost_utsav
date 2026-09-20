@@ -1,0 +1,838 @@
+[gd_scene format=3 uid="uid://cx4v8j07n2q1m"]
+
+[ext_resource type="Script" path="res://scripts/ui/leaderboard.gd" id="1_lb_script"]
+[ext_resource type="Texture2D" uid="uid://cy3q1nkcx1vr" path="res://assets/start-pages/leaderboard_elements.png" id="2_elements_tex"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_CleanBg"]
+atlas = ExtResource("2_elements_tex")
+region = Rect2(16, 40, 637, 702)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_TitleLogo"]
+atlas = ExtResource("2_elements_tex")
+region = Rect2(675, 40, 410, 250)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_HeaderBanner"]
+atlas = ExtResource("2_elements_tex")
+region = Rect2(1105, 40, 415, 250)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_TableFrame"]
+atlas = ExtResource("2_elements_tex")
+region = Rect2(885, 412, 635, 314)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ScrollNote"]
+atlas = ExtResource("2_elements_tex")
+region = Rect2(915, 770, 210, 175)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_DividerGold"]
+atlas = ExtResource("2_elements_tex")
+region = Rect2(1150, 790, 365, 45)
+filter_clip = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_BtnActive_Normal"]
+bg_color = Color(0.55, 0.08, 0.09, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.95, 0.75, 0.28, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0.8, 0.15, 0.1, 0.45)
+shadow_size = 6
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_BtnDark_Normal"]
+bg_color = Color(0.08, 0.09, 0.13, 0.93)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.78, 0.58, 0.22, 0.85)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 3
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_BtnDark_Hover"]
+bg_color = Color(0.16, 0.19, 0.27, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.86, 0.42, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0.9, 0.7, 0.2, 0.4)
+shadow_size = 6
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_BtnDark_Pressed"]
+bg_color = Color(0.04, 0.05, 0.08, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.65, 0.45, 0.15, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_Tab_Normal"]
+bg_color = Color(0.09, 0.1, 0.14, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5, 0.55, 0.65, 0.65)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_Tab_Hover"]
+bg_color = Color(0.18, 0.21, 0.28, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.95, 0.78, 0.35, 0.92)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_TableOverlay"]
+bg_color = Color(0.05, 0.06, 0.09, 0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.48, 0.52, 0.62, 0.85)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0, 0, 0, 0.85)
+shadow_size = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_ProfileCard"]
+bg_color = Color(0.06, 0.07, 0.11, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.78, 0.62, 0.25, 0.85)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0, 0, 0, 0.65)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_ModalPanel"]
+bg_color = Color(0.07, 0.08, 0.11, 0.97)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.86, 0.66, 0.25, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.85)
+shadow_size = 18
+shadow_offset = Vector2(0, 8)
+
+[node name="LeaderboardPage" type="Control"]
+texture_filter = 0
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lb_script")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.03, 0.03, 0.05, 1)
+
+[node name="Background" type="TextureRect" parent="."]
+texture_filter = 0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_CleanBg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="AmbientVFX" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TorchGlowL" type="ColorRect" parent="AmbientVFX"]
+modulate = Color(1, 0.65, 0.2, 0.28)
+layout_mode = 0
+offset_left = 185.0
+offset_top = 250.0
+offset_right = 215.0
+offset_bottom = 280.0
+mouse_filter = 2
+color = Color(1, 0.75, 0.35, 1)
+
+[node name="TorchGlowR" type="ColorRect" parent="AmbientVFX"]
+modulate = Color(1, 0.65, 0.2, 0.28)
+layout_mode = 0
+offset_left = 890.0
+offset_top = 480.0
+offset_right = 920.0
+offset_bottom = 510.0
+mouse_filter = 2
+color = Color(1, 0.75, 0.35, 1)
+
+[node name="TitleLogo" type="TextureRect" parent="."]
+texture_filter = 0
+layout_mode = 0
+offset_left = 22.0
+offset_top = 18.0
+offset_right = 278.0
+offset_bottom = 158.0
+texture = SubResource("AtlasTexture_TitleLogo")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HeaderBanner" type="TextureRect" parent="."]
+texture_filter = 0
+layout_mode = 0
+offset_left = 325.0
+offset_top = 12.0
+offset_right = 725.0
+offset_bottom = 155.0
+texture = SubResource("AtlasTexture_HeaderBanner")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LeftMenu" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 18.0
+offset_top = 195.0
+offset_right = 168.0
+offset_bottom = 445.0
+
+[node name="VBox" type="VBoxContainer" parent="LeftMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="PlayButton" type="Button" parent="LeftMenu/VBox"]
+custom_minimum_size = Vector2(148, 36)
+layout_mode = 2
+focus_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.85, 0.65, 1)
+theme_override_colors/font_hover_color = Color(1, 0.95, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "  ▶   PLAY"
+alignment = 1
+
+[node name="StoryButton" type="Button" parent="LeftMenu/VBox"]
+custom_minimum_size = Vector2(148, 36)
+layout_mode = 2
+focus_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.85, 0.65, 1)
+theme_override_colors/font_hover_color = Color(1, 0.95, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "  📖   STORY"
+alignment = 1
+
+[node name="LeaderboardButton" type="Button" parent="LeftMenu/VBox"]
+custom_minimum_size = Vector2(148, 38)
+layout_mode = 2
+focus_mode = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.85, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnActive_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnActive_Normal")
+theme_override_styles/pressed = SubResource("StyleBox_BtnActive_Normal")
+text = "  🏆   LEADERBOARD"
+alignment = 1
+
+[node name="SettingsButton" type="Button" parent="LeftMenu/VBox"]
+custom_minimum_size = Vector2(148, 36)
+layout_mode = 2
+focus_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.85, 0.65, 1)
+theme_override_colors/font_hover_color = Color(1, 0.95, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "  ⚙   SETTINGS"
+alignment = 1
+
+[node name="ExitButton" type="Button" parent="LeftMenu/VBox"]
+custom_minimum_size = Vector2(148, 36)
+layout_mode = 2
+focus_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.85, 0.65, 1)
+theme_override_colors/font_hover_color = Color(1, 0.95, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "  🚪   EXIT"
+alignment = 1
+
+[node name="LevelDropdown" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 795.0
+offset_top = 160.0
+offset_right = 955.0
+offset_bottom = 194.0
+
+[node name="OptionButton" type="OptionButton" parent="LevelDropdown"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_colors/font_hover_color = Color(1, 0.96, 0.68, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+item_count = 3
+selected = 0
+popup/item_0/text = "LEVEL 3 (FINAL)"
+popup/item_0/id = 0
+popup/item_1/text = "LEVEL 2 (MAZE)"
+popup/item_1/id = 1
+popup/item_2/text = "LEVEL 1 (OUTDOOR)"
+popup/item_2/id = 2
+
+[node name="CenterTableArea" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 185.0
+offset_top = 160.0
+offset_right = 785.0
+offset_bottom = 665.0
+
+[node name="Tabs" type="HBoxContainer" parent="CenterTableArea"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 0.0
+offset_right = 430.0
+offset_bottom = 32.0
+theme_override_constants/separation = 10
+
+[node name="AllTimeTab" type="Button" parent="CenterTableArea/Tabs"]
+custom_minimum_size = Vector2(130, 32)
+layout_mode = 2
+focus_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBox_BtnActive_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnActive_Normal")
+theme_override_styles/pressed = SubResource("StyleBox_BtnActive_Normal")
+text = "ALL TIME"
+
+[node name="ThisMonthTab" type="Button" parent="CenterTableArea/Tabs"]
+custom_minimum_size = Vector2(130, 32)
+layout_mode = 2
+focus_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.8, 0.7, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBox_Tab_Normal")
+theme_override_styles/hover = SubResource("StyleBox_Tab_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_Tab_Normal")
+text = "THIS MONTH"
+
+[node name="FriendsTab" type="Button" parent="CenterTableArea/Tabs"]
+custom_minimum_size = Vector2(130, 32)
+layout_mode = 2
+focus_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.8, 0.7, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBox_Tab_Normal")
+theme_override_styles/hover = SubResource("StyleBox_Tab_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_Tab_Normal")
+text = "FRIENDS"
+
+[node name="DynamicRowsOverlay" type="Panel" parent="CenterTableArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 38.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_TableOverlay")
+
+[node name="HeaderBar" type="HBoxContainer" parent="CenterTableArea/DynamicRowsOverlay"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 10.0
+offset_top = 6.0
+offset_right = -10.0
+offset_bottom = 28.0
+grow_horizontal = 2
+theme_override_constants/separation = 6
+
+[node name="H_Rank" type="Label" parent="CenterTableArea/DynamicRowsOverlay/HeaderBar"]
+custom_minimum_size = Vector2(32, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.78, 0.78, 0.85)
+theme_override_font_sizes/font_size = 11
+text = "#"
+horizontal_alignment = 1
+
+[node name="H_Medal" type="Label" parent="CenterTableArea/DynamicRowsOverlay/HeaderBar"]
+custom_minimum_size = Vector2(28, 20)
+layout_mode = 2
+
+[node name="H_Avatar" type="Label" parent="CenterTableArea/DynamicRowsOverlay/HeaderBar"]
+custom_minimum_size = Vector2(28, 20)
+layout_mode = 2
+
+[node name="H_Player" type="Label" parent="CenterTableArea/DynamicRowsOverlay/HeaderBar"]
+custom_minimum_size = Vector2(170, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.78, 0.78, 0.85)
+theme_override_font_sizes/font_size = 11
+text = "PLAYER"
+
+[node name="H_Level" type="Label" parent="CenterTableArea/DynamicRowsOverlay/HeaderBar"]
+custom_minimum_size = Vector2(85, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.78, 0.78, 0.85)
+theme_override_font_sizes/font_size = 11
+text = "LEVEL REACHED"
+horizontal_alignment = 1
+
+[node name="H_Time" type="Label" parent="CenterTableArea/DynamicRowsOverlay/HeaderBar"]
+custom_minimum_size = Vector2(85, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.78, 0.78, 0.85)
+theme_override_font_sizes/font_size = 11
+text = "TIME"
+horizontal_alignment = 1
+
+[node name="H_Score" type="Label" parent="CenterTableArea/DynamicRowsOverlay/HeaderBar"]
+custom_minimum_size = Vector2(85, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.78, 0.78, 0.85)
+theme_override_font_sizes/font_size = 11
+text = "SCORE"
+horizontal_alignment = 2
+
+[node name="HSeparator" type="HSeparator" parent="CenterTableArea/DynamicRowsOverlay"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 6.0
+offset_top = 30.0
+offset_right = -6.0
+offset_bottom = 34.0
+grow_horizontal = 2
+
+[node name="VBoxRows" type="VBoxContainer" parent="CenterTableArea/DynamicRowsOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = 36.0
+offset_right = -6.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="RightSideArea" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 800.0
+offset_top = 210.0
+offset_right = 990.0
+offset_bottom = 665.0
+
+[node name="ScrollNote" type="TextureRect" parent="RightSideArea"]
+texture_filter = 0
+layout_mode = 0
+offset_left = 10.0
+offset_top = 0.0
+offset_right = 175.0
+offset_bottom = 145.0
+mouse_filter = 0
+texture = SubResource("AtlasTexture_ScrollNote")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ProfileCard" type="Panel" parent="RightSideArea"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 160.0
+offset_right = 180.0
+offset_bottom = 445.0
+theme_override_styles/panel = SubResource("StyleBox_ProfileCard")
+
+[node name="VBox" type="VBoxContainer" parent="RightSideArea/ProfileCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 12.0
+offset_right = -10.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="CardTitle" type="Label" parent="RightSideArea/ProfileCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_font_sizes/font_size = 12
+text = "WARRIOR PROFILE"
+horizontal_alignment = 1
+
+[node name="HSep" type="HSeparator" parent="RightSideArea/ProfileCard/VBox"]
+layout_mode = 2
+
+[node name="PlayerAvatar" type="TextureRect" parent="RightSideArea/ProfileCard/VBox"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_horizontal = 4
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PlayerNameLbl" type="Label" parent="RightSideArea/ProfileCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 1, 0.5, 1)
+theme_override_font_sizes/font_size = 13
+text = "BraveWarrior"
+horizontal_alignment = 1
+
+[node name="PlayerIdLbl" type="Label" parent="RightSideArea/ProfileCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 0.9)
+theme_override_font_sizes/font_size = 11
+text = "[USR-8492]"
+horizontal_alignment = 1
+
+[node name="StatsGrid" type="GridContainer" parent="RightSideArea/ProfileCard/VBox"]
+layout_mode = 2
+columns = 2
+
+[node name="LblRank" type="Label" parent="RightSideArea/ProfileCard/VBox/StatsGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.75, 0.75, 1)
+theme_override_font_sizes/font_size = 11
+text = "Rank:"
+
+[node name="ValRank" type="Label" parent="RightSideArea/ProfileCard/VBox/StatsGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_font_sizes/font_size = 11
+text = "#3"
+
+[node name="LblBest" type="Label" parent="RightSideArea/ProfileCard/VBox/StatsGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.75, 0.75, 1)
+theme_override_font_sizes/font_size = 11
+text = "Best Time:"
+
+[node name="ValBest" type="Label" parent="RightSideArea/ProfileCard/VBox/StatsGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_font_sizes/font_size = 11
+text = "00:33:45"
+
+[node name="BtnEditName" type="Button" parent="RightSideArea/ProfileCard/VBox"]
+custom_minimum_size = Vector2(130, 28)
+layout_mode = 2
+size_flags_horizontal = 4
+focus_mode = 2
+theme_override_colors/font_color = Color(1, 0.92, 0.75, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "✏ Change Name"
+
+[node name="BottomDivider" type="TextureRect" parent="."]
+texture_filter = 0
+layout_mode = 0
+offset_left = 220.0
+offset_top = 675.0
+offset_right = 750.0
+offset_bottom = 705.0
+texture = SubResource("AtlasTexture_DividerGold")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ModalLayer" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackdropDim" type="ColorRect" parent="ModalLayer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.78)
+
+[node name="SettingsModal" type="Control" parent="ModalLayer"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -230.0
+offset_top = -180.0
+offset_right = 230.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="ModalLayer/SettingsModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_ModalPanel")
+
+[node name="VBox" type="VBoxContainer" parent="ModalLayer/SettingsModal/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 20.0
+offset_right = -24.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="ModalLayer/SettingsModal/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_font_sizes/font_size = 20
+text = "⚙ REALM SETTINGS ⚙"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="ModalLayer/SettingsModal/Panel/VBox"]
+layout_mode = 2
+
+[node name="Grid" type="GridContainer" parent="ModalLayer/SettingsModal/Panel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 12
+columns = 2
+
+[node name="LblMaster" type="Label" parent="ModalLayer/SettingsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 0.75, 1)
+theme_override_font_sizes/font_size = 14
+text = "Master Volume:"
+
+[node name="MasterSlider" type="HSlider" parent="ModalLayer/SettingsModal/Panel/VBox/Grid"]
+custom_minimum_size = Vector2(200, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+value = 80.0
+
+[node name="LblMusic" type="Label" parent="ModalLayer/SettingsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 0.75, 1)
+theme_override_font_sizes/font_size = 14
+text = "Music Volume:"
+
+[node name="MusicSlider" type="HSlider" parent="ModalLayer/SettingsModal/Panel/VBox/Grid"]
+custom_minimum_size = Vector2(200, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+value = 75.0
+
+[node name="LblSFX" type="Label" parent="ModalLayer/SettingsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 0.75, 1)
+theme_override_font_sizes/font_size = 14
+text = "Effects Volume:"
+
+[node name="SFXSlider" type="HSlider" parent="ModalLayer/SettingsModal/Panel/VBox/Grid"]
+custom_minimum_size = Vector2(200, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+value = 85.0
+
+[node name="LblFullscreen" type="Label" parent="ModalLayer/SettingsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 0.75, 1)
+theme_override_font_sizes/font_size = 14
+text = "Fullscreen Mode:"
+
+[node name="FullscreenChk" type="CheckBox" parent="ModalLayer/SettingsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+text = " Enable Fullscreen"
+
+[node name="CloseButton" type="Button" parent="ModalLayer/SettingsModal/Panel/VBox"]
+custom_minimum_size = Vector2(140, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "Save & Close"
+
+[node name="ProfileModal" type="Control" parent="ModalLayer"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -140.0
+offset_right = 200.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="ModalLayer/ProfileModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_ModalPanel")
+
+[node name="VBox" type="VBoxContainer" parent="ModalLayer/ProfileModal/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 18.0
+offset_right = -24.0
+offset_bottom = -18.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="ModalLayer/ProfileModal/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_font_sizes/font_size = 18
+text = "✏ WARRIOR IDENTITY"
+horizontal_alignment = 1
+
+[node name="IdDesc" type="Label" parent="ModalLayer/ProfileModal/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.8, 0.9, 0.9)
+theme_override_font_sizes/font_size = 12
+text = "Your unique ID cannot be forged."
+horizontal_alignment = 1
+
+[node name="NameEdit" type="LineEdit" parent="ModalLayer/ProfileModal/Panel/VBox"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+placeholder_text = "Enter warrior name..."
+max_length = 20
+alignment = 1
+
+[node name="HBoxBtns" type="HBoxContainer" parent="ModalLayer/ProfileModal/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="SaveNameBtn" type="Button" parent="ModalLayer/ProfileModal/Panel/VBox/HBoxBtns"]
+custom_minimum_size = Vector2(120, 34)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBox_BtnActive_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnActive_Normal")
+theme_override_styles/pressed = SubResource("StyleBox_BtnActive_Normal")
+text = "Save Name"
+
+[node name="CancelNameBtn" type="Button" parent="ModalLayer/ProfileModal/Panel/VBox/HBoxBtns"]
+custom_minimum_size = Vector2(100, 34)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "Cancel"
+
+[node name="FadeOverlay" type="ColorRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)

@@ -1,0 +1,745 @@
+[gd_scene format=3 uid="uid://dm0y3u8p5k4r1"]
+
+[ext_resource type="Script" path="res://scripts/ui/start_page.gd" id="1_start_script"]
+[ext_resource type="Texture2D" uid="uid://dhl0lsbtmvsem" path="res://assets/start-pages/start_page_elements.png" id="2_elements_tex"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_StartBg"]
+atlas = ExtResource("2_elements_tex")
+region = Rect2(14, 50, 770, 948)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_StartLogo"]
+atlas = ExtResource("2_elements_tex")
+region = Rect2(810, 70, 450, 238)
+filter_clip = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_MenuPlaque"]
+bg_color = Color(0.05, 0.06, 0.09, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.85, 0.68, 0.28, 0.9)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.85)
+shadow_size = 14
+shadow_offset = Vector2(0, 6)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_BtnPlay_Normal"]
+bg_color = Color(0.52, 0.08, 0.09, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.92, 0.75, 0.3, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+shadow_color = Color(0.65, 0.1, 0.1, 0.5)
+shadow_size = 6
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_BtnPlay_Hover"]
+bg_color = Color(0.72, 0.13, 0.14, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.9, 0.48, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+shadow_color = Color(0.9, 0.25, 0.12, 0.6)
+shadow_size = 10
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_BtnPlay_Pressed"]
+bg_color = Color(0.35, 0.05, 0.06, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.75, 0.55, 0.2, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_BtnDark_Normal"]
+bg_color = Color(0.08, 0.1, 0.14, 0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.8, 0.62, 0.24, 0.88)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 4
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_BtnDark_Hover"]
+bg_color = Color(0.16, 0.2, 0.28, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.88, 0.44, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+shadow_color = Color(0.95, 0.75, 0.25, 0.4)
+shadow_size = 8
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_BtnDark_Pressed"]
+bg_color = Color(0.04, 0.05, 0.08, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.65, 0.48, 0.16, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_ActionIcon_Normal"]
+bg_color = Color(0.08, 0.09, 0.13, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.75, 0.6, 0.25, 0.8)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_ActionIcon_Hover"]
+bg_color = Color(0.2, 0.18, 0.12, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.88, 0.45, 0.95)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0.9, 0.75, 0.25, 0.3)
+shadow_size = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_ModalPanel"]
+bg_color = Color(0.06, 0.07, 0.1, 0.97)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.88, 0.68, 0.26, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.85)
+shadow_size = 20
+shadow_offset = Vector2(0, 8)
+
+[node name="StartPage" type="Control"]
+texture_filter = 0
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_start_script")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.03, 0.03, 0.05, 1)
+
+[node name="Background" type="TextureRect" parent="."]
+texture_filter = 0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_StartBg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="AmbientVFX" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TorchGlow1" type="ColorRect" parent="AmbientVFX"]
+modulate = Color(1, 0.65, 0.2, 0.28)
+layout_mode = 0
+offset_left = 265.0
+offset_top = 445.0
+offset_right = 295.0
+offset_bottom = 475.0
+mouse_filter = 2
+color = Color(1, 0.72, 0.32, 1)
+
+[node name="TorchGlow2" type="ColorRect" parent="AmbientVFX"]
+modulate = Color(1, 0.6, 0.2, 0.25)
+layout_mode = 0
+offset_left = 378.0
+offset_top = 492.0
+offset_right = 412.0
+offset_bottom = 526.0
+mouse_filter = 2
+color = Color(1, 0.75, 0.35, 1)
+
+[node name="GateGlow" type="ColorRect" parent="AmbientVFX"]
+modulate = Color(1, 0.22, 0.15, 0.32)
+layout_mode = 0
+offset_left = 570.0
+offset_top = 285.0
+offset_right = 612.0
+offset_bottom = 345.0
+mouse_filter = 2
+color = Color(1, 0.28, 0.16, 1)
+
+[node name="TitleLogo" type="TextureRect" parent="."]
+texture_filter = 0
+layout_mode = 0
+offset_left = 32.0
+offset_top = 22.0
+offset_right = 352.0
+offset_bottom = 192.0
+texture = SubResource("AtlasTexture_StartLogo")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MenuContainer" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 48.0
+offset_top = 205.0
+offset_right = 240.0
+offset_bottom = 455.0
+
+[node name="MenuPanel" type="Panel" parent="MenuContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_MenuPlaque")
+
+[node name="VBoxButtons" type="VBoxContainer" parent="MenuContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 12.0
+offset_right = -10.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="PlayButton" type="Button" parent="MenuContainer/VBoxButtons"]
+custom_minimum_size = Vector2(172, 46)
+layout_mode = 2
+focus_mode = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.85, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBox_BtnPlay_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnPlay_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnPlay_Pressed")
+text = "  ▶   PLAY"
+alignment = 1
+
+[node name="StoryButton" type="Button" parent="MenuContainer/VBoxButtons"]
+custom_minimum_size = Vector2(172, 42)
+layout_mode = 2
+focus_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.85, 0.65, 1)
+theme_override_colors/font_hover_color = Color(1, 0.96, 0.85, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "  📖   STORY"
+alignment = 1
+
+[node name="LeaderboardButton" type="Button" parent="MenuContainer/VBoxButtons"]
+custom_minimum_size = Vector2(172, 42)
+layout_mode = 2
+focus_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.85, 0.65, 1)
+theme_override_colors/font_hover_color = Color(1, 0.96, 0.85, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "  🏆   LEADERBOARD"
+alignment = 1
+
+[node name="ExitButton" type="Button" parent="MenuContainer/VBoxButtons"]
+custom_minimum_size = Vector2(172, 42)
+layout_mode = 2
+focus_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.85, 0.65, 1)
+theme_override_colors/font_hover_color = Color(1, 0.96, 0.85, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "  🚪   EXIT"
+alignment = 1
+
+[node name="BottomRightHUD" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -315.0
+offset_top = -75.0
+offset_right = -20.0
+offset_bottom = -25.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="HBoxIcons" type="HBoxContainer" parent="BottomRightHUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+alignment = 2
+
+[node name="ControlsButton" type="Button" parent="BottomRightHUD/HBoxIcons"]
+custom_minimum_size = Vector2(88, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.84, 0.64, 0.95)
+theme_override_colors/font_hover_color = Color(1, 0.94, 0.76, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBox_ActionIcon_Normal")
+theme_override_styles/hover = SubResource("StyleBox_ActionIcon_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_ActionIcon_Hover")
+text = "🎮 CONTROLS"
+
+[node name="CreditsButton" type="Button" parent="BottomRightHUD/HBoxIcons"]
+custom_minimum_size = Vector2(82, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.84, 0.64, 0.95)
+theme_override_colors/font_hover_color = Color(1, 0.94, 0.76, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBox_ActionIcon_Normal")
+theme_override_styles/hover = SubResource("StyleBox_ActionIcon_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_ActionIcon_Hover")
+text = "👥 CREDITS"
+
+[node name="HelpButton" type="Button" parent="BottomRightHUD/HBoxIcons"]
+custom_minimum_size = Vector2(72, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.84, 0.64, 0.95)
+theme_override_colors/font_hover_color = Color(1, 0.94, 0.76, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBox_ActionIcon_Normal")
+theme_override_styles/hover = SubResource("StyleBox_ActionIcon_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_ActionIcon_Hover")
+text = "❓ HELP"
+
+[node name="ModalLayer" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackdropDim" type="ColorRect" parent="ModalLayer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.78)
+
+[node name="ControlsModal" type="Control" parent="ModalLayer"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -210.0
+offset_right = 260.0
+offset_bottom = 210.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="ModalLayer/ControlsModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_ModalPanel")
+
+[node name="VBox" type="VBoxContainer" parent="ModalLayer/ControlsModal/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 20.0
+offset_right = -24.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="ModalLayer/ControlsModal/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_font_sizes/font_size = 20
+text = "⚔ REALM CONTROLS ⚔"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="ModalLayer/ControlsModal/Panel/VBox"]
+layout_mode = 2
+
+[node name="Grid" type="GridContainer" parent="ModalLayer/ControlsModal/Panel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 8
+columns = 2
+
+[node name="Lbl1" type="Label" parent="ModalLayer/ControlsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
+theme_override_font_sizes/font_size = 14
+text = "Move Hero:"
+
+[node name="Val1" type="Label" parent="ModalLayer/ControlsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_font_sizes/font_size = 14
+text = "[W][A][S][D] or [Arrow Keys]"
+
+[node name="Lbl2" type="Label" parent="ModalLayer/ControlsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
+theme_override_font_sizes/font_size = 14
+text = "Interact / Inspect:"
+
+[node name="Val2" type="Label" parent="ModalLayer/ControlsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_font_sizes/font_size = 14
+text = "[E] or [Space]"
+
+[node name="Lbl3" type="Label" parent="ModalLayer/ControlsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
+theme_override_font_sizes/font_size = 14
+text = "Attack / Strike:"
+
+[node name="Val3" type="Label" parent="ModalLayer/ControlsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_font_sizes/font_size = 14
+text = "[Shift] or [Left Click]"
+
+[node name="Lbl4" type="Label" parent="ModalLayer/ControlsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
+theme_override_font_sizes/font_size = 14
+text = "Dialogue / Advance:"
+
+[node name="Val4" type="Label" parent="ModalLayer/ControlsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_font_sizes/font_size = 14
+text = "[Space] or [Enter] or [Click]"
+
+[node name="Lbl5" type="Label" parent="ModalLayer/ControlsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
+theme_override_font_sizes/font_size = 14
+text = "Pause / Menu:"
+
+[node name="Val5" type="Label" parent="ModalLayer/ControlsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_font_sizes/font_size = 14
+text = "[Escape]"
+
+[node name="CloseButton" type="Button" parent="ModalLayer/ControlsModal/Panel/VBox"]
+custom_minimum_size = Vector2(140, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "Back to Menu"
+
+[node name="CreditsModal" type="Control" parent="ModalLayer"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -180.0
+offset_right = 250.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="ModalLayer/CreditsModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_ModalPanel")
+
+[node name="VBox" type="VBoxContainer" parent="ModalLayer/CreditsModal/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 20.0
+offset_right = -24.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="ModalLayer/CreditsModal/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_font_sizes/font_size = 20
+text = "THE LOST UTSAV"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="ModalLayer/CreditsModal/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.75, 0.55, 0.9)
+theme_override_font_sizes/font_size = 13
+text = "A Journey of Faith and Courage"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="ModalLayer/CreditsModal/Panel/VBox"]
+layout_mode = 2
+
+[node name="Body" type="Label" parent="ModalLayer/CreditsModal/Panel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_font_sizes/font_size = 13
+text = "A mythological 2.5D action-adventure crafted in Godot Engine 4.7.2.
+
+Story & Art: The Lost Utsav Creative Team
+Platform: Linux / Web (Itch.io & Vercel) / Windows"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="CloseButton" type="Button" parent="ModalLayer/CreditsModal/Panel/VBox"]
+custom_minimum_size = Vector2(140, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "Close"
+
+[node name="HelpModal" type="Control" parent="ModalLayer"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -270.0
+offset_top = -210.0
+offset_right = 270.0
+offset_bottom = 210.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="ModalLayer/HelpModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_ModalPanel")
+
+[node name="VBox" type="VBoxContainer" parent="ModalLayer/HelpModal/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 20.0
+offset_right = -24.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="ModalLayer/HelpModal/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_font_sizes/font_size = 20
+text = "📜 QUEST & LORE 📜"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="ModalLayer/HelpModal/Panel/VBox"]
+layout_mode = 2
+
+[node name="Body" type="Label" parent="ModalLayer/HelpModal/Panel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.92, 0.92, 0.92, 1)
+theme_override_font_sizes/font_size = 13
+text = "The sacred festival lights have been locked away within the demonic fortress.
+
+1. Cross the mountain bridge and solve the ancient rune gate puzzle.
+2. Traverse the shifting shadows of the underground labyrinth.
+3. Overcome the fierce Asur boss in the volcanic sanctuary to reclaim the divine spark!"
+autowrap_mode = 2
+
+[node name="CloseButton" type="Button" parent="ModalLayer/HelpModal/Panel/VBox"]
+custom_minimum_size = Vector2(140, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "Understood"
+
+[node name="ExitConfirmModal" type="Control" parent="ModalLayer"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -210.0
+offset_top = -105.0
+offset_right = 210.0
+offset_bottom = 105.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="ModalLayer/ExitConfirmModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_ModalPanel")
+
+[node name="VBox" type="VBoxContainer" parent="ModalLayer/ExitConfirmModal/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Prompt" type="Label" parent="ModalLayer/ExitConfirmModal/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.8, 1)
+theme_override_font_sizes/font_size = 15
+text = "Leave the sacred realm?"
+horizontal_alignment = 1
+
+[node name="HBox" type="HBoxContainer" parent="ModalLayer/ExitConfirmModal/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="ConfirmExitButton" type="Button" parent="ModalLayer/ExitConfirmModal/Panel/VBox/HBox"]
+custom_minimum_size = Vector2(125, 38)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.88, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnPlay_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnPlay_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnPlay_Pressed")
+text = "Exit Realm"
+
+[node name="CancelExitButton" type="Button" parent="ModalLayer/ExitConfirmModal/Panel/VBox/HBox"]
+custom_minimum_size = Vector2(125, 38)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.86, 0.72, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "Stay"
+
+[node name="FadeOverlay" type="ColorRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)

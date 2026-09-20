@@ -33,6 +33,7 @@ var player_near_altar: bool = false
 var player_near_exit: bool = false
 var nearby_rock: Node3D = null
 var held_rock: Node3D = null
+var is_restarting_level: bool = false
 
 var blessing_claimed: bool = false
 var blessing_in_progress: bool = false
@@ -62,8 +63,16 @@ const MINION_SPAWN_POINTS: Array[Vector3] = [
 ]
 
 func _ready() -> void:
-	if has_node("/root/MusicManager"):
-		MusicManager.play("l3_boss")
+	var music_mgr = get_node_or_null("/root/MusicManager")
+	if music_mgr and music_mgr.has_method("play"):
+		music_mgr.play("l3_boss")
+		
+	var grm = get_node_or_null("/root/GameRunManager")
+	if grm:
+		if not grm.is_run_active:
+			grm.start_new_run()
+		grm.set_current_level(3)
+		
 	_ensure_l3_textures_cleaned()
 	_setup_player()
 	_setup_camera()
@@ -371,6 +380,12 @@ func _setup_ui() -> void:
 
 	_update_hp_display(player.health if (player and "health" in player) else 250)
 
+	var hud_scene = preload("res://scenes/ui/speedrun_hud.tscn")
+	var ui = get_node_or_null("UI")
+	if ui and not ui.get_node_or_null("SpeedrunHUD"):
+		var speed_hud = hud_scene.instantiate()
+		ui.add_child(speed_hud)
+
 func _on_player_damaged(hp: int) -> void:
 	if camera_rig:
 		var tw = create_tween()
@@ -380,26 +395,43 @@ func _on_player_damaged(hp: int) -> void:
 	_update_hp_display(hp)
 
 func _on_player_died() -> void:
+	if is_restarting_level:
+		return
+	is_restarting_level = true
+
+	var grm = get_node_or_null("/root/GameRunManager")
+	if grm and grm.has_method("record_level_3_death"):
+		grm.record_level_3_death()
+
+	Engine.time_scale = 1.0
 	_update_hp_display(0)
+
 	if hud_action:
-		hud_action.text = "The Asur struck you down! Regrouping..."
+		hud_action.text = "The Asur struck you down!"
 	if hud_objective:
-		hud_objective.text = "★ DEFEATED - Regroup and strike back! ★"
-		hud_objective.modulate = Color(1.0, 0.3, 0.3)
-	
-	get_tree().create_timer(1.2).timeout.connect(func():
-		if is_instance_valid(player):
-			player.global_position = Vector3(0, 0.1, 7.5)
-			player.velocity = Vector3.ZERO
-			if player.has_method("reset_health"):
-				player.reset_health()
-			_update_hp_display(player.health)
-		if hud_objective:
-			hud_objective.text = "Boss Arena: Use Cover (Pillars & Walls) and Throw Rocks [C] to Stagger the Asur!"
-			hud_objective.modulate = Color(1.0, 0.45, 0.35)
-		if hud_action:
-			hud_action.text = ""
-	)
+		hud_objective.text = "★ DEFEATED - Restarting Level 3... ★"
+		hud_objective.modulate = Color(1.0, 0.25, 0.25)
+
+	# Disable player physics and fade sprite on defeat
+	if is_instance_valid(player):
+		player.set_physics_process(false)
+		player.velocity = Vector3.ZERO
+		var spr = player.get_node_or_null("AnimatedSprite3D")
+		if spr:
+			var tw = create_tween()
+			tw.tween_property(spr, "modulate", Color(1.0, 0.2, 0.2, 0.0), 1.0)
+
+	# Restart Level 3 after defeat pause
+	var tree = get_tree()
+	if tree:
+		tree.create_timer(1.2).timeout.connect(func():
+			Engine.time_scale = 1.0
+			var active_tree = get_tree()
+			if active_tree:
+				var err = active_tree.reload_current_scene()
+				if err != OK:
+					active_tree.change_scene_to_file("res://scenes/levels/l3/l3_map.tscn")
+		)
 
 func _update_hp_display(hp: int) -> void:
 	var hud = get_node_or_null("UI/HUD")
@@ -589,6 +621,9 @@ func _on_rock_impact(rock: Node3D) -> void:
 	if asur and is_instance_valid(asur) and asur.visible:
 		var dist = rock.global_position.distance_to(asur.global_position)
 		if dist < 2.5:
+			var grm = get_node_or_null("/root/GameRunManager")
+			if grm and grm.has_method("record_boss_hit"):
+				grm.record_boss_hit()
 			if asur.has_method("take_rock_hit"):
 				asur.take_rock_hit(85)
 			elif asur.has_method("take_damage"):
@@ -715,6 +750,10 @@ func _spawn_falling_rock(spawn_pos: Vector3) -> void:
 func _reclaim_blessing() -> void:
 	blessing_in_progress = true
 	blessing_claimed = true
+
+	var grm = get_node_or_null("/root/GameRunManager")
+	if grm and grm.has_method("complete_level_3"):
+		grm.complete_level_3()
 	
 	if altar_prompt:
 		altar_prompt.visible = false
@@ -751,6 +790,17 @@ func _reclaim_blessing() -> void:
 	if hud_objective:
 		hud_objective.text = "★ SACRED BLESSING RESTORED - UTSAV TRIUMPHANT! ★"
 		hud_objective.modulate = Color(1.0, 0.85, 0.3)
+
+	# Transition to End Storyline cutscene after divine celebration
+	var tree = get_tree()
+	if tree:
+		tree.create_timer(3.2).timeout.connect(func():
+			var end_storyline_path = "res://scenes/ui/end_storyline.tscn"
+			if ResourceLoader.exists(end_storyline_path):
+				var active_tree = get_tree()
+				if active_tree:
+					active_tree.change_scene_to_file(end_storyline_path)
+		)
 
 # -------------------------------------------------------------------------
 # Area Signal Callbacks
@@ -795,6 +845,18 @@ func _on_rock_area_exited(body: Node3D, rock: Node3D) -> void:
 			prompt.visible = false
 
 func _trigger_exit() -> void:
+	var grm = get_node_or_null("/root/GameRunManager")
+	if grm and grm.has_method("complete_level_3") and not grm.level3_cleared:
+		grm.complete_level_3()
 	if dialogue_box and dialogue_label:
 		dialogue_box.visible = true
 		dialogue_label.text = "The castle gates are open. Faith and courage have dispelled the Asur's shadow."
+	var end_storyline_path = "res://scenes/ui/end_storyline.tscn"
+	if ResourceLoader.exists(end_storyline_path):
+		var tree = get_tree()
+		if tree:
+			tree.create_timer(1.2).timeout.connect(func():
+				var active_tree = get_tree()
+				if active_tree:
+					active_tree.change_scene_to_file(end_storyline_path)
+			)
