@@ -3,6 +3,7 @@ extends Node3D
 # --- Node References ---
 @onready var player: CharacterBody3D = $Player
 @onready var camera_rig: Node3D = $CameraRig
+@onready var asur: CharacterBody3D = get_node_or_null("Asur")
 
 # Interactables & Prompts
 @onready var exit_prompt: Label3D = $Interactables/SouthExit/Prompt
@@ -52,6 +53,7 @@ func _ready() -> void:
 	_setup_interactables()
 	_setup_rocks()
 	_setup_glb_collisions()
+	_setup_asur()
 	_setup_ui()
 
 # -------------------------------------------------------------------------
@@ -112,8 +114,9 @@ func _setup_player() -> void:
 		anim.rotation_degrees = Vector3.ZERO
 		anim.position = Vector3(0, 0.72, 0)
 		anim.scale = Vector3(1.0, 1.0, 1.0)
-		anim.sorting_offset = 2.0
-		anim.render_priority = 2
+		anim.sorting_offset = 0.0
+		anim.render_priority = 0
+		anim.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
 		anim.double_sided = true
 		anim.no_depth_test = false
 
@@ -127,6 +130,11 @@ func _setup_player() -> void:
 	if shadow:
 		shadow.scale = Vector3(1.0, 1.0, 1.0)
 		shadow.visible = true
+
+	if player.has_signal("player_damaged") and not player.player_damaged.is_connected(_on_player_damaged):
+		player.player_damaged.connect(_on_player_damaged)
+	if player.has_signal("player_died") and not player.player_died.is_connected(_on_player_died):
+		player.player_died.connect(_on_player_died)
 
 # -------------------------------------------------------------------------
 # Camera Rig Setup (Perspective 2.5D, -12.5 deg tilt, outdoor perspective)
@@ -217,11 +225,95 @@ func _setup_glb_collisions() -> void:
 	if arena_props:
 		_glb_collision.setup_glb_collisions(arena_props)
 
+func _setup_asur() -> void:
+	if asur:
+		if asur.has_method("set_player"):
+			asur.set_player(player)
+		if asur.has_signal("boss_roared"):
+			asur.boss_roared.connect(_on_asur_roared)
+		if asur.has_signal("boss_damaged"):
+			asur.boss_damaged.connect(_on_asur_damaged)
+		if asur.has_signal("boss_defeated"):
+			asur.boss_defeated.connect(_on_asur_defeated)
+
+func _on_asur_roared() -> void:
+	if camera_rig:
+		var tw = create_tween()
+		tw.tween_property(camera_rig, "target_offset", Vector3(0.15, 1.35, -2.0), 0.05)
+		tw.tween_property(camera_rig, "target_offset", Vector3(-0.15, 1.35, -2.0), 0.05)
+		tw.tween_property(camera_rig, "target_offset", Vector3(0, 1.35, -2.0), 0.08)
+
+func _on_asur_damaged(new_hp: int) -> void:
+	if camera_rig:
+		var tw = create_tween()
+		tw.tween_property(camera_rig, "target_offset", Vector3(0.2, 1.35, -1.9), 0.06)
+		tw.tween_property(camera_rig, "target_offset", Vector3(-0.2, 1.35, -2.1), 0.06)
+		tw.tween_property(camera_rig, "target_offset", Vector3(0, 1.35, -2.0), 0.08)
+
+func _on_asur_defeated() -> void:
+	# Unlock path to the Sacred Murti by disabling rear barrier
+	var rear_barrier_col = get_node_or_null("Boundaries/AsurRearBarrier/CollisionShape3D")
+	if rear_barrier_col and rear_barrier_col is CollisionShape3D:
+		rear_barrier_col.set_deferred("disabled", true)
+		
+	if hud_objective:
+		hud_objective.text = "★ ASUR GENERAL DEFEATED! Proceed to the Sacred Murti to claim the blessing! ★"
+		hud_objective.modulate = Color(1.0, 0.85, 0.3)
+
 func _setup_ui() -> void:
 	if dialogue_box:
 		dialogue_box.visible = false
 	if hud_action:
 		hud_action.text = ""
+	
+	var hud = get_node_or_null("UI/HUD")
+	if hud:
+		var char_bar = hud.get_node_or_null("CharacterHealthBar")
+		if char_bar and char_bar.has_method("set_player"):
+			char_bar.set_player(player)
+
+		var boss_bar = hud.get_node_or_null("AsurBossBar")
+		if boss_bar and boss_bar.has_method("set_boss") and asur:
+			boss_bar.set_boss(asur)
+
+	_update_hp_display(3)
+
+func _on_player_damaged(hp: int) -> void:
+	if camera_rig:
+		var tw = create_tween()
+		tw.tween_property(camera_rig, "target_offset", Vector3(0.25, 1.35, -1.8), 0.05)
+		tw.tween_property(camera_rig, "target_offset", Vector3(-0.25, 1.35, -2.2), 0.05)
+		tw.tween_property(camera_rig, "target_offset", Vector3(0, 1.35, -2.0), 0.08)
+	_update_hp_display(hp)
+
+func _on_player_died() -> void:
+	_update_hp_display(0)
+	if hud_action:
+		hud_action.text = "The Asur struck you down! Regrouping..."
+	if hud_objective:
+		hud_objective.text = "★ DEFEATED - Regroup and strike back! ★"
+		hud_objective.modulate = Color(1.0, 0.3, 0.3)
+	
+	get_tree().create_timer(1.2).timeout.connect(func():
+		if is_instance_valid(player):
+			player.global_position = Vector3(0, 0.1, 7.5)
+			player.velocity = Vector3.ZERO
+			if player.has_method("reset_health"):
+				player.reset_health()
+			_update_hp_display(player.health)
+		if hud_objective:
+			hud_objective.text = "Boss Arena: Use Cover (Pillars & Walls) and Throw Rocks [C] to Stagger the Asur!"
+			hud_objective.modulate = Color(1.0, 0.45, 0.35)
+		if hud_action:
+			hud_action.text = ""
+	)
+
+func _update_hp_display(hp: int) -> void:
+	var hud = get_node_or_null("UI/HUD")
+	if hud:
+		var char_bar = hud.get_node_or_null("CharacterHealthBar")
+		if char_bar and char_bar.has_method("update_health"):
+			char_bar.update_health(hp, 3)
 
 # -------------------------------------------------------------------------
 # Physics Process & Dynamic Loop
@@ -241,9 +333,9 @@ func _physics_process(delta: float) -> void:
 		var murti_pulse = sin(time_passed * 2.2) * 0.35
 		divine_light.light_energy = 3.2 + murti_pulse
 
-	# 3. Update held rock position
+	# 3. Update held rock position overhead
 	if is_instance_valid(held_rock) and is_instance_valid(player):
-		held_rock.global_position = player.global_position + Vector3(0, 1.45, 0)
+		held_rock.global_position = player.global_position + Vector3(0, 1.65, 0)
 		if "is_carrying" in player and not player.is_carrying:
 			player.is_carrying = true
 
@@ -381,6 +473,21 @@ func _on_rock_impact(rock: Node3D) -> void:
 	# Re-enable collision
 	_set_rock_collision_disabled(rock, false)
 	
+	# Check impact on Asur boss
+	if asur and is_instance_valid(asur) and asur.visible:
+		var dist = rock.global_position.distance_to(asur.global_position)
+		if dist < 2.5:
+			if asur.has_method("take_rock_hit"):
+				asur.take_rock_hit(1)
+			elif asur.has_method("take_damage"):
+				asur.take_damage(1)
+			if hud_action:
+				hud_action.text = "DIRECT HIT! The Asur is STUNNED by the rock!"
+				get_tree().create_timer(2.5).timeout.connect(func():
+					if is_instance_valid(hud_action) and hud_action.text == "DIRECT HIT! The Asur is STUNNED by the rock!":
+						hud_action.text = ""
+				)
+
 	# Spawn dust particles
 	var dust = rock.get_node_or_null("ImpactDust")
 	if dust is CPUParticles3D:
@@ -463,6 +570,8 @@ func _on_boss_trigger_entered(body: Node3D) -> void:
 		if hud_objective:
 			hud_objective.text = "Boss Arena: Use Cover (Pillars & Walls) and Throw Rocks [C] to Stagger the Asur!"
 			hud_objective.modulate = Color(1.0, 0.45, 0.35)
+		if asur and asur.has_method("roar"):
+			asur.roar()
 
 func _on_rock_area_entered(body: Node3D, rock: Node3D) -> void:
 	if body == player and not is_instance_valid(held_rock):

@@ -93,6 +93,17 @@ func setup_glb_collisions(arena_props: Node) -> void:
 
 	print("[L3 3D] True 3D conversion complete for all arena elements.")
 
+func break_pillar(body: StaticBody3D) -> void:
+	if not is_instance_valid(body):
+		return
+	print("[L3 3D] Smashed pillar %s into broken model!" % body.name)
+	_apply_glb_model(body, "pillar_broken")
+
+func apply_rock_model(rock_body: StaticBody3D) -> void:
+	if not is_instance_valid(rock_body):
+		return
+	_apply_glb_model(rock_body, "rock")
+
 
 func _apply_glb_model(body: StaticBody3D, glb_key: String) -> void:
 	var glb_name: String = GLB_MAP.get(glb_key, "")

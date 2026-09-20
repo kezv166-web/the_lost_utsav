@@ -25,6 +25,7 @@ texture = ExtResource("3_shadow")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.72, 0)
 pixel_size = 0.0125
 billboard = 2
+alpha_cut = 1
 texture_filter = 0
 sprite_frames = ExtResource("2_frames")
 animation = &"idle_up"

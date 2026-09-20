@@ -33,16 +33,26 @@ var current_attack_type: String = ""
 var is_walking: bool = false
 var is_jumping: bool = false
 var is_carrying: bool = false
+var has_hit_in_current_attack: bool = false
 
 var human_frames: SpriteFrames = preload("res://scenes/player/player_sprite_frames.tres")
 var mouse_frames: SpriteFrames = preload("res://scenes/player/mushika_sprite_frames.tres")
 
 @onready var anim_sprite: AnimatedSprite3D = $AnimatedSprite3D
 
+signal player_damaged(current_hp: int)
+signal player_died
+
+@export var max_health: int = 250
+var health: int = 250
+var is_invulnerable: bool = false
+var invulnerable_timer: float = 0.0
+
 func _ready() -> void:
 	_setup_inputs()
 	if anim_sprite:
 		anim_sprite.animation_finished.connect(_on_animation_finished)
+		anim_sprite.frame_changed.connect(_on_anim_frame_changed)
 	_update_animation()
 
 func _setup_inputs() -> void:
@@ -51,9 +61,11 @@ func _setup_inputs() -> void:
 	_add_key_binding("move_up", KEY_W, KEY_UP)
 	_add_key_binding("move_down", KEY_S, KEY_DOWN)
 	_add_key_binding("jump", KEY_SPACE)
-	# Attacks on K (axe) and L (rope) only
-	_add_key_binding("attack_axe", KEY_K)
+	# Attacks on K/J (axe) and L (rope) + Mouse Left/Right Click
+	_add_key_binding("attack_axe", KEY_K, KEY_J)
 	_add_key_binding("attack_rope", KEY_L)
+	_add_mouse_binding("attack_axe", MOUSE_BUTTON_LEFT)
+	_add_mouse_binding("attack_rope", MOUSE_BUTTON_RIGHT)
 	_add_key_binding("interact", KEY_E)
 	_add_key_binding("transform_1", KEY_1)
 	_add_key_binding("pause", KEY_ESCAPE)
@@ -87,6 +99,17 @@ func _add_key_binding(action_name: String, primary_key: Key, secondary_key: Key 
 		ev2.physical_keycode = secondary_key
 		InputMap.action_add_event(action_name, ev2)
 
+func _add_mouse_binding(action_name: String, button_index: MouseButton) -> void:
+	if not InputMap.has_action(action_name):
+		InputMap.add_action(action_name)
+	var events = InputMap.action_get_events(action_name)
+	for ev in events:
+		if ev is InputEventMouseButton and ev.button_index == button_index:
+			return
+	var ev = InputEventMouseButton.new()
+	ev.button_index = button_index
+	InputMap.action_add_event(action_name, ev)
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("transform_1") or (event is InputEventKey and event.pressed and not event.is_echo() and (event.physical_keycode == KEY_1 or event.keycode == KEY_1)):
 		var current_sc = get_tree().current_scene if get_tree() else null
@@ -106,6 +129,16 @@ func _unhandled_input(event: InputEvent) -> void:
 			transform_to_human()
 
 func _physics_process(delta: float) -> void:
+	# Invulnerability timer & visual sprite flicker
+	if is_invulnerable:
+		invulnerable_timer -= delta
+		if anim_sprite:
+			anim_sprite.modulate.a = 0.35 if int(invulnerable_timer * 12.0) % 2 == 0 else 1.0
+		if invulnerable_timer <= 0.0:
+			is_invulnerable = false
+			if anim_sprite:
+				anim_sprite.modulate.a = 1.0
+
 	if current_form == PlayerForm.TRANSFORMING:
 		velocity = Vector3.ZERO
 		move_and_slide()
@@ -182,6 +215,7 @@ func _physics_process(delta: float) -> void:
 func _play_attack_animation() -> void:
 	if not anim_sprite:
 		return
+	has_hit_in_current_attack = false
 	var dir_str: String
 	match current_direction:
 		Direction.LEFT:
@@ -198,6 +232,87 @@ func _play_attack_animation() -> void:
 
 	anim_sprite.speed_scale = 1.0
 	anim_sprite.play(anim_name)
+	_execute_attack_hit()
+
+func _on_anim_frame_changed() -> void:
+	if current_state == State.ATTACKING and not has_hit_in_current_attack:
+		if anim_sprite and anim_sprite.frame in [1, 2, 3]:
+			_execute_attack_hit()
+
+func _execute_attack_hit() -> void:
+	if has_hit_in_current_attack:
+		return
+		
+	var reach: float = 3.2 if current_attack_type == "axe" else 4.6
+	var damage_amount: int = 40 if current_attack_type == "axe" else 28
+	
+	# Compute horizontal facing vector
+	var face_vec = Vector3.ZERO
+	match current_direction:
+		Direction.UP:
+			face_vec = Vector3(0, 0, -1)
+		Direction.DOWN:
+			face_vec = Vector3(0, 0, 1)
+		Direction.LEFT:
+			face_vec = Vector3(-1, 0, 0)
+		Direction.RIGHT:
+			face_vec = Vector3(1, 0, 0)
+			
+	if current_direction in [Direction.UP, Direction.DOWN]:
+		var h_bias = -0.35 if last_horizontal_facing == Direction.LEFT else 0.35
+		face_vec.x += h_bias
+		face_vec = face_vec.normalized()
+		
+	var tree = get_tree()
+	if not tree:
+		return
+		
+	var targets: Array[Node] = []
+	targets.append_array(tree.get_nodes_in_group("enemy"))
+	targets.append_array(tree.get_nodes_in_group("boss"))
+	
+	for enemy in targets:
+		if not is_instance_valid(enemy) or not (enemy is Node3D) or enemy == self:
+			continue
+		if "visible" in enemy and not enemy.visible:
+			continue
+			
+		var to_enemy: Vector3 = enemy.global_position - global_position
+		to_enemy.y = 0.0
+		var dist = to_enemy.length()
+		
+		var hit_connected = false
+		if dist <= 1.35:
+			hit_connected = true
+		elif dist <= reach:
+			var dot = face_vec.dot(to_enemy.normalized())
+			if dot >= 0.15:
+				hit_connected = true
+				
+		if hit_connected:
+			has_hit_in_current_attack = true
+			if enemy.has_method("take_damage"):
+				enemy.take_damage(damage_amount)
+			elif enemy.has_method("take_hit"):
+				enemy.take_hit(damage_amount)
+				
+			# Impact visual / camera shake
+			var cam = get_viewport().get_camera_3d() if get_viewport() else null
+			if cam and cam.get_parent() and cam.get_parent().has_method("shake"):
+				cam.get_parent().shake(0.25, 16.0)
+				
+			# Hitstop micro-pause (2 frames / 0.04s)
+			Engine.time_scale = 0.05
+			tree.create_timer(0.04, true, false, true).timeout.connect(func():
+				Engine.time_scale = 1.0
+			)
+				
+			# Sprite flash on player strike
+			if anim_sprite:
+				var tw = create_tween()
+				tw.tween_property(anim_sprite, "modulate", Color(2.0, 1.8, 1.2, 1.0), 0.06)
+				tw.tween_property(anim_sprite, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
+			break
 
 func _update_animation() -> void:
 	if not anim_sprite or current_state == State.ATTACKING or current_form == PlayerForm.TRANSFORMING:
@@ -215,8 +330,11 @@ func _update_animation() -> void:
 			dir_str = "right"
 			
 	var target_anim: String
-	if is_carrying and anim_sprite.sprite_frames and anim_sprite.sprite_frames.has_animation("carry_rock"):
-		target_anim = "carry_rock"
+	if is_carrying:
+		if anim_sprite.sprite_frames and anim_sprite.sprite_frames.has_animation("carry_" + dir_str):
+			target_anim = "carry_" + dir_str
+		elif anim_sprite.sprite_frames and anim_sprite.sprite_frames.has_animation("carry_rock"):
+			target_anim = "carry_rock"
 		anim_sprite.speed_scale = 1.0
 	elif not is_on_floor() or is_jumping:
 		if anim_sprite.sprite_frames and anim_sprite.sprite_frames.has_animation("jump_" + dir_str):
@@ -303,3 +421,33 @@ func transform_to_human() -> void:
 	if shadow:
 		shadow.scale = Vector3(1.0, 1.0, 1.0)
 	print("Player transformed to HUMAN.")
+
+func take_damage(amount: int = 1, knockback_source: Vector3 = Vector3.ZERO) -> void:
+	if is_invulnerable or health <= 0:
+		return
+	health = max(0, health - amount)
+	is_invulnerable = true
+	invulnerable_timer = 1.0
+	
+	if knockback_source != Vector3.ZERO:
+		var knock_dir = global_position - knockback_source
+		knock_dir.y = 0.0
+		if knock_dir.length_squared() < 0.001:
+			knock_dir = Vector3(0, 0, 1) # Default push South
+		else:
+			knock_dir = knock_dir.normalized()
+		velocity.x = knock_dir.x * 6.5
+		velocity.z = knock_dir.z * 6.5
+		if is_on_floor():
+			velocity.y = 2.5
+	
+	emit_signal("player_damaged", health)
+	if health <= 0:
+		emit_signal("player_died")
+
+func reset_health() -> void:
+	health = max_health
+	is_invulnerable = false
+	invulnerable_timer = 0.0
+	if anim_sprite:
+		anim_sprite.modulate.a = 1.0

@@ -1,0 +1,38 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/asur_ground_cracks.gd" id="1_script"]
+
+[sub_resource type="Curve" id="Curve_debris"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="AsurGroundCracks" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="CracksDecal" type="Decal" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+size = Vector3(0.2, 2, 0.2)
+modulate = Color(1, 0.92, 0.85, 1)
+
+[node name="StoneDebris" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+emitting = false
+amount = 32
+lifetime = 1.0
+one_shot = true
+explosiveness = 0.95
+direction = Vector3(0, 1, 0)
+spread = 60.0
+gravity = Vector3(0, -18, 0)
+initial_velocity_min = 4.5
+initial_velocity_max = 8.5
+scale_amount_min = 2.0
+scale_amount_max = 4.5
+scale_amount_curve = SubResource("Curve_debris")
+color = Color(0.82, 0.55, 0.32, 0.95)
+
+[node name="FlashLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+light_color = Color(1, 0.45, 0.15, 1)
+light_energy = 4.2
+omni_range = 6.0
