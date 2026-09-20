@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/character_health_bar.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/character/health_bar/processed/char_bar_1_full.png" id="2_tex_full"]
+
+[node name="CharacterHealthBar" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 384.0
+offset_bottom = 68.0
+pivot_offset = Vector2(0, 24)
+script = ExtResource("1_script")
+
+[node name="BarTexture" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_tex_full")
+expand_mode = 1
+stretch_mode = 5

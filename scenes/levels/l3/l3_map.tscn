@@ -36,6 +36,8 @@
 [ext_resource type="Texture2D" uid="uid://dkobqxlbbl5r1" path="res://assets/environment/l3_3d/plant_grass_tuft_2.png" id="35_grass_2"]
 [ext_resource type="Texture2D" uid="uid://bmivjjv48wwig" path="res://assets/environment/l3_3d/banner_tall_sigil.png" id="37_banner_tall"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/asur.tscn" id="38_asur"]
+[ext_resource type="PackedScene" path="res://scenes/ui/asur_boss_bar.tscn" id="39_boss_bar"]
+[ext_resource type="PackedScene" path="res://scenes/ui/character_health_bar.tscn" id="40_char_bar"]
 
 [sub_resource type="Environment" id="Environment_castle"]
 background_mode = 1
@@ -68,6 +70,12 @@ size = Vector3(1, 6, 36)
 
 [sub_resource type="BoxShape3D" id="Shape_WallSouthWing"]
 size = Vector3(9, 6, 1)
+
+[sub_resource type="BoxShape3D" id="Shape_WallSouthGate"]
+size = Vector3(8, 6, 1)
+
+[sub_resource type="BoxShape3D" id="Shape_AsurRearBarrier"]
+size = Vector3(22, 6, 1)
 
 [sub_resource type="BoxShape3D" id="Shape_Dais"]
 size = Vector3(7.4, 0.9, 3.2)
@@ -184,6 +192,18 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 3, 15.5)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Boundaries/WallSouthRight" unique_id=1216562397]
 shape = SubResource("Shape_WallSouthWing")
+
+[node name="WallSouthGate" type="StaticBody3D" parent="Boundaries" unique_id=999888777]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 15.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Boundaries/WallSouthGate" unique_id=999888778]
+shape = SubResource("Shape_WallSouthGate")
+
+[node name="AsurRearBarrier" type="StaticBody3D" parent="Boundaries" unique_id=999888779]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -2.6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Boundaries/AsurRearBarrier" unique_id=999888780]
+shape = SubResource("Shape_AsurRearBarrier")
 
 [node name="Visuals3D" type="Node3D" parent="." unique_id=27410492]
 
@@ -1238,6 +1258,27 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.92, 0.85, 1)
 theme_override_font_sizes/font_size = 18
 autowrap_mode = 2
+
+[node name="CharacterHealthBar" parent="UI/HUD" unique_id=123456781 instance=ExtResource("40_char_bar")]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 384.0
+offset_bottom = 68.0
+
+[node name="AsurBossBar" parent="UI/HUD" unique_id=123456782 instance=ExtResource("39_boss_bar")]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -340.0
+offset_top = -105.0
+offset_right = 340.0
+offset_bottom = -25.0
+grow_horizontal = 2
+grow_vertical = 0
 
 [node name="Player" parent="." unique_id=190694912 instance=ExtResource("3_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 12.5)

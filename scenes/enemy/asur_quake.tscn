@@ -1,0 +1,50 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/asur_quake.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/character/drop_shadow.png" id="2_ring"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_hitbox"]
+height = 1.0
+radius = 1.0
+
+[sub_resource type="Curve" id="Curve_dust"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="AsurQuake" type="Area3D" groups=["enemy_attack"]]
+collision_layer = 8
+collision_mask = 3
+script = ExtResource("1_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CylinderShape3D_hitbox")
+
+[node name="QuakeLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+light_color = Color(1, 0.45, 0.15, 1)
+light_energy = 3.5
+omni_range = 6.0
+
+[node name="ShockRing" type="Decal" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+size = Vector3(2, 1.5, 2)
+texture_albedo = ExtResource("2_ring")
+modulate = Color(1, 0.6, 0.2, 0.9)
+
+[node name="DustParticles" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+amount = 48
+lifetime = 0.8
+explosiveness = 0.9
+emission_shape = 2
+emission_box_extents = Vector3(1.5, 0.1, 1.5)
+direction = Vector3(0, 1, 0)
+spread = 60.0
+gravity = Vector3(0, -12.0, 0)
+initial_velocity_min = 4.0
+initial_velocity_max = 9.0
+scale_amount_min = 2.5
+scale_amount_max = 5.0
+scale_amount_curve = SubResource("Curve_dust")
+color = Color(0.9, 0.65, 0.35, 0.95)
