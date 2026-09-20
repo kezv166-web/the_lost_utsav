@@ -60,18 +60,19 @@ func _trigger_damage_feedback() -> void:
 		tw.tween_property(self, "scale", Vector2(1.05, 1.05), 0.06)
 		tw.tween_property(self, "scale", Vector2(1.0, 1.0), 0.12)
 
-func update_health(hp: int, max_val: int) -> void:
+func update_health(hp: int, max_val: int = -1) -> void:
 	current_hp = hp
-	max_hp = max(1, max_val)
-	var ratio = float(current_hp) / float(max_hp)
+	if max_val > 0:
+		max_hp = max_val
+	var ratio = clampf(float(current_hp) / float(max_hp), 0.0, 1.0)
 	
-	if ratio >= 0.85:
+	if ratio >= 0.82:
 		target_tex = tex_full
-	elif ratio >= 0.65:
+	elif ratio >= 0.62:
 		target_tex = tex_high
-	elif ratio >= 0.45:
+	elif ratio >= 0.42:
 		target_tex = tex_mid
-	elif ratio >= 0.20:
+	elif ratio >= 0.18:
 		target_tex = tex_low
 	elif ratio > 0.0:
 		target_tex = tex_critical

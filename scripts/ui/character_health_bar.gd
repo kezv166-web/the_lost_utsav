@@ -36,22 +36,23 @@ func set_player(player_node: Node) -> void:
 		
 	update_health(current_hp, max_hp)
 
-func update_health(hp: int, max_val: int = 3) -> void:
+func update_health(hp: int, max_val: int = -1) -> void:
 	var prev_hp = current_hp
 	current_hp = hp
-	max_hp = max(1, max_val)
-	var ratio = float(current_hp) / float(max_hp)
+	if max_val > 0:
+		max_hp = max_val
+	var ratio = clampf(float(current_hp) / float(max_hp), 0.0, 1.0)
 	
 	var chosen_tex = tex_1_full
-	if ratio >= 0.95:
+	if ratio >= 0.90:
 		chosen_tex = tex_1_full
-	elif ratio >= 0.75:
+	elif ratio >= 0.72:
 		chosen_tex = tex_2_high
-	elif ratio >= 0.55:
+	elif ratio >= 0.54:
 		chosen_tex = tex_3_mid
-	elif ratio >= 0.38:
+	elif ratio >= 0.36:
 		chosen_tex = tex_4_half
-	elif ratio >= 0.20:
+	elif ratio >= 0.18:
 		chosen_tex = tex_5_low
 	elif ratio > 0.0:
 		chosen_tex = tex_6_critical

@@ -382,7 +382,7 @@ func take_damage(amount: int = 40) -> void:
 		current_state = State.HURT
 		_play_anim("hurt")
 
-func take_rock_hit(amount: int = 85) -> void:
+func take_rock_hit(amount: int = 175) -> void:
 	_cleanup_telegraph()
 	recovery_timer = 0.0
 	health = max(0, health - amount)

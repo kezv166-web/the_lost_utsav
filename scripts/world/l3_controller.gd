@@ -276,7 +276,8 @@ func _setup_ui() -> void:
 		if boss_bar and boss_bar.has_method("set_boss") and asur:
 			boss_bar.set_boss(asur)
 
-	_update_hp_display(3)
+	var init_hp = player.health if (is_instance_valid(player) and "health" in player) else 250
+	_update_hp_display(init_hp)
 
 func _on_player_damaged(hp: int) -> void:
 	if camera_rig:
@@ -313,7 +314,8 @@ func _update_hp_display(hp: int) -> void:
 	if hud:
 		var char_bar = hud.get_node_or_null("CharacterHealthBar")
 		if char_bar and char_bar.has_method("update_health"):
-			char_bar.update_health(hp, 3)
+			var max_val = player.max_health if (is_instance_valid(player) and "max_health" in player) else 250
+			char_bar.update_health(hp, max_val)
 
 # -------------------------------------------------------------------------
 # Physics Process & Dynamic Loop
@@ -478,9 +480,9 @@ func _on_rock_impact(rock: Node3D) -> void:
 		var dist = rock.global_position.distance_to(asur.global_position)
 		if dist < 2.5:
 			if asur.has_method("take_rock_hit"):
-				asur.take_rock_hit(1)
+				asur.take_rock_hit(175)
 			elif asur.has_method("take_damage"):
-				asur.take_damage(1)
+				asur.take_damage(175)
 			if hud_action:
 				hud_action.text = "DIRECT HIT! The Asur is STUNNED by the rock!"
 				get_tree().create_timer(2.5).timeout.connect(func():

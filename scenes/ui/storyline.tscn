@@ -116,6 +116,20 @@ offset_bottom = 56.0
 grow_horizontal = 2
 mouse_filter = 2
 
+[node name="MenuButton" type="Button" parent="HUD/TopBar"]
+custom_minimum_size = Vector2(125, 34)
+layout_mode = 1
+anchors_preset = 0
+offset_left = 20.0
+offset_right = 145.0
+offset_bottom = 34.0
+theme_override_colors/font_color = Color(0.9, 0.85, 0.7, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBox_BtnNormal")
+theme_override_styles/hover = SubResource("StyleBox_BtnHover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnPressed")
+text = "« Main Menu"
+
 [node name="SkipButton" type="Button" parent="HUD/TopBar"]
 custom_minimum_size = Vector2(115, 34)
 layout_mode = 1
@@ -132,6 +146,7 @@ theme_override_styles/normal = SubResource("StyleBox_BtnNormal")
 theme_override_styles/hover = SubResource("StyleBox_BtnHover")
 theme_override_styles/pressed = SubResource("StyleBox_BtnPressed")
 text = "Skip [Esc] »"
+
 
 [node name="BottomBar" type="Control" parent="HUD"]
 layout_mode = 1
