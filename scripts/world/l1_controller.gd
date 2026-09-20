@@ -40,6 +40,18 @@ func _ready() -> void:
 	if has_node("/root/MusicManager"):
 		MusicManager.play("l1_upper")
 
+	var grm = get_node_or_null("/root/GameRunManager")
+	if grm:
+		if not grm.is_run_active:
+			grm.start_new_run()
+		grm.set_current_level(1)
+
+	var hud_scene = preload("res://scenes/ui/speedrun_hud.tscn")
+	var ui = get_node_or_null("UI")
+	if ui and not ui.get_node_or_null("SpeedrunHUD"):
+		var speed_hud = hud_scene.instantiate()
+		ui.add_child(speed_hud)
+
 	if not InputMap.has_action("transform_1"):
 		InputMap.add_action("transform_1")
 		var ev = InputEventKey.new()

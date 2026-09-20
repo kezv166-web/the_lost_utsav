@@ -28,6 +28,9 @@ const SCENE_STORYLINE: String = "res://scenes/ui/storyline.tscn"
 
 @onready var dynamic_table_overlay: Control = $CenterTableArea/DynamicRowsOverlay
 @onready var rows_container: VBoxContainer = $CenterTableArea/DynamicRowsOverlay/VBoxRows
+@onready var header_level_lbl: Label = $CenterTableArea/DynamicRowsOverlay/HeaderBar/H_Level
+@onready var header_time_lbl: Label = $CenterTableArea/DynamicRowsOverlay/HeaderBar/H_Time
+@onready var header_score_lbl: Label = $CenterTableArea/DynamicRowsOverlay/HeaderBar/H_Score
 @onready var scroll_note: TextureRect = $RightSideArea/ScrollNote
 
 # Profile card nodes
@@ -60,7 +63,7 @@ const SCENE_STORYLINE: String = "res://scenes/ui/storyline.tscn"
 var _sound_synth: UISoundSynth = null
 var _data_manager: LeaderboardManager = null
 var _current_tab: String = "all_time"
-var _current_level: String = "level_3"
+var _current_level: String = "all"
 var _is_transitioning: bool = false
 var _anim_time: float = 0.0
 
@@ -101,9 +104,10 @@ func _ready() -> void:
 	# 3. Setup Level Dropdown
 	if level_dropdown:
 		level_dropdown.clear()
-		level_dropdown.add_item("LEVEL 3 (FINAL)", 0)
-		level_dropdown.add_item("LEVEL 2 (MAZE)", 1)
-		level_dropdown.add_item("LEVEL 1 (OUTDOOR)", 2)
+		level_dropdown.add_item("ALL STAGES (FULL RUN)", 0)
+		level_dropdown.add_item("LEVEL 3 (FINAL BOSS)", 1)
+		level_dropdown.add_item("LEVEL 2 (UNDERGROUND MAZE)", 2)
+		level_dropdown.add_item("LEVEL 1 (OUTDOOR GATE)", 3)
 		level_dropdown.selected = 0
 		if not level_dropdown.item_selected.is_connected(_on_level_selected):
 			level_dropdown.item_selected.connect(_on_level_selected)
@@ -260,10 +264,11 @@ func _on_level_selected(index: int) -> void:
 	if _sound_synth:
 		_sound_synth.play_tab()
 	match index:
-		0: _current_level = "level_3"
-		1: _current_level = "level_2"
-		2: _current_level = "level_1"
-		_: _current_level = "level_3"
+		0: _current_level = "all"
+		1: _current_level = "level_3"
+		2: _current_level = "level_2"
+		3: _current_level = "level_1"
+		_: _current_level = "all"
 	_refresh_table_view()
 
 func _update_tab_visuals() -> void:
@@ -294,16 +299,74 @@ func _refresh_table_view() -> void:
 	dynamic_table_overlay.visible = true
 	dynamic_table_overlay.modulate.a = 1.0
 
+	# Update contextual table headers per level
+	match _current_level:
+		"level_1":
+			if header_level_lbl: header_level_lbl.text = "STAGE"
+			if header_time_lbl: header_time_lbl.text = "GATE TIME"
+			if header_score_lbl: header_score_lbl.text = "L1 SCORE"
+		"level_2":
+			if header_level_lbl: header_level_lbl.text = "MODAKS"
+			if header_time_lbl: header_time_lbl.text = "MAZE TIME"
+			if header_score_lbl: header_score_lbl.text = "L2 SCORE"
+		"level_3":
+			if header_level_lbl: header_level_lbl.text = "ATTEMPTS"
+			if header_time_lbl: header_time_lbl.text = "BOSS TIME"
+			if header_score_lbl: header_score_lbl.text = "L3 SCORE"
+		_:
+			if header_level_lbl: header_level_lbl.text = "LEVEL REACHED"
+			if header_time_lbl: header_time_lbl.text = "TOTAL TIME"
+			if header_score_lbl: header_score_lbl.text = "TOTAL SCORE"
+
 	for child in rows_container.get_children():
 		child.queue_free()
 
 	if _data_manager == null:
 		_data_manager = LeaderboardManager.get_instance()
 
-	var entries = _data_manager.get_entries(10)
+	var entries = _data_manager.get_filtered_entries(_current_level, _current_tab)
+	if entries.is_empty():
+		var empty_row = _create_empty_state_panel()
+		rows_container.add_child(empty_row)
+		return
+
 	for entry in entries:
 		var row = _create_row_panel(entry)
 		rows_container.add_child(row)
+
+func _create_empty_state_panel() -> PanelContainer:
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(580, 160)
+	var sb = StyleBoxFlat.new()
+	sb.bg_color = Color(0.06, 0.05, 0.07, 0.90)
+	sb.border_width_left = 1
+	sb.border_width_top = 1
+	sb.border_width_right = 1
+	sb.border_width_bottom = 1
+	sb.border_color = Color(0.65, 0.50, 0.22, 0.7)
+	sb.set_corner_radius_all(6)
+	panel.add_theme_stylebox_override("panel", sb)
+
+	var vb = VBoxContainer.new()
+	vb.alignment = BoxContainer.ALIGNMENT_CENTER
+	vb.add_theme_constant_override("separation", 10)
+	panel.add_child(vb)
+
+	var title = Label.new()
+	title.text = "NO RECORDED RUNS YET"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_color_override("font_color", Color(1.0, 0.88, 0.4))
+	title.add_theme_font_size_override("font_size", 16)
+	vb.add_child(title)
+
+	var desc = Label.new()
+	desc.text = "Every brave soul leaves a mark.\nStart a journey [▶ PLAY] to defeat the Asur and record your authentic run here!\n\nTIP: Collect all 5 Modaks in the Underground Maze for +250 Bonus Points!"
+	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	desc.add_theme_color_override("font_color", Color(0.85, 0.82, 0.75))
+	desc.add_theme_font_size_override("font_size", 12)
+	vb.add_child(desc)
+
+	return panel
 
 func _create_row_panel(entry: Dictionary) -> PanelContainer:
 	var panel = PanelContainer.new()
@@ -387,7 +450,7 @@ func _create_row_panel(entry: Dictionary) -> PanelContainer:
 	# 3. Avatar Portrait
 	var avatar_key = entry.get("avatar", "avatar_0")
 	var avatar_rect = TextureRect.new()
-	avatar_rect.custom_minimum_size = Vector2(26, 24)
+	avatar_rect.custom_minimum_size = Vector2(28, 24)
 	avatar_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	avatar_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	var a_tex = UISliceManager.get_avatar(avatar_key)
@@ -416,12 +479,12 @@ func _create_row_panel(entry: Dictionary) -> PanelContainer:
 	lbl_player.add_theme_font_size_override("font_size", 12)
 	hbox.add_child(lbl_player)
 
-	# 5. Level Reached
+	# 5. Level Reached / Stage Context
 	var lbl_lvl = Label.new()
 	lbl_lvl.custom_minimum_size = Vector2(85, 24)
 	lbl_lvl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl_lvl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl_lvl.text = str(entry.get("level", 1))
+	lbl_lvl.text = str(entry.get("display_level", entry.get("level", 1)))
 	lbl_lvl.add_theme_font_size_override("font_size", 12)
 	lbl_lvl.add_theme_color_override("font_color", Color(0.85, 0.85, 0.85))
 	hbox.add_child(lbl_lvl)
@@ -431,7 +494,7 @@ func _create_row_panel(entry: Dictionary) -> PanelContainer:
 	lbl_time.custom_minimum_size = Vector2(85, 24)
 	lbl_time.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl_time.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl_time.text = entry.get("time", "00:00:00")
+	lbl_time.text = str(entry.get("display_time", entry.get("time", "00:00:00")))
 	lbl_time.add_theme_font_size_override("font_size", 12)
 	if rank == 1:
 		lbl_time.add_theme_color_override("font_color", Color(1.0, 0.90, 0.50))
@@ -446,7 +509,8 @@ func _create_row_panel(entry: Dictionary) -> PanelContainer:
 	lbl_score.custom_minimum_size = Vector2(85, 24)
 	lbl_score.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	lbl_score.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl_score.text = LeaderboardManager.format_score(entry.get("score", 0))
+	var score_val = entry.get("display_score", entry.get("score", 0))
+	lbl_score.text = LeaderboardManager.format_score(score_val)
 	lbl_score.add_theme_font_size_override("font_size", 12)
 	if rank == 1:
 		lbl_score.add_theme_color_override("font_color", Color(1.0, 0.88, 0.35))
@@ -478,12 +542,15 @@ func _update_profile_card() -> void:
 	if profile_rank_lbl:
 		var user_id = profile.get("id", "")
 		var entries = _data_manager.get_entries(999)
-		var user_rank = 1
+		var user_rank = -1
 		for entry in entries:
 			if entry.get("id") == user_id or entry.get("is_self", false):
 				user_rank = entry.get("rank", 1)
 				break
-		profile_rank_lbl.text = "#%d" % user_rank
+		if user_rank > 0:
+			profile_rank_lbl.text = "#%d" % user_rank
+		else:
+			profile_rank_lbl.text = "--"
 
 # ---------------------------------------------------------------------------
 # PROFILE MODAL (WARRIOR NAME CUSTOMIZATION)

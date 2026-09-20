@@ -31,3 +31,4 @@ textures/default_filters/use_nearest_mipmap_filter=true
 [autoload]
 
 MusicManager="*res://scripts/music_manager.gd"
+GameRunManager="*res://scripts/game_run_manager.gd"

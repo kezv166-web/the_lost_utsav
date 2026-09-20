@@ -66,6 +66,13 @@ func _ready() -> void:
 	var music_mgr = get_node_or_null("/root/MusicManager")
 	if music_mgr and music_mgr.has_method("play"):
 		music_mgr.play("l3_boss")
+		
+	var grm = get_node_or_null("/root/GameRunManager")
+	if grm:
+		if not grm.is_run_active:
+			grm.start_new_run()
+		grm.set_current_level(3)
+		
 	_ensure_l3_textures_cleaned()
 	_setup_player()
 	_setup_camera()
@@ -373,6 +380,12 @@ func _setup_ui() -> void:
 
 	_update_hp_display(player.health if (player and "health" in player) else 250)
 
+	var hud_scene = preload("res://scenes/ui/speedrun_hud.tscn")
+	var ui = get_node_or_null("UI")
+	if ui and not ui.get_node_or_null("SpeedrunHUD"):
+		var speed_hud = hud_scene.instantiate()
+		ui.add_child(speed_hud)
+
 func _on_player_damaged(hp: int) -> void:
 	if camera_rig:
 		var tw = create_tween()
@@ -385,6 +398,10 @@ func _on_player_died() -> void:
 	if is_restarting_level:
 		return
 	is_restarting_level = true
+
+	var grm = get_node_or_null("/root/GameRunManager")
+	if grm and grm.has_method("record_level_3_death"):
+		grm.record_level_3_death()
 
 	Engine.time_scale = 1.0
 	_update_hp_display(0)
@@ -604,6 +621,9 @@ func _on_rock_impact(rock: Node3D) -> void:
 	if asur and is_instance_valid(asur) and asur.visible:
 		var dist = rock.global_position.distance_to(asur.global_position)
 		if dist < 2.5:
+			var grm = get_node_or_null("/root/GameRunManager")
+			if grm and grm.has_method("record_boss_hit"):
+				grm.record_boss_hit()
 			if asur.has_method("take_rock_hit"):
 				asur.take_rock_hit(85)
 			elif asur.has_method("take_damage"):
@@ -730,6 +750,10 @@ func _spawn_falling_rock(spawn_pos: Vector3) -> void:
 func _reclaim_blessing() -> void:
 	blessing_in_progress = true
 	blessing_claimed = true
+
+	var grm = get_node_or_null("/root/GameRunManager")
+	if grm and grm.has_method("complete_level_3"):
+		grm.complete_level_3()
 	
 	if altar_prompt:
 		altar_prompt.visible = false
@@ -821,6 +845,9 @@ func _on_rock_area_exited(body: Node3D, rock: Node3D) -> void:
 			prompt.visible = false
 
 func _trigger_exit() -> void:
+	var grm = get_node_or_null("/root/GameRunManager")
+	if grm and grm.has_method("complete_level_3") and not grm.level3_cleared:
+		grm.complete_level_3()
 	if dialogue_box and dialogue_label:
 		dialogue_box.visible = true
 		dialogue_label.text = "The castle gates are open. Faith and courage have dispelled the Asur's shadow."

@@ -14,8 +14,23 @@ const PuzzleScene = preload("res://scenes/ui/gate_puzzle.tscn")
 const AssetExtractor = preload("res://scripts/extract_assets.gd")
 
 func _ready() -> void:
-	if has_node("/root/MusicManager"):
-		MusicManager.play("outdoor")
+	var music_mgr = get_node_or_null("/root/MusicManager")
+	if music_mgr and music_mgr.has_method("play"):
+		music_mgr.play("outdoor")
+	
+	var grm = get_node_or_null("/root/GameRunManager")
+	if grm:
+		if not grm.is_run_active:
+			grm.start_new_run()
+		grm.set_current_level(1)
+		
+	var hud_scene = preload("res://scenes/ui/speedrun_hud.tscn")
+	var cl = CanvasLayer.new()
+	cl.name = "SpeedrunCanvas"
+	cl.layer = 15
+	add_child(cl)
+	cl.add_child(hud_scene.instantiate())
+
 	AssetExtractor.extract_assets_now()
 	_update_prompt_text()
 	prompt_label.visible = false
@@ -85,6 +100,10 @@ func _on_puzzle_solved() -> void:
 	# Restore player control
 	if current_player and current_player.has_method("set_physics_process"):
 		current_player.set_physics_process(true)
+		
+	var grm = get_node_or_null("/root/GameRunManager")
+	if grm and grm.has_method("complete_level_1"):
+		grm.complete_level_1()
 		
 	# Dissolve spell barrier & Asur sigil in outdoor world
 	var parent_gate = get_parent()

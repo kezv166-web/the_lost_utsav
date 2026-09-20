@@ -22,16 +22,57 @@ var key_bob_tween: Tween = null
 
 var torch_lights: Array[OmniLight3D] = []
 
+const MODAK_SPAWN_POSITIONS: Array[Vector3] = [
+	Vector3(-24.0, 0.35, 14.0),
+	Vector3(-18.0, 0.35, -10.0),
+	Vector3(8.0, 0.35, -8.0),
+	Vector3(20.0, 0.35, 6.0),
+	Vector3(-6.0, 0.35, 10.0)
+]
+
 func _ready() -> void:
-	if has_node("/root/MusicManager"):
-		MusicManager.play("l1_lower")
+	var music_mgr = get_node_or_null("/root/MusicManager")
+	if music_mgr and music_mgr.has_method("play"):
+		music_mgr.play("l1_lower")
+		
+	var grm = get_node_or_null("/root/GameRunManager")
+	if grm:
+		if not grm.is_run_active:
+			grm.start_new_run()
+		grm.set_current_level(2)
+
 	_setup_player_as_mouse()
 	_setup_camera()
 	_setup_torches()
 	_setup_interactables()
+	_setup_modak_pickups()
+	_setup_speedrun_hud()
 	_setup_fade_in()
 	_update_hud()
-	_show_hud_message("Level 1: Underground Maze\nNavigate the fortress foundation. Find the Golden Key to unlock the Exit Gate.", 5.0)
+	_show_hud_message("Level 2: Underground Maze\nNavigate the foundation. Find the Golden Key & 5 Sacred Modaks (+50 PTS each)!", 5.0)
+
+func _setup_modak_pickups() -> void:
+	var modak_scene = preload("res://scenes/props/modak_pickup.tscn")
+	var interactables = get_node_or_null("Interactables")
+	if not interactables:
+		interactables = self
+		
+	var modak_parent = Node3D.new()
+	modak_parent.name = "ModakPickups"
+	interactables.add_child(modak_parent)
+	
+	for i in range(MODAK_SPAWN_POSITIONS.size()):
+		var m = modak_scene.instantiate()
+		m.name = "Modak_%d" % (i + 1)
+		m.position = MODAK_SPAWN_POSITIONS[i]
+		modak_parent.add_child(m)
+
+func _setup_speedrun_hud() -> void:
+	var hud_scene = preload("res://scenes/ui/speedrun_hud.tscn")
+	var hud_layer = get_node_or_null("MazeHUD")
+	if hud_layer and not hud_layer.get_node_or_null("SpeedrunHUD"):
+		var speed_hud = hud_scene.instantiate()
+		hud_layer.add_child(speed_hud)
 
 func _setup_fade_in() -> void:
 	var hud = get_node_or_null("MazeHUD")
@@ -201,6 +242,9 @@ func _on_key_body_entered(body: Node3D) -> void:
 		return
 	if body.is_in_group("player") or body == player:
 		has_key = true
+		var grm = get_node_or_null("/root/GameRunManager")
+		if grm and grm.has_method("record_key_pickup"):
+			grm.record_key_pickup()
 		if key_bob_tween and key_bob_tween.is_valid():
 			key_bob_tween.kill()
 		_update_hud()
@@ -265,6 +309,11 @@ func _transition_to_level_3() -> void:
 	if transitioning_to_l3:
 		return
 	transitioning_to_l3 = true
+	
+	var grm = get_node_or_null("/root/GameRunManager")
+	if grm and grm.has_method("complete_level_2"):
+		grm.complete_level_2()
+		
 	var l3_path = "res://scenes/levels/l3/l3_map.tscn"
 	if ResourceLoader.exists(l3_path):
 		_show_hud_message("Ascending to Level 3: The Inner Castle Sanctum...", 3.0)
