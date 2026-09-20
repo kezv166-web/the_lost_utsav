@@ -37,6 +37,9 @@ var transformation_in_progress: bool = false
 var pulse_time: float = 0.0
 
 func _ready() -> void:
+	if has_node("/root/MusicManager"):
+		MusicManager.play("l1_upper")
+
 	if not InputMap.has_action("transform_1"):
 		InputMap.add_action("transform_1")
 		var ev = InputEventKey.new()

@@ -34,6 +34,8 @@ var is_walking: bool = false
 var is_jumping: bool = false
 var is_carrying: bool = false
 var has_hit_in_current_attack: bool = false
+var attack_cooldown_timer: float = 0.0
+var attack_duration_timer: float = 0.0
 
 var human_frames: SpriteFrames = preload("res://scenes/player/player_sprite_frames.tres")
 var mouse_frames: SpriteFrames = preload("res://scenes/player/mushika_sprite_frames.tres")
@@ -61,12 +63,12 @@ func _setup_inputs() -> void:
 	_add_key_binding("move_up", KEY_W, KEY_UP)
 	_add_key_binding("move_down", KEY_S, KEY_DOWN)
 	_add_key_binding("jump", KEY_SPACE)
-	# Attacks on K/J (axe) and L (rope) + Mouse Left/Right Click
-	_add_key_binding("attack_axe", KEY_K, KEY_J)
-	_add_key_binding("attack_rope", KEY_L)
+	# Attacks on F (axe) and G (rope) + K/L fallbacks + Mouse Left/Right Click
+	_add_key_binding("attack_axe", KEY_F, KEY_K)
+	_add_key_binding("attack_rope", KEY_G, KEY_L)
 	_add_mouse_binding("attack_axe", MOUSE_BUTTON_LEFT)
 	_add_mouse_binding("attack_rope", MOUSE_BUTTON_RIGHT)
-	_add_key_binding("interact", KEY_E)
+	_add_key_binding("interact", KEY_E, KEY_C)
 	_add_key_binding("transform_1", KEY_1)
 	_add_key_binding("pause", KEY_ESCAPE)
 
@@ -74,6 +76,8 @@ func _on_animation_finished() -> void:
 	if current_state == State.ATTACKING:
 		current_state = State.IDLE_WALK if is_on_floor() else State.JUMPING
 		current_attack_type = ""
+		attack_duration_timer = 0.0
+		attack_cooldown_timer = 0.38
 		_update_animation()
 
 func _add_key_binding(action_name: String, primary_key: Key, secondary_key: Key = KEY_NONE) -> void:
@@ -158,18 +162,23 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.y -= gravity * delta
 
+	if attack_cooldown_timer > 0.0:
+		attack_cooldown_timer -= delta
+		
+	if attack_duration_timer > 0.0:
+		attack_duration_timer -= delta
+		if attack_duration_timer <= 0.0 and current_state == State.ATTACKING:
+			current_state = State.IDLE_WALK if is_on_floor() else State.JUMPING
+			current_attack_type = ""
+			attack_cooldown_timer = 0.38
+			_update_animation()
+
 	# Combat attack triggers (allowed on ground or airborne when in human form and not already attacking)
-	if current_state != State.ATTACKING and current_form == PlayerForm.HUMAN:
+	if current_state != State.ATTACKING and attack_cooldown_timer <= 0.0 and current_form == PlayerForm.HUMAN:
 		if Input.is_action_just_pressed("attack_axe"):
-			current_state = State.ATTACKING
-			current_attack_type = "axe"
-			is_walking = false
-			_play_attack_animation()
+			attack("axe")
 		elif Input.is_action_just_pressed("attack_rope"):
-			current_state = State.ATTACKING
-			current_attack_type = "rope"
-			is_walking = false
-			_play_attack_animation()
+			attack("rope")
 
 	if current_state == State.ATTACKING:
 		if is_on_floor():
@@ -212,6 +221,15 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
+func attack(type: String = "axe") -> bool:
+	if current_state == State.ATTACKING or attack_cooldown_timer > 0.0 or current_form != PlayerForm.HUMAN:
+		return false
+	current_state = State.ATTACKING
+	current_attack_type = type
+	is_walking = false
+	_play_attack_animation()
+	return true
+
 func _play_attack_animation() -> void:
 	if not anim_sprite:
 		return
@@ -232,6 +250,7 @@ func _play_attack_animation() -> void:
 
 	anim_sprite.speed_scale = 1.0
 	anim_sprite.play(anim_name)
+	attack_duration_timer = 0.42
 	_execute_attack_hit()
 
 func _on_anim_frame_changed() -> void:
@@ -297,11 +316,9 @@ func _execute_attack_hit() -> void:
 				enemy.take_hit(damage_amount)
 				
 			# Impact visual / camera shake
-			var cam = get_viewport().get_camera_3d() if get_viewport() else null
-			if cam and cam.get_parent() and cam.get_parent().has_method("shake"):
-				cam.get_parent().shake(0.25, 16.0)
+			_trigger_camera_shake(0.25, 16.0)
 				
-			# Hitstop micro-pause (2 frames / 0.04s)
+			# Hitstop micro-pause (2 frames / 0.04s real time)
 			Engine.time_scale = 0.05
 			tree.create_timer(0.04, true, false, true).timeout.connect(func():
 				Engine.time_scale = 1.0
@@ -313,6 +330,15 @@ func _execute_attack_hit() -> void:
 				tw.tween_property(anim_sprite, "modulate", Color(2.0, 1.8, 1.2, 1.0), 0.06)
 				tw.tween_property(anim_sprite, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
 			break
+
+func _trigger_camera_shake(duration: float, intensity: float) -> void:
+	var cam = get_viewport().get_camera_3d() if get_viewport() else null
+	var node: Node = cam
+	while node:
+		if node.has_method("shake"):
+			node.shake(duration, intensity)
+			return
+		node = node.get_parent()
 
 func _update_animation() -> void:
 	if not anim_sprite or current_state == State.ATTACKING or current_form == PlayerForm.TRANSFORMING:
@@ -445,9 +471,14 @@ func take_damage(amount: int = 1, knockback_source: Vector3 = Vector3.ZERO) -> v
 	if health <= 0:
 		emit_signal("player_died")
 
+func _exit_tree() -> void:
+	Engine.time_scale = 1.0
+
 func reset_health() -> void:
+	Engine.time_scale = 1.0
 	health = max_health
 	is_invulnerable = false
 	invulnerable_timer = 0.0
 	if anim_sprite:
 		anim_sprite.modulate.a = 1.0
+	emit_signal("player_damaged", health)

@@ -14,6 +14,8 @@ const PuzzleScene = preload("res://scenes/ui/gate_puzzle.tscn")
 const AssetExtractor = preload("res://scripts/extract_assets.gd")
 
 func _ready() -> void:
+	if has_node("/root/MusicManager"):
+		MusicManager.play("outdoor")
 	AssetExtractor.extract_assets_now()
 	_update_prompt_text()
 	prompt_label.visible = false

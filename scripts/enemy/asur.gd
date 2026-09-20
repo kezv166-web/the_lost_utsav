@@ -33,15 +33,19 @@ enum Direction {
 @export var telegraph_duration: float = 0.95
 @export var recovery_duration: float = 1.8
 @export var stun_duration: float = 2.2
+@export var stomp_cooldown_duration: float = 7.0
 
 var health: int = 1000
 var current_state: State = State.IDLE
 var current_attack_type: AttackType = AttackType.GADHA_SLAM
 var current_direction: Direction = Direction.DOWN
 var attack_cooldown: float = 1.0
+var stomp_cooldown: float = 0.0
 var attack_counter: int = 0
 var recovery_timer: float = 0.0
 var stun_timer: float = 0.0
+var hurt_timer: float = 0.0
+var hurt_grace_timer: float = 0.0
 var has_hit_in_current_attack: bool = false
 var is_telegraphing: bool = false
 
@@ -58,6 +62,13 @@ var active_telegraph: Node3D = null
 
 var player_ref: Node3D = null
 var pulse_time: float = 0.0
+var current_phase: int = 1
+
+# Spam-counter reactive stomp: if player lands 4 hits in a short window, Asur force-stomps
+var spam_hit_count: int = 0
+var spam_hit_window: float = 0.0
+const SPAM_HIT_THRESHOLD: int = 4
+const SPAM_HIT_WINDOW_SEC: float = 4.0
 
 func _ready() -> void:
 	health = max_health
@@ -83,6 +94,47 @@ func _ready() -> void:
 		anim_sprite.position = Vector3(0, 2.30, 0)
 	
 	_play_anim("idle_down")
+	_update_aggression_phase()
+
+func _update_aggression_phase() -> void:
+	var ratio = float(health) / float(max_health)
+	var new_phase = 1
+	if ratio <= 0.35:
+		new_phase = 3
+	elif ratio <= 0.70:
+		new_phase = 2
+	else:
+		new_phase = 1
+		
+	if new_phase != current_phase:
+		var old_phase = current_phase
+		current_phase = new_phase
+		print("[Asur Boss] Enrage Phase %d Activated! (HP: %d/%d)" % [current_phase, health, max_health])
+		
+		# Roar and visual screen shake on phase transition
+		if new_phase > old_phase and current_state not in [State.STUN, State.HURT]:
+			roar()
+			_trigger_camera_shake(0.35, 18.0)
+			
+	# Dynamically tune attack aggression & speeds based on current phase
+	match current_phase:
+		1:
+			attack_cooldown_duration = 2.8
+			telegraph_duration = 0.95
+			recovery_duration = 1.8
+			stomp_cooldown_duration = 7.0
+		2:
+			# Phase 2 (35%..70% HP): 35% faster cooldowns, snappier telegraph
+			attack_cooldown_duration = 1.8
+			telegraph_duration = 0.75
+			recovery_duration = 1.25
+			stomp_cooldown_duration = 4.8
+		3:
+			# Phase 3 (<35% HP): Frenzy! Relentless strikes, ultra-fast recovery
+			attack_cooldown_duration = 1.15
+			telegraph_duration = 0.55
+			recovery_duration = 0.85
+			stomp_cooldown_duration = 3.2
 
 func set_player(p: Node3D) -> void:
 	player_ref = p
@@ -100,8 +152,27 @@ func _physics_process(delta: float) -> void:
 		if stun_timer <= 0.0 and current_state == State.STUN:
 			_play_anim("recover_stun")
 
+	if hurt_timer > 0.0:
+		hurt_timer -= delta
+		if hurt_timer <= 0.0 and current_state == State.HURT:
+			current_state = State.IDLE
+			attack_cooldown = maxf(attack_cooldown, 0.6)
+			_play_anim("idle_down")
+
+	if hurt_grace_timer > 0.0:
+		hurt_grace_timer -= delta
+
 	if attack_cooldown > 0.0:
 		attack_cooldown -= delta
+
+	if stomp_cooldown > 0.0:
+		stomp_cooldown -= delta
+
+	# Tick spam-hit window – reset counter if player paused their barrage
+	if spam_hit_window > 0.0:
+		spam_hit_window -= delta
+		if spam_hit_window <= 0.0:
+			spam_hit_count = 0
 	
 	if health <= 0 or not visible:
 		return
@@ -114,19 +185,39 @@ func _physics_process(delta: float) -> void:
 		# If player is in front/side within attack range and attack is off cooldown
 		if dist <= stomp_range and offset.z > -0.8 and attack_cooldown <= 0.0:
 			if dist > attack_range:
-				# Far / big range attack: Mega Earthquake Stomp Slam!
-				attack_stomp()
+				# Far range: Stomp if ready; otherwise approach with Gadha Slam
+				if stomp_cooldown <= 0.0:
+					attack_stomp()
+				else:
+					attack()
 			else:
-				# Close to mid range: alternate between Gadha Slam and Stomp Slam
-				if attack_counter % 2 == 1:
+				# Close to mid range: 75% Gadha Slam, 25% Mega Stomp only when stomp off cooldown
+				if stomp_cooldown <= 0.0 and (attack_counter % 4 == 3):
 					attack_stomp()
 				else:
 					attack()
 
 func _process(delta: float) -> void:
-	pulse_time += delta * 3.0
+	var pulse_speed = 3.0
+	var base_energy = 1.8
+	var energy_amp = 0.5
+	var target_color = Color(1.0, 0.3, 0.3, 1.0)
+	
+	if current_phase == 2:
+		pulse_speed = 5.5
+		base_energy = 2.4
+		energy_amp = 0.8
+		target_color = Color(1.0, 0.45, 0.15, 1.0)
+	elif current_phase == 3:
+		pulse_speed = 8.5
+		base_energy = 3.4
+		energy_amp = 1.2
+		target_color = Color(1.5, 0.1, 0.1, 1.0)
+
+	pulse_time += delta * pulse_speed
 	if aura_light:
-		aura_light.light_energy = 1.8 + sin(pulse_time) * 0.5
+		aura_light.light_energy = base_energy + sin(pulse_time) * energy_amp
+		aura_light.light_color = aura_light.light_color.lerp(target_color, delta * 4.0)
 	
 	# Track player facing when in IDLE
 	if current_state == State.IDLE and player_ref and is_instance_valid(player_ref):
@@ -184,6 +275,7 @@ func attack_stomp() -> void:
 		return
 	current_state = State.ATTACK
 	current_attack_type = AttackType.MEGA_STOMP
+	stomp_cooldown = stomp_cooldown_duration
 	attack_counter += 1
 	has_hit_in_current_attack = false
 	is_telegraphing = true
@@ -236,8 +328,29 @@ func _spawn_telegraph_circle() -> void:
 	if parent_node:
 		parent_node.add_child(telegraph)
 	active_telegraph = telegraph
-	telegraph.setup_circle(global_position, 5.0, telegraph_duration)
+	var spawn_pos = _get_stomp_epicenter()
+	telegraph.setup_circle(spawn_pos, 5.0, telegraph_duration)
 	telegraph.telegraph_completed.connect(_on_telegraph_completed)
+
+func _get_stomp_epicenter() -> Vector3:
+	var spawn_pos = global_position
+	match current_direction:
+		Direction.LEFT:
+			spawn_pos += Vector3(-1.0, 0.0, 0.0)
+		Direction.RIGHT:
+			spawn_pos += Vector3(1.0, 0.0, 0.0)
+		_:
+			spawn_pos += Vector3(0.0, 0.0, 0.8)
+	return spawn_pos
+
+func _trigger_camera_shake(duration: float, intensity: float) -> void:
+	var cam = get_viewport().get_camera_3d() if get_viewport() else null
+	var node: Node = cam
+	while node:
+		if node.has_method("shake"):
+			node.shake(duration, intensity)
+			return
+		node = node.get_parent()
 
 func _on_telegraph_completed() -> void:
 	is_telegraphing = false
@@ -263,7 +376,12 @@ func _on_anim_frame_changed() -> void:
 				_spawn_ground_spikes()
 				var parent_node = get_parent()
 				if parent_node and parent_node.has_method("smash_nearby_pillars"):
-					parent_node.smash_nearby_pillars(global_position + Vector3(0, 0, 1.4), 3.2)
+					var slam_pos = global_position + Vector3(0, 0, 1.4)
+					if current_direction == Direction.LEFT:
+						slam_pos = global_position + Vector3(-2.0, 0, 0)
+					elif current_direction == Direction.RIGHT:
+						slam_pos = global_position + Vector3(2.0, 0, 0)
+					parent_node.smash_nearby_pillars(slam_pos, 5.0)
 				# Frame 3 lands slam -> begin recovery punish window!
 				_start_recovery()
 		elif current_attack_type == AttackType.MEGA_STOMP:
@@ -281,19 +399,9 @@ func _start_recovery() -> void:
 
 func _trigger_quake_slam() -> void:
 	# 1. Camera shake (heavy 0.4s, 24.0)
-	var cam = get_viewport().get_camera_3d() if get_viewport() else null
-	if cam and cam.get_parent() and cam.get_parent().has_method("shake"):
-		cam.get_parent().shake(0.4, 24.0)
+	_trigger_camera_shake(0.4, 24.0)
 		
-	var spawn_pos = global_position
-	match current_direction:
-		Direction.LEFT:
-			spawn_pos += Vector3(-1.0, 0.0, 0.0)
-		Direction.RIGHT:
-			spawn_pos += Vector3(1.0, 0.0, 0.0)
-		_:
-			spawn_pos += Vector3(0.0, 0.0, 0.8)
-			
+	var spawn_pos = _get_stomp_epicenter()
 	var parent_node = get_parent()
 	
 	# 2. Spawn Ground Cracks Decal & Debris
@@ -310,9 +418,9 @@ func _trigger_quake_slam() -> void:
 			parent_node.add_child(quake)
 		quake.setup(spawn_pos)
 
-	# 4. Smash nearby pillars (Point A)
+	# 4. Smash nearby pillars (Point A - seismic shockwave expands to arena colonnade at 7.5m)
 	if parent_node and parent_node.has_method("smash_nearby_pillars"):
-		parent_node.smash_nearby_pillars(spawn_pos, 3.5)
+		parent_node.smash_nearby_pillars(spawn_pos, 7.5)
 
 func _spawn_ground_spikes() -> void:
 	if not spikes_scene:
@@ -362,13 +470,35 @@ func _check_strike_hit() -> void:
 			player_ref.take_damage(45, global_position)
 
 func take_damage(amount: int = 40) -> void:
+	if health <= 0:
+		return
+	if hurt_grace_timer > 0.0:
+		return
 	_cleanup_telegraph()
 	recovery_timer = 0.0
 	stun_timer = 0.0
 	health = max(0, health - amount)
+	_update_aggression_phase()
 	has_hit_in_current_attack = false
 	attack_cooldown = attack_cooldown_duration + 0.5
 	emit_signal("boss_damaged", health)
+
+	# --- Spam-counter reactive stomp ---
+	# Track consecutive melee hits within a rolling time window
+	spam_hit_count += 1
+	spam_hit_window = SPAM_HIT_WINDOW_SEC  # refresh/extend window on every hit
+	if spam_hit_count >= SPAM_HIT_THRESHOLD and health > 0:
+		# Player is spamming – Asur retaliates with a force stomp regardless of cooldown
+		spam_hit_count = 0
+		spam_hit_window = 0.0
+		stomp_cooldown = 0.0           # bypass stomp cooldown
+		attack_cooldown = 0.0          # bypass attack cooldown
+		current_state = State.IDLE     # exit HURT so stomp can fire next physics frame
+		hurt_timer = 0.0
+		hurt_grace_timer = 0.0
+		_play_anim("idle_down")
+		attack_stomp()
+		return
 	
 	# Flash red on hit
 	if anim_sprite:
@@ -380,12 +510,17 @@ func take_damage(amount: int = 40) -> void:
 		_on_defeated()
 	else:
 		current_state = State.HURT
+		hurt_timer = 0.55
+		hurt_grace_timer = 0.35
 		_play_anim("hurt")
 
-func take_rock_hit(amount: int = 175) -> void:
+func take_rock_hit(amount: int = 85) -> void:
+	if health <= 0:
+		return
 	_cleanup_telegraph()
 	recovery_timer = 0.0
 	health = max(0, health - amount)
+	_update_aggression_phase()
 	has_hit_in_current_attack = false
 	attack_cooldown = attack_cooldown_duration + 1.0
 	emit_signal("boss_damaged", health)
@@ -401,6 +536,7 @@ func take_rock_hit(amount: int = 175) -> void:
 	else:
 		current_state = State.STUN
 		stun_timer = stun_duration
+		hurt_grace_timer = 0.5
 		_play_anim("stunned")
 
 func _on_defeated() -> void:
@@ -443,6 +579,7 @@ func _on_animation_finished() -> void:
 	_cleanup_telegraph()
 	if current_state in [State.ROAR, State.STAGGER, State.HURT]:
 		current_state = State.IDLE
+		hurt_timer = 0.0
 		attack_cooldown = attack_cooldown_duration
 		_play_anim("idle_down")
 	elif current_state == State.STUN:

@@ -23,6 +23,8 @@ var key_bob_tween: Tween = null
 var torch_lights: Array[OmniLight3D] = []
 
 func _ready() -> void:
+	if has_node("/root/MusicManager"):
+		MusicManager.play("l1_lower")
 	_setup_player_as_mouse()
 	_setup_camera()
 	_setup_torches()

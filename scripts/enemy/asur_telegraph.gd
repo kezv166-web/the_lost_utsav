@@ -33,7 +33,7 @@ var base_mat: StandardMaterial3D
 var border_mat: StandardMaterial3D
 var fill_mat: StandardMaterial3D
 
-var fill_quad: QuadMesh = null
+var fill_quad: PlaneMesh = null
 var fill_cyl: CylinderMesh = null
 
 func _ready() -> void:
@@ -100,29 +100,32 @@ func _rebuild_geometry() -> void:
 
 	if shape_type == ShapeType.RECTANGLE:
 		# Static base footprint (full lane)
-		var base_quad = QuadMesh.new()
+		var base_quad = PlaneMesh.new()
 		base_quad.size = Vector2(width, length)
 		base_quad.orientation = PlaneMesh.FACE_Y
 		base_mesh.mesh = base_quad
 		base_mesh.material_override = base_mat
-		base_mesh.position = Vector3(0, 0.005, length * 0.5)
+		base_mesh.position = Vector3(0, 0.002, length * 0.5)
 		
 		# Static border outline
 		if border_mesh:
-			var b_quad = QuadMesh.new()
+			var b_quad = PlaneMesh.new()
 			b_quad.size = Vector2(width + 0.15, length + 0.15)
 			b_quad.orientation = PlaneMesh.FACE_Y
 			border_mesh.mesh = b_quad
 			border_mesh.material_override = border_mat
-			border_mesh.position = Vector3(0, 0.002, length * 0.5)
+			border_mesh.position = Vector3(0, 0.001, length * 0.5)
 
 		# Dynamic progressive fill mesh (grows forward from 0 to length)
-		fill_quad = QuadMesh.new()
+		fill_quad = PlaneMesh.new()
 		fill_quad.size = Vector2(width, 0.01)
 		fill_quad.orientation = PlaneMesh.FACE_Y
 		fill_mesh.mesh = fill_quad
 		fill_mesh.material_override = fill_mat
-		fill_mesh.position = Vector3(0, 0.01, 0.005)
+		fill_mesh.position = Vector3(0, 0.004, 0.005)
+
+		if warning_light:
+			warning_light.position = Vector3(0, 0.5, length * 0.5)
 	else:
 		# Static base footprint (full circle)
 		var base_cyl = CylinderMesh.new()
@@ -132,7 +135,7 @@ func _rebuild_geometry() -> void:
 		base_cyl.radial_segments = 48
 		base_mesh.mesh = base_cyl
 		base_mesh.material_override = base_mat
-		base_mesh.position = Vector3.ZERO
+		base_mesh.position = Vector3(0, 0.002, 0)
 		
 		# Static border outline
 		if border_mesh:
@@ -143,7 +146,7 @@ func _rebuild_geometry() -> void:
 			b_cyl.radial_segments = 48
 			border_mesh.mesh = b_cyl
 			border_mesh.material_override = border_mat
-			border_mesh.position = Vector3.ZERO
+			border_mesh.position = Vector3(0, 0.001, 0)
 
 		# Dynamic progressive fill mesh (expands outward from 0.1 to radius)
 		fill_cyl = CylinderMesh.new()
@@ -153,7 +156,10 @@ func _rebuild_geometry() -> void:
 		fill_cyl.radial_segments = 48
 		fill_mesh.mesh = fill_cyl
 		fill_mesh.material_override = fill_mat
-		fill_mesh.position = Vector3.ZERO
+		fill_mesh.position = Vector3(0, 0.004, 0)
+
+		if warning_light:
+			warning_light.position = Vector3(0, 0.5, 0)
 
 func _physics_process(delta: float) -> void:
 	if is_completed:

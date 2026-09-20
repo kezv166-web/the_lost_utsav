@@ -6,6 +6,8 @@ const EXPAND_TIME: float = 0.22
 const LINGER_TIME: float = 3.5
 const FADE_TIME: float = 0.9
 
+static var _cached_texture: Texture2D = null
+
 @onready var decal: Decal = $CracksDecal
 @onready var debris: CPUParticles3D = get_node_or_null("StoneDebris")
 @onready var flash_light: OmniLight3D = get_node_or_null("FlashLight")
@@ -16,13 +18,22 @@ func _ready() -> void:
 func setup(pos: Vector3) -> void:
 	global_position = pos
 	global_position.y = 0.05
+	_play_impact_effects()
 
 static func ensure_ground_cracks_texture() -> Texture2D:
+	if _cached_texture != null:
+		return _cached_texture
+		
 	var global_path = ProjectSettings.globalize_path(CRACKS_PATH)
 	if FileAccess.file_exists(global_path):
+		var img := Image.load_from_file(global_path)
+		if img and not img.is_empty():
+			_cached_texture = ImageTexture.create_from_image(img)
+			return _cached_texture
 		var loaded_tex = load(CRACKS_PATH)
 		if loaded_tex:
-			return loaded_tex
+			_cached_texture = loaded_tex
+			return _cached_texture
 			
 	# Generate procedural radial cracked stone image
 	var size: int = 512
@@ -104,7 +115,8 @@ static func ensure_ground_cracks_texture() -> Texture2D:
 	# Save PNG file to disk
 	img.save_png(global_path)
 	print("[VFX] Successfully generated radial ground cracks texture: ", global_path)
-	return ImageTexture.create_from_image(img)
+	_cached_texture = ImageTexture.create_from_image(img)
+	return _cached_texture
 
 func _setup_cracks() -> void:
 	var tex = ensure_ground_cracks_texture()
@@ -120,7 +132,17 @@ func _setup_cracks() -> void:
 		var tw = create_tween()
 		tw.tween_property(decal, "size", Vector3(TARGET_SIZE, 2.0, TARGET_SIZE), EXPAND_TIME).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
-	# Stone chunk burst particles
+	# Linger for 3.5s then fade out
+	var fade_tw = create_tween()
+	fade_tw.tween_interval(LINGER_TIME)
+	if decal:
+		fade_tw.tween_property(decal, "modulate:a", 0.0, FADE_TIME)
+	if flash_light:
+		fade_tw.parallel().tween_property(flash_light, "light_energy", 0.0, FADE_TIME)
+	fade_tw.tween_callback(queue_free)
+
+func _play_impact_effects() -> void:
+	# Stone chunk burst particles (at exact stomp location)
 	if debris:
 		debris.restart()
 		debris.emitting = true
@@ -130,12 +152,3 @@ func _setup_cracks() -> void:
 		flash_light.light_energy = 4.2
 		var ltw = create_tween()
 		ltw.tween_property(flash_light, "light_energy", 0.0, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-
-	# Linger for 3.5s then fade out
-	var fade_tw = create_tween()
-	fade_tw.tween_interval(LINGER_TIME)
-	if decal:
-		fade_tw.tween_property(decal, "modulate:a", 0.0, FADE_TIME)
-	if flash_light:
-		fade_tw.parallel().tween_property(flash_light, "light_energy", 0.0, FADE_TIME)
-	fade_tw.tween_callback(queue_free)

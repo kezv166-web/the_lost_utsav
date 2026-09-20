@@ -43,6 +43,10 @@ func _on_body_entered(body: Node3D) -> void:
 		speed = 0.0
 		if particles:
 			particles.emitting = true
+		if body.name.begins_with("Col"):
+			var scene = get_tree().current_scene
+			if scene and scene.has_method("smash_pillar_direct"):
+				scene.smash_pillar_direct(body)
 		var tw = create_tween()
 		if anim_sprite:
 			tw.tween_property(anim_sprite, "modulate:a", 0.0, 0.25)
