@@ -12,10 +12,17 @@ const PROFILE_FILE_PATH: String = "user://player_profile.json"
 const WEB_KEY_LEADERBOARD: String = "lost_utsav_leaderboard_real"
 const WEB_KEY_PROFILE: String = "lost_utsav_profile_real"
 
+# SilentWolf Global Leaderboard Backend Credentials
+const SILENTWOLF_GAME_ID: String = "thelostutsav"
+const SILENTWOLF_API_KEY: String = "XEiVMbvzWaAkzQDxzu5uaf7TEu3RxR28O3ScIgAg"
+const SILENTWOLF_POST_SCORE_URL: String = "https://api.silentwolf.com/post_new_score"
+const SILENTWOLF_GET_SCORES_URL: String = "https://api.silentwolf.com/get_scores/thelostutsav"
+
 static var _instance: LeaderboardManager = null
 
 var player_profile: Dictionary = {}
 var leaderboard_entries: Array = []
+var is_cloud_connected: bool = false
 
 static func get_instance() -> LeaderboardManager:
 	if _instance == null:
@@ -242,6 +249,175 @@ func add_run_entry(run_data: Dictionary) -> void:
 	_recalc_profile_stats()
 	save_leaderboard_data()
 	print("[LeaderboardManager] Added authentic run: %s, Score: %d, Time: %s" % [p_name, score, formatted_time])
+
+	# Post authentic score to SilentWolf global leaderboard backend
+	post_global_score(entry)
+
+# ---------------------------------------------------------------------------
+# SILENTWOLF GLOBAL ONLINE LEADERBOARD INTEGRATION (ITCH.IO HTTPS)
+# ---------------------------------------------------------------------------
+
+func _create_http_node() -> HTTPRequest:
+	var tree = Engine.get_main_loop() as SceneTree
+	if tree and tree.root:
+		var http = HTTPRequest.new()
+		http.timeout = 7.0
+		# Web export uses browser fetch/XHR without native worker threads
+		http.use_threads = false if OS.has_feature("web") else true
+		tree.root.add_child(http)
+		return http
+	return null
+
+func post_global_score(entry: Dictionary, callback: Callable = Callable()) -> void:
+	var http = _create_http_node()
+	if not http:
+		if callback.is_valid():
+			callback.call(false)
+		return
+
+	var p_name = str(entry.get("player", player_profile.get("name", "BraveWarrior")))
+	var score_val = int(entry.get("score", 0))
+	var meta = {
+		"id": str(entry.get("id", player_profile.get("id", "USR-1000"))),
+		"time": str(entry.get("time", "00:00:00")),
+		"raw_time": float(entry.get("raw_time", 0.0)),
+		"avatar": str(entry.get("avatar", "avatar_4")),
+		"level": int(entry.get("level", 1)),
+		"level_reached_str": str(entry.get("level_reached_str", "1.0")),
+		"date": str(entry.get("date", Time.get_date_string_from_system()))
+	}
+
+	var payload = {
+		"game_id": SILENTWOLF_GAME_ID,
+		"api_key": SILENTWOLF_API_KEY,
+		"player_name": p_name,
+		"score": score_val,
+		"ldboard_name": "main",
+		"metadata": meta
+	}
+
+	var json_payload = JSON.stringify(payload)
+	var headers = [
+		"Content-Type: application/json",
+		"x-api-key: " + SILENTWOLF_API_KEY
+	]
+
+	http.request_completed.connect(func(_result: int, response_code: int, _headers: PackedStringArray, _body: PackedByteArray):
+		http.queue_free()
+		var success = (response_code >= 200 and response_code < 300)
+		is_cloud_connected = success
+		if success:
+			print("[LeaderboardManager] Successfully posted global score to SilentWolf for %s!" % p_name)
+		else:
+			print("[LeaderboardManager] SilentWolf post response: HTTP %d (Offline/Cached locally)" % response_code)
+		if callback.is_valid():
+			callback.call(success)
+	)
+
+	var err = http.request(SILENTWOLF_POST_SCORE_URL, headers, HTTPClient.METHOD_POST, json_payload)
+	if err != OK:
+		print("[LeaderboardManager] SilentWolf HTTP POST dispatch failed: code %d" % err)
+		http.queue_free()
+		if callback.is_valid():
+			callback.call(false)
+
+func fetch_global_leaderboard(callback: Callable = Callable()) -> void:
+	var http = _create_http_node()
+	if not http:
+		if callback.is_valid():
+			callback.call(false, leaderboard_entries)
+		return
+
+	var url = "%s?api_key=%s&ldboard_name=main" % [SILENTWOLF_GET_SCORES_URL, SILENTWOLF_API_KEY]
+	var headers = [
+		"Content-Type: application/json",
+		"x-api-key: " + SILENTWOLF_API_KEY
+	]
+
+	http.request_completed.connect(func(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray):
+		http.queue_free()
+		var success = false
+		if response_code >= 200 and response_code < 300:
+			var body_str = body.get_string_from_utf8()
+			var parsed = JSON.parse_string(body_str)
+			var raw_scores: Array = []
+			if parsed is Array:
+				raw_scores = parsed
+			elif parsed is Dictionary:
+				if parsed.has("top_scores") and parsed["top_scores"] is Array:
+					raw_scores = parsed["top_scores"]
+				elif parsed.has("scores") and parsed["scores"] is Array:
+					raw_scores = parsed["scores"]
+				elif parsed.has("result") and parsed["result"] is Array:
+					raw_scores = parsed["result"]
+
+			if not raw_scores.is_empty():
+				_merge_cloud_scores(raw_scores)
+				success = true
+				is_cloud_connected = true
+				print("[LeaderboardManager] Successfully synced %d global scores from SilentWolf" % raw_scores.size())
+
+		if not success:
+			print("[LeaderboardManager] SilentWolf fetch response: HTTP %d. Serving %d local authentic runs." % [response_code, leaderboard_entries.size()])
+
+		if callback.is_valid():
+			callback.call(success, leaderboard_entries)
+	)
+
+	var err = http.request(url, headers, HTTPClient.METHOD_GET)
+	if err != OK:
+		print("[LeaderboardManager] SilentWolf HTTP GET dispatch failed: code %d" % err)
+		http.queue_free()
+		if callback.is_valid():
+			callback.call(false, leaderboard_entries)
+
+func _merge_cloud_scores(raw_scores: Array) -> void:
+	var user_id = player_profile.get("id", "")
+	for item in raw_scores:
+		if not (item is Dictionary):
+			continue
+		var meta = item.get("metadata", {})
+		if typeof(meta) == TYPE_STRING:
+			meta = JSON.parse_string(meta) if not meta.is_empty() else {}
+		if not (meta is Dictionary):
+			meta = {}
+
+		var p_name = str(item.get("player_name", meta.get("player", "Warrior")))
+		var score_val = int(item.get("score", 0))
+		var p_id = str(meta.get("id", item.get("score_id", "")))
+		var is_self = (p_id == user_id or p_name == player_profile.get("name", ""))
+
+		# Check if already present in local entries
+		var found_index = -1
+		for i in range(leaderboard_entries.size()):
+			var e = leaderboard_entries[i]
+			if (not p_id.is_empty() and e.get("id") == p_id) or (e.get("player") == p_name):
+				found_index = i
+				break
+
+		var entry_dict = {
+			"id": p_id if not p_id.is_empty() else "CLOUD-%d" % randi_range(1000, 9999),
+			"player": p_name,
+			"avatar": str(meta.get("avatar", "avatar_4")),
+			"level": int(meta.get("level", 1)),
+			"level_reached_str": str(meta.get("level_reached_str", "%.1f" % int(meta.get("level", 1)))),
+			"time": str(meta.get("time", "00:00:00")),
+			"raw_time": float(meta.get("raw_time", time_str_to_seconds(str(meta.get("time", "00:00:00"))))),
+			"score": score_val,
+			"date": str(meta.get("date", Time.get_date_string_from_system())),
+			"is_self": is_self
+		}
+
+		if found_index >= 0:
+			var existing_score = int(leaderboard_entries[found_index].get("score", 0))
+			if score_val >= existing_score:
+				leaderboard_entries[found_index] = entry_dict
+		else:
+			leaderboard_entries.append(entry_dict)
+
+	sort_and_rank()
+	_recalc_profile_stats()
+	save_leaderboard_data()
 
 # ---------------------------------------------------------------------------
 # TIME-BASED ACCURATE SORTING & LEVEL FILTERING

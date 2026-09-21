@@ -17,7 +17,7 @@ const FRAME_PATHS: Array[String] = [
 	"res://assets/storyline/end/end-story11.png"
 ]
 
-const NEXT_SCENE: String = "res://scenes/ui/leaderboard.tscn"
+const NEXT_SCENE: String = "res://scenes/ui/credits_screen.tscn"
 const START_PAGE_SCENE: String = "res://scenes/ui/start_page.tscn"
 
 @onready var current_rect: TextureRect = $DisplayContainer/CurrentFrame
@@ -172,7 +172,7 @@ func _update_hud() -> void:
 		prev_btn.visible = (current_index > 0)
 	if next_btn:
 		if current_index == textures.size() - 1:
-			next_btn.text = "View Leaderboard »"
+			next_btn.text = "Roll Credits »"
 		else:
 			next_btn.text = "[Space / Click] Next »"
 

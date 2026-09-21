@@ -475,16 +475,18 @@ func _physics_process(delta: float) -> void:
 
 	# 4. Proximity detection for nearby rocks
 	if not is_instance_valid(held_rock) and is_instance_valid(player):
+		var player_holding_minion = ("held_chota_asur" in player and is_instance_valid(player.held_chota_asur))
 		var closest_rock: Node3D = null
 		var min_dist: float = 2.4
-		var rocks_parent = get_node_or_null("ArenaProps/MovableRocks")
-		if rocks_parent:
-			for rock in rocks_parent.get_children():
-				if rock is Node3D and rock != held_rock:
-					var dist = player.global_position.distance_to(rock.global_position)
-					if dist < min_dist:
-						min_dist = dist
-						closest_rock = rock
+		if not player_holding_minion:
+			var rocks_parent = get_node_or_null("ArenaProps/MovableRocks")
+			if rocks_parent:
+				for rock in rocks_parent.get_children():
+					if rock is Node3D and rock != held_rock:
+						var dist = player.global_position.distance_to(rock.global_position)
+						if dist < min_dist:
+							min_dist = dist
+							closest_rock = rock
 
 		if closest_rock != nearby_rock:
 			if is_instance_valid(nearby_rock):
@@ -512,6 +514,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 		# If near rock, grab it with E!
 		elif is_instance_valid(nearby_rock):
+			if is_instance_valid(player) and "held_chota_asur" in player and is_instance_valid(player.held_chota_asur):
+				return
 			_grab_rock(nearby_rock)
 			return
 		# Pray at Altar

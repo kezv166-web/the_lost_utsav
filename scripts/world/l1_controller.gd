@@ -406,12 +406,18 @@ func _on_mouse_passage_interacted() -> void:
 				var tw = create_tween()
 				tw.tween_property(fade, "color:a", 1.0, 0.45)
 				tw.tween_callback(func():
-					get_tree().change_scene_to_file(maze_path)
+					var loader = get_node_or_null("/root/SceneLoader")
+					if loader:
+						loader.load_scene(maze_path, 2, "LOADING LEVEL 2", "Entering the underground foundations...")
+					else:
+						get_tree().change_scene_to_file(maze_path)
 				)
 			else:
-				get_tree().create_timer(0.45).timeout.connect(func():
+				var loader = get_node_or_null("/root/SceneLoader")
+				if loader:
+					loader.load_scene(maze_path, 2, "LOADING LEVEL 2", "Entering the underground foundations...")
+				else:
 					get_tree().change_scene_to_file(maze_path)
-				)
 	else:
 		_show_hud_message("A broken-brick opening into the dark dungeon foundations.\nToo narrow for a human, but a mouse could easily navigate it.\nPress [1] to chant mantra and transform into Mushika!", 5.0)
 		print("PASSED: Player inspected the narrow mouse passage!")

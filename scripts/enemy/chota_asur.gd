@@ -8,6 +8,8 @@ enum State {
 	ATTACK,
 	RECOVERY,
 	HURT,
+	GRABBED,
+	THROWN,
 	DEAD
 }
 
@@ -92,7 +94,20 @@ func set_player(p: Node3D) -> void:
 	player_ref = p
 
 func _physics_process(delta: float) -> void:
-	if current_state == State.DEAD:
+	if current_state in [State.DEAD, State.THROWN]:
+		return
+
+	if current_state == State.GRABBED:
+		if is_instance_valid(player_ref):
+			var facing_dir = Vector3.BACK
+			if "current_direction" in player_ref:
+				match player_ref.current_direction:
+					0: facing_dir = Vector3(0, 0, 1)   # DOWN
+					1: facing_dir = Vector3(0, 0, -1)  # UP
+					2: facing_dir = Vector3(-1, 0, 0)  # LEFT
+					3: facing_dir = Vector3(1, 0, 0)   # RIGHT
+			var tether_offset = facing_dir * 1.1 + Vector3(0, 0.15, 0)
+			global_position = player_ref.global_position + tether_offset
 		return
 		
 	if attack_cooldown > 0.0:
@@ -155,6 +170,11 @@ func _physics_process(delta: float) -> void:
 			velocity = forward.normalized() * 0.8
 		else:
 			velocity = Vector3.ZERO
+	elif current_state == State.HURT:
+		# Smoothly decelerate horizontal knockback velocity
+		velocity.x = move_toward(velocity.x, 0.0, 14.0 * delta)
+		velocity.z = move_toward(velocity.z, 0.0, 14.0 * delta)
+		_play_anim("hurt_" + _get_dir_str())
 	else:
 		velocity.x = 0.0
 		velocity.z = 0.0
@@ -258,6 +278,12 @@ func _release_attack_token() -> void:
 		if scene and scene.has_method("release_attack_token"):
 			scene.release_attack_token(self)
 
+func apply_knockback(impulse: Vector3) -> void:
+	velocity.x = impulse.x
+	velocity.z = impulse.z
+	current_state = State.HURT
+	hurt_timer = 0.4
+
 func take_damage(amount: int = 40) -> void:
 	if current_state == State.DEAD:
 		return
@@ -270,13 +296,12 @@ func take_damage(amount: int = 40) -> void:
 		tw.tween_property(anim_sprite, "modulate", Color(2.5, 0.5, 0.5, 1.0), 0.08)
 		tw.tween_property(anim_sprite, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.16)
 		
-	# Small knockback
-	if player_ref and is_instance_valid(player_ref):
+	# Small knockback if velocity not already set by apply_knockback
+	if velocity.length_squared() < 0.1 and player_ref and is_instance_valid(player_ref):
 		var kb_dir = (global_position - player_ref.global_position)
 		kb_dir.y = 0.0
 		if kb_dir.length() > 0.001:
-			velocity = kb_dir.normalized() * 3.5
-			move_and_slide()
+			velocity = kb_dir.normalized() * 5.5
 			
 	if health <= 0:
 		_die()
@@ -290,6 +315,146 @@ func take_hit(amount: int = 40) -> void:
 
 func take_rock_hit(amount: int = 85) -> void:
 	take_damage(amount)
+
+func grab_by_player(p: Node3D) -> void:
+	player_ref = p
+	current_state = State.GRABBED
+	_release_attack_token()
+	
+	if collision_shape:
+		collision_shape.set_deferred("disabled", true)
+	var hurt_col = get_node_or_null("Hurtbox/HurtCollision")
+	if hurt_col and hurt_col is CollisionShape3D:
+		hurt_col.set_deferred("disabled", true)
+		
+	if health_bar:
+		health_bar.visible = false
+	if drop_shadow:
+		drop_shadow.visible = true
+		
+	# Struggle / bound flash
+	if anim_sprite:
+		anim_sprite.play("hurt_down" if anim_sprite.sprite_frames.has_animation("hurt_down") else "idle_down")
+		var tw = create_tween()
+		tw.tween_property(anim_sprite, "modulate", Color(2.5, 1.8, 0.4, 1.0), 0.1)
+		tw.tween_property(anim_sprite, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.15)
+
+func throw_as_projectile(start_pos: Vector3, target_pos: Vector3, target_node: Node3D = null, damage: int = 38) -> void:
+	current_state = State.THROWN
+	global_position = start_pos
+	
+	# Smooth ballistic arc tween
+	var tw = create_tween().set_parallel(true)
+	tw.tween_property(self, "global_position:x", target_pos.x, 0.42).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(self, "global_position:z", target_pos.z, 0.42).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	
+	# Parabolic height arc
+	var height_tw = create_tween()
+	height_tw.tween_property(self, "global_position:y", start_pos.y + 1.2, 0.21).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	height_tw.tween_property(self, "global_position:y", target_pos.y, 0.21).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	
+	# Tumbling mid-air rotation
+	if anim_sprite:
+		var rot_tw = create_tween()
+		rot_tw.tween_property(anim_sprite, "rotation_degrees:z", 720.0, 0.42)
+		
+	height_tw.tween_callback(func():
+		_on_thrown_impact(target_pos, target_node, damage)
+	)
+
+func _on_thrown_impact(impact_pos: Vector3, target_node: Node3D, damage: int) -> void:
+	# Impact VFX & Camera Shake
+	_spawn_impact_burst(impact_pos)
+	
+	var cam = get_viewport().get_camera_3d() if get_viewport() else null
+	var node: Node = cam
+	while node:
+		if node.has_method("shake"):
+			node.shake(0.3, 18.0)
+			break
+		node = node.get_parent()
+		
+	# Damage application
+	var hit_applied = false
+	if is_instance_valid(target_node):
+		var d = global_position.distance_to(target_node.global_position)
+		if d <= 3.2:
+			hit_applied = true
+			if target_node.is_in_group("boss"):
+				var grm = get_node_or_null("/root/GameRunManager")
+				if grm and grm.has_method("record_boss_hit"):
+					grm.record_boss_hit()
+					
+			var push_dir = (target_node.global_position - impact_pos)
+			push_dir.y = 0.0
+			if push_dir.length_squared() < 0.001:
+				push_dir = Vector3(0, 0, 1)
+			push_dir = push_dir.normalized()
+			
+			if target_node.has_method("apply_knockback"):
+				target_node.apply_knockback(push_dir * 8.5)
+			elif "velocity" in target_node:
+				target_node.velocity = push_dir * 8.5
+				
+			if target_node.has_method("take_rock_hit"):
+				target_node.take_rock_hit(damage)
+			elif target_node.has_method("take_damage"):
+				target_node.take_damage(damage)
+			elif target_node.has_method("take_hit"):
+				target_node.take_hit(damage)
+				
+	# Splash damage to other enemies in 2.2m radius
+	var tree = get_tree()
+	if tree:
+		var enemies: Array[Node] = []
+		enemies.append_array(tree.get_nodes_in_group("enemy"))
+		enemies.append_array(tree.get_nodes_in_group("boss"))
+		for enemy in enemies:
+			if enemy == self or not is_instance_valid(enemy) or not (enemy is Node3D):
+				continue
+			if enemy == target_node and hit_applied:
+				continue
+			var dist = global_position.distance_to(enemy.global_position)
+			if dist <= 2.2:
+				var splash_dmg = int(damage * 0.6) # 22 splash damage
+				var push_dir = (enemy.global_position - impact_pos)
+				push_dir.y = 0.0
+				if push_dir.length_squared() < 0.001:
+					push_dir = Vector3(0, 0, 1)
+				push_dir = push_dir.normalized()
+				
+				if enemy.has_method("apply_knockback"):
+					enemy.apply_knockback(push_dir * 7.5)
+				elif "velocity" in enemy:
+					enemy.velocity = push_dir * 7.5
+					
+				if enemy.has_method("take_rock_hit"):
+					enemy.take_rock_hit(splash_dmg)
+				elif enemy.has_method("take_damage"):
+					enemy.take_damage(splash_dmg)
+				elif enemy.has_method("take_hit"):
+					enemy.take_hit(splash_dmg)
+					
+	# Minion self-destructs on impact
+	_die()
+
+func _spawn_impact_burst(pos: Vector3) -> void:
+	var particles := CPUParticles3D.new()
+	particles.amount = 32
+	particles.one_shot = true
+	particles.explosiveness = 0.95
+	particles.lifetime = 0.65
+	particles.direction = Vector3(0, 1, 0)
+	particles.spread = 70.0
+	particles.initial_velocity_min = 3.5
+	particles.initial_velocity_max = 7.0
+	particles.color = Color(1.0, 0.7, 0.2, 1.0)
+	var parent_sc = get_tree().current_scene if get_tree() else get_parent()
+	if parent_sc:
+		parent_sc.add_child(particles)
+		particles.global_position = pos + Vector3(0, 0.3, 0)
+		particles.emitting = true
+		get_tree().create_timer(0.9).timeout.connect(particles.queue_free)
 
 func _die() -> void:
 	current_state = State.DEAD

@@ -327,10 +327,18 @@ func _transition_to_level_3() -> void:
 			var tw = create_tween()
 			tw.tween_property(fade, "color:a", 1.0, 0.45)
 			tw.tween_callback(func():
-				get_tree().change_scene_to_file(l3_path)
+				var loader = get_node_or_null("/root/SceneLoader")
+				if loader:
+					loader.load_scene(l3_path, 3, "FINAL LEVEL: ASUR ARENA", "Confronting Mahishasur in the demon throne room...")
+				else:
+					get_tree().change_scene_to_file(l3_path)
 			)
 		else:
-			get_tree().change_scene_to_file(l3_path)
+			var loader = get_node_or_null("/root/SceneLoader")
+			if loader:
+				loader.load_scene(l3_path, 3, "FINAL LEVEL: ASUR ARENA", "Confronting Mahishasur in the demon throne room...")
+			else:
+				get_tree().change_scene_to_file(l3_path)
 	else:
 		_show_hud_message("Error: Level 3 scene file not found!", 3.0)
 

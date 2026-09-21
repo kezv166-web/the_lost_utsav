@@ -1262,9 +1262,9 @@ autowrap_mode = 2
 [node name="CharacterHealthBar" parent="UI/HUD" unique_id=123456781 instance=ExtResource("40_char_bar")]
 layout_mode = 0
 offset_left = 24.0
-offset_top = 20.0
+offset_top = 96.0
 offset_right = 384.0
-offset_bottom = 68.0
+offset_bottom = 211.0
 
 [node name="AsurBossBar" parent="UI/HUD" unique_id=123456782 instance=ExtResource("39_boss_bar")]
 layout_mode = 1

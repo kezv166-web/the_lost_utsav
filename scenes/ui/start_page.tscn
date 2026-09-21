@@ -524,10 +524,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -250.0
-offset_top = -180.0
-offset_right = 250.0
-offset_bottom = 180.0
+offset_left = -280.0
+offset_top = -250.0
+offset_right = 280.0
+offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -546,18 +546,19 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 24.0
-offset_top = 20.0
+offset_top = 18.0
 offset_right = -24.0
-offset_bottom = -20.0
+offset_bottom = -18.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="ModalLayer/CreditsModal/Panel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_constants/letter_spacing = 2
 theme_override_font_sizes/font_size = 20
-text = "THE LOST UTSAV"
+text = "✦ THE LOST UTSAV ✦"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="ModalLayer/CreditsModal/Panel/VBox"]
@@ -570,15 +571,57 @@ horizontal_alignment = 1
 [node name="HSeparator" type="HSeparator" parent="ModalLayer/CreditsModal/Panel/VBox"]
 layout_mode = 2
 
-[node name="Body" type="Label" parent="ModalLayer/CreditsModal/Panel/VBox"]
+[node name="ScrollContainer" type="ScrollContainer" parent="ModalLayer/CreditsModal/Panel/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
-theme_override_font_sizes/font_size = 13
-text = "A mythological 2.5D action-adventure crafted in Godot Engine 4.7.2.
+horizontal_scroll_mode = 0
 
-Story & Art: The Lost Utsav Creative Team
-Platform: Linux / Web (Itch.io & Vercel) / Windows"
+[node name="Body" type="Label" parent="ModalLayer/CreditsModal/Panel/VBox/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.92, 0.88, 0.8, 1)
+theme_override_constants/line_spacing = 5
+theme_override_font_sizes/font_size = 13
+text = "A GAME BY
+TEAM SHIVOY
+
+✦  ✦  ✦
+
+🎮 GAME DESIGN
+Harshal Sharda
+Sarthak Singh Chauhaan
+Gaurav Dhyani
+Vaibhav Joshi
+
+💻 PROGRAMMING
+Harshal Sharda
+Sarthak Singh Chauhaan
+
+📖 STORY & NARRATIVE
+Harshal Sharda
+Sarthak Singh Chauhaan
+
+🎨 ART & ANIMATION
+Gaurav Dhyani
+
+🎵 MUSIC & SOUND
+Vaibhav Joshi
+
+✦  ✦  ✦
+
+✦ SPECIAL THANKS ✦
+To everyone who tested the game,
+shared feedback, found bugs,
+and supported us throughout the journey.
+
+Thank you for playing The Lost Utsav.
+
+✦  ✦  ✦
+
+SHIVOY
+Faith Gives Strength • Courage Gives Direction
+
+THE JOURNEY CONTINUES..."
 horizontal_alignment = 1
 autowrap_mode = 2
 

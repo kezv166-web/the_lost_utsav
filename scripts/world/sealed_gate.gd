@@ -131,5 +131,9 @@ func _on_puzzle_closed() -> void:
 func enter_level_1() -> void:
 	var l1_path = "res://scenes/levels/l1/l1_map.tscn"
 	if ResourceLoader.exists(l1_path):
-		get_tree().change_scene_to_file(l1_path)
+		var loader = get_node_or_null("/root/SceneLoader")
+		if loader:
+			loader.load_scene(l1_path, 1, "LOADING LEVEL 1: INNER SANCTUM", "Crossing the sacred threshold...")
+		else:
+			get_tree().change_scene_to_file(l1_path)
 

@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/target_reticle.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/vfx/energy_ring.png" id="2_ring_tex"]
+
+[node name="TargetReticle" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Ring" type="Sprite3D" parent="."]
+transform = Transform3D(1.1, 0, 0, 0, 0, 1.1, 0, -1.1, 0, 0, 0.1, 0)
+modulate = Color(1, 0.25, 0.15, 0.85)
+pixel_size = 0.007
+texture = ExtResource("2_ring_tex")
+
+[node name="MarkerLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+billboard = 1
+no_depth_test = true
+render_priority = 12
+text = "▼ TARGET ▼"
+font_size = 26
+outline_size = 8
+modulate = Color(1, 0.85, 0.2, 1)
+outline_modulate = Color(0.6, 0.05, 0.02, 1)

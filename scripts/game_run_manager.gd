@@ -14,6 +14,7 @@ signal points_awarded(amount: int, total: int, reason: String)
 signal run_completed(summary: Dictionary)
 
 var is_run_active: bool = false
+var is_timer_paused: bool = false
 var current_level_num: int = 1 # 1 = Outdoor/Gate, 2 = Maze, 3 = Asur Arena
 
 var total_time: float = 0.0
@@ -43,7 +44,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
 func _process(delta: float) -> void:
-	if not is_run_active:
+	if not is_run_active or is_timer_paused:
 		return
 
 	total_time += delta
@@ -56,6 +57,14 @@ func _process(delta: float) -> void:
 			level3_time += delta
 
 	run_updated.emit(total_time, total_points)
+
+func pause_run_timer() -> void:
+	is_timer_paused = true
+	print("[GameRunManager] Run timer paused.")
+
+func resume_run_timer() -> void:
+	is_timer_paused = false
+	print("[GameRunManager] Run timer resumed.")
 
 func start_new_run() -> void:
 	total_time = 0.0
@@ -78,6 +87,7 @@ func start_new_run() -> void:
 	level3_cleared = false
 
 	is_run_active = true
+	is_timer_paused = false
 	run_started.emit()
 	run_updated.emit(total_time, total_points)
 	print("[GameRunManager] New game run started! Points: 0, Timer running.")

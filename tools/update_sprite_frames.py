@@ -33,7 +33,15 @@ anim_defs = [
     ("attack_rope_left", [f"attack_rope_left_{i}.png" for i in range(6)], 13.0, 0),
     ("attack_rope_right", [f"attack_rope_right_{i}.png" for i in range(6)], 13.0, 0),
     
-    # Rock carry / lift pose
+    # Pasa Throw animations
+    ("pasa_throw_left", [f"pasa_throw_left_{i}.png" for i in range(5)], 12.0, 0),
+    ("pasa_throw_right", [f"pasa_throw_right_{i}.png" for i in range(5)], 12.0, 0),
+    
+    # Carry animations
+    ("carry_down", ["carry_down.png"], 5.0, 1),
+    ("carry_up", ["carry_up.png"], 5.0, 1),
+    ("carry_left", ["carry_left.png"], 5.0, 1),
+    ("carry_right", ["carry_right.png"], 5.0, 1),
     ("carry_rock", ["carry_rock.png"], 5.0, 1),
     
     # Idle (3 frames: 0, 1, 2; non-looping, holds 3rd frame prayer pose until movement)

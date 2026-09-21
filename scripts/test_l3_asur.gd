@@ -513,7 +513,108 @@ func _ready() -> void:
 	assert(char_bar.displayed_hp < 250.0 and char_bar.displayed_hp >= 180.0, "char_bar displayed_hp must smoothly interpolate towards target HP")
 	await get_tree().create_timer(0.35).timeout
 	assert(abs(char_bar.displayed_hp - 180.0) < 1.0, "char_bar displayed_hp must reach 180 upon tween completion")
-	print("PASSED: Smooth health bar interpolation verified!")
+	# -------------------------------------------------------------
+	# Test 6l: Pasa Weapon Ability (Chota Asur Grab, Arrow Aim, Throw)
+	# -------------------------------------------------------------
+	print("[9l] Testing Pasa Weapon Ability: Chota Asur Grab, Arrow Key Aim & Throw...")
+	# Clean up any minions first
+	for old_m in l3_map.active_chota_asurs.duplicate():
+		l3_map._on_minion_died(old_m)
+		old_m.queue_free()
+	l3_map.active_chota_asurs.clear()
+	
+	# Spawn minion 1 near player
+	player.global_position = Vector3(0, 0.05, 3.0)
+	var grab_m = l3_map.spawn_chota_asur(Vector3(0, 0.1, 4.2))
+	# Spawn minion 2 to the East
+	var flank_m = l3_map.spawn_chota_asur(Vector3(4.0, 0.1, 4.0))
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	
+	assert(grab_m != null, "Grab minion must exist")
+	assert(flank_m != null, "Flank minion must exist")
+	
+	# Verify animations exist in player sprite frames
+	assert(player.human_frames.has_animation("pasa_throw_left"), "SpriteFrames must contain pasa_throw_left")
+	assert(player.human_frames.has_animation("pasa_throw_right"), "SpriteFrames must contain pasa_throw_right")
+	
+	# Verify Divine Energy Bar on HUD
+	player.combo_hits = 0
+	player.emit_signal("divine_energy_changed", 0, 3)
+	assert(char_bar.divine_bar != null, "HUD must have Divine Energy Bar ProgressBar")
+	assert(char_bar.divine_label != null, "HUD must have Divine Energy text label")
+	assert(player.combo_hits == 0, "Player must start with 0 combo hits")
+	
+	# Score 3 hits to charge Divine Energy to 3/3 (PASA SPECIAL READY)
+	player.combo_hits = 3
+	player.emit_signal("divine_energy_changed", 3, 3)
+	assert(char_bar.current_divine == 3, "HUD Divine Energy Bar must be full at 3/3")
+	assert("SPECIAL READY" in char_bar.divine_label.text, "HUD label must flash special ready")
+
+	# Player grabs minion with Pasa Special
+	player.current_direction = player.Direction.DOWN
+	player.last_horizontal_facing = player.Direction.RIGHT
+	player.grab_chota_asur(grab_m)
+	assert(player.held_chota_asur == grab_m, "player.held_chota_asur must equal grabbed minion")
+	assert(player.is_carrying == false, "player.is_carrying must be false while holding minion (decoupled from rock carry)")
+	assert(grab_m.current_state == grab_m.State.GRABBED, "Minion state must be GRABBED")
+	assert(player.target_reticle != null, "Player target reticle must exist")
+	assert(player.target_reticle.visible == true, "Target reticle must be visible when holding minion")
+	# Check default target is the closest enemy (flank_m is at dist 4.12m vs Asur boss at dist 5.23m)
+	assert(player.targeted_enemy == flank_m, "Default targeted enemy must be the closest enemy (flank minion at dist 4.1m vs boss at dist 5.2m)")
+	print("PASSED: Divine Energy Bar charged, Chota Asur grabbed with Pasa, decoupled from rock carry, default closest target verified!")
+	
+	# Test Arrow Key target selection
+	# Press KEY_UP -> should select Boss Asur (to the North, Z=-2.23)
+	player._handle_arrow_target_selection(KEY_UP)
+	assert(player.targeted_enemy == asur, "KEY_UP must select the Boss Asur to the North")
+	assert(player.target_reticle.current_target == asur, "Reticle must attach to Boss Asur")
+	
+	# Press KEY_RIGHT -> should select flank_m (at X=4.0)
+	player._handle_arrow_target_selection(KEY_RIGHT)
+	assert(player.targeted_enemy == flank_m, "KEY_RIGHT must select the flank minion to the East")
+	assert(player.target_reticle.current_target == flank_m, "Reticle must attach to flank minion")
+	print("PASSED: Arrow keys successfully select/aim targets dynamically!")
+	
+	# Select boss for throw test
+	player._handle_arrow_target_selection(KEY_UP)
+	
+	# Test Throw execution
+	var asur_hp_before = asur.health
+	asur.hurt_grace_timer = 0.0
+	assert(player.chota_asur_throw_damage == 38, "Chota Asur throw damage must be 38 (balanced, less than rock throw 85)")
+	player.throw_held_chota_asur()
+	assert(player.current_state == player.State.ATTACKING, "Player must enter ATTACKING state during throw")
+	assert(player.current_attack_type == "pasa_throw", "current_attack_type must be pasa_throw")
+	assert("pasa_throw" in player.anim_sprite.animation, "anim_sprite must play pasa_throw animation")
+	
+	# Await projectile impact (0.70s to cover 0.20s launch delay + 0.42s arc)
+	await get_tree().create_timer(0.70).timeout
+	await get_tree().physics_frame
+	
+	assert(asur.health == asur_hp_before - 38, "Boss Asur must take 38 damage from thrown minion")
+	assert(player.held_chota_asur == null, "player.held_chota_asur must be null after throw")
+	assert(player.is_carrying == false, "player.is_carrying must be false after throw")
+	assert(player.target_reticle.visible == false, "Target reticle must be hidden after throw")
+	assert(player.attack_cooldown_timer > 0.5, "Attack cooldown after throw must be active (> 0.5s remaining of 1.0s cooldown) to prevent spamming")
+	assert(player.combo_hits == 0, "Combo hits must reset to 0 after special throw")
+	assert(char_bar.current_divine == 0, "Divine Energy Bar must reset to 0/3 after special throw")
+	
+	# Test throw against Chota Asur to verify survival and knockback (60 HP minion survives 1 hit with 22 HP)
+	var target_survivor = flank_m
+	assert(target_survivor.health == 60, "Flank minion starts at 60 HP")
+	var second_grab = l3_map.spawn_chota_asur(Vector3(0, 0.1, 2.0))
+	player.attack_cooldown_timer = 0.0
+	player.combo_hits = 3
+	player.grab_chota_asur(second_grab)
+	assert(player.targeted_enemy == target_survivor, "Closest target must be the survivor minion")
+	var prev_pos_z = target_survivor.global_position.z
+	player.throw_held_chota_asur()
+	await get_tree().create_timer(0.70).timeout
+	await get_tree().physics_frame
+	assert(target_survivor.health == 22, "Chota Asur taking 38 throw damage must survive 1 hit with 22 HP (60 - 38 = 22)")
+	assert(target_survivor.current_state == target_survivor.State.HURT or target_survivor.current_state == target_survivor.State.CHASE, "Hit minion must enter HURT state")
+	print("PASSED: Divine Energy tracking, Pasa throw arc, 38 damage (survives 1 hit), anti-spam cooldown, and knockback verified!")
 
 	# -------------------------------------------------------------
 	# Test 7: Defeat and Rear Arena Barrier Unlocking

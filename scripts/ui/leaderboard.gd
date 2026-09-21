@@ -160,6 +160,9 @@ func _ready() -> void:
 			tw.tween_property(fade_overlay, "modulate:a", 0.0, 0.40).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 			tw.tween_callback(func(): fade_overlay.visible = false)
 
+	# 8. Sync live global scores from SilentWolf
+	_fetch_cloud_scores()
+
 func _process(delta: float) -> void:
 	_anim_time += delta
 	if torch_glow_l:
@@ -247,12 +250,27 @@ func _on_story_pressed() -> void:
 
 func _on_leaderboard_refresh() -> void:
 	_current_tab = "all_time"
-	_current_level = "level_3"
+	_current_level = "all"
 	if level_dropdown:
 		level_dropdown.selected = 0
 	_update_tab_visuals()
 	_refresh_table_view()
 	_update_profile_card()
+	_fetch_cloud_scores()
+
+func _fetch_cloud_scores() -> void:
+	if not is_inside_tree():
+		return
+	await get_tree().process_frame
+	if not is_inside_tree():
+		return
+	if _data_manager == null:
+		_data_manager = LeaderboardManager.get_instance()
+	_data_manager.fetch_global_leaderboard(func(_success: bool, _entries: Array):
+		if is_inside_tree():
+			_refresh_table_view()
+			_update_profile_card()
+	)
 
 func _on_settings_pressed() -> void:
 	_show_modal(settings_modal)
@@ -353,14 +371,14 @@ func _create_empty_state_panel() -> PanelContainer:
 	panel.add_child(vb)
 
 	var title = Label.new()
-	title.text = "NO RECORDED RUNS YET"
+	title.text = "GLOBAL LEADERBOARD ONLINE"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_color_override("font_color", Color(1.0, 0.88, 0.4))
 	title.add_theme_font_size_override("font_size", 16)
 	vb.add_child(title)
 
 	var desc = Label.new()
-	desc.text = "Every brave soul leaves a mark.\nStart a journey [▶ PLAY] to defeat the Asur and record your authentic run here!\n\nTIP: Collect all 5 Modaks in the Underground Maze for +250 Bonus Points!"
+	desc.text = "Global online synchronization is active.\nComplete a run to defeat the Asur and immortalize your name on the world leaderboard!\n\nTIP: Collect all 5 Modaks in the Underground Maze for +250 Bonus Points!"
 	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	desc.add_theme_color_override("font_color", Color(0.85, 0.82, 0.75))
 	desc.add_theme_font_size_override("font_size", 12)

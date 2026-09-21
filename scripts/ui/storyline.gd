@@ -190,6 +190,10 @@ func _finish_storyline() -> void:
 
 func _load_next_scene() -> void:
 	if ResourceLoader.exists(NEXT_SCENE):
-		get_tree().change_scene_to_file(NEXT_SCENE)
+		var loader = get_node_or_null("/root/SceneLoader")
+		if loader:
+			loader.load_scene(NEXT_SCENE, 1, "LOADING LEVEL 1", "Preparing the fortress...")
+		else:
+			get_tree().change_scene_to_file(NEXT_SCENE)
 	else:
 		push_error("Next scene does not exist: %s" % NEXT_SCENE)

@@ -1,0 +1,438 @@
+[gd_scene format=3 uid="uid://c5q4q7r7t2m1o"]
+
+[ext_resource type="Script" path="res://scripts/ui/credits_screen.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/start-pages/slices/bg_start_page.png" id="2_bg"]
+[ext_resource type="Texture2D" path="res://assets/lostutsav-text.png" id="3_logo"]
+[ext_resource type="Texture2D" path="res://assets/vfx/golden_lotus.png" id="4_lotus"]
+[ext_resource type="Texture2D" path="res://assets/vfx/golden_om.png" id="5_om"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
+bg_color = Color(0.12, 0.08, 0.15, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.72, 0.54, 0.22, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0, 0, 0, 0.7)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
+bg_color = Color(0.2, 0.14, 0.26, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.95, 0.78, 0.35, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0.95, 0.65, 0.2, 0.35)
+shadow_size = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pressed"]
+bg_color = Color(0.28, 0.18, 0.1, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.88, 0.45, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_scroll"]
+
+[node name="CreditsScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="DarkBase" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.04, 0.02, 0.05, 1)
+
+[node name="Background" type="TextureRect" parent="."]
+modulate = Color(0.35, 0.3, 0.42, 0.35)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VignetteOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.03, 0.01, 0.04, 0.5)
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -340.0
+offset_top = 30.0
+offset_right = 340.0
+offset_bottom = -60.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_scroll")
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 3
+
+[node name="CreditsContent" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="TopSpacer" type="Control" parent="ScrollContainer/CreditsContent"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+
+[node name="LogoRect" type="TextureRect" parent="ScrollContainer/CreditsContent"]
+custom_minimum_size = Vector2(320, 80)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("3_logo")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LotusIcon" type="TextureRect" parent="ScrollContainer/CreditsContent"]
+custom_minimum_size = Vector2(38, 38)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("4_lotus")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MainTitle" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/letter_spacing = 3
+theme_override_font_sizes/font_size = 24
+text = "✦ THE LOST UTSAV ✦"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.78, 0.65, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_font_sizes/font_size = 15
+text = "A Journey of Faith and Courage"
+horizontal_alignment = 1
+
+[node name="Sep1" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.54, 0.25, 0.7)
+theme_override_font_sizes/font_size = 14
+text = "✦  ✦  ✦"
+horizontal_alignment = 1
+
+[node name="GameBy" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.7, 0.55, 1)
+theme_override_constants/letter_spacing = 2
+theme_override_font_sizes/font_size = 13
+text = "A GAME BY"
+horizontal_alignment = 1
+
+[node name="TeamName" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.4, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/letter_spacing = 4
+theme_override_font_sizes/font_size = 22
+text = "TEAM SHIVOY"
+horizontal_alignment = 1
+
+[node name="Sep2" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.54, 0.25, 0.7)
+theme_override_font_sizes/font_size = 14
+text = "✦  ✦  ✦"
+horizontal_alignment = 1
+
+[node name="DesignHeader" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.75, 0.35, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/letter_spacing = 2
+theme_override_font_sizes/font_size = 16
+text = "🎮 GAME DESIGN"
+horizontal_alignment = 1
+
+[node name="DesignNames" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.88, 0.8, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/line_spacing = 6
+theme_override_font_sizes/font_size = 15
+text = "Harshal Sharda
+Sarthak Singh Chauhaan
+Gaurav Dhyani
+Vaibhav Joshi"
+horizontal_alignment = 1
+
+[node name="ProgHeader" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.75, 0.35, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/letter_spacing = 2
+theme_override_font_sizes/font_size = 16
+text = "💻 PROGRAMMING"
+horizontal_alignment = 1
+
+[node name="ProgNames" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.88, 0.8, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/line_spacing = 6
+theme_override_font_sizes/font_size = 15
+text = "Harshal Sharda
+Sarthak Singh Chauhaan"
+horizontal_alignment = 1
+
+[node name="StoryHeader" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.75, 0.35, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/letter_spacing = 2
+theme_override_font_sizes/font_size = 16
+text = "📖 STORY & NARRATIVE"
+horizontal_alignment = 1
+
+[node name="StoryNames" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.88, 0.8, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/line_spacing = 6
+theme_override_font_sizes/font_size = 15
+text = "Harshal Sharda
+Sarthak Singh Chauhaan"
+horizontal_alignment = 1
+
+[node name="ArtHeader" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.75, 0.35, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/letter_spacing = 2
+theme_override_font_sizes/font_size = 16
+text = "🎨 ART & ANIMATION"
+horizontal_alignment = 1
+
+[node name="ArtNames" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.88, 0.8, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/line_spacing = 6
+theme_override_font_sizes/font_size = 15
+text = "Gaurav Dhyani"
+horizontal_alignment = 1
+
+[node name="MusicHeader" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.75, 0.35, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/letter_spacing = 2
+theme_override_font_sizes/font_size = 16
+text = "🎵 MUSIC & SOUND"
+horizontal_alignment = 1
+
+[node name="MusicNames" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.88, 0.8, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/line_spacing = 6
+theme_override_font_sizes/font_size = 15
+text = "Vaibhav Joshi"
+horizontal_alignment = 1
+
+[node name="Sep3" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.54, 0.25, 0.7)
+theme_override_font_sizes/font_size = 14
+text = "✦  ✦  ✦"
+horizontal_alignment = 1
+
+[node name="OmIcon" type="TextureRect" parent="ScrollContainer/CreditsContent"]
+custom_minimum_size = Vector2(42, 42)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("5_om")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ThanksHeader" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.45, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/letter_spacing = 2
+theme_override_font_sizes/font_size = 17
+text = "✦ SPECIAL THANKS ✦"
+horizontal_alignment = 1
+
+[node name="ThanksBody" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.84, 0.75, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/line_spacing = 6
+theme_override_font_sizes/font_size = 14
+text = "To everyone who tested the game,
+shared feedback, found bugs,
+and supported us throughout the journey.
+
+Thank you for playing The Lost Utsav."
+horizontal_alignment = 1
+
+[node name="Sep4" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.54, 0.25, 0.7)
+theme_override_font_sizes/font_size = 14
+text = "✦  ✦  ✦"
+horizontal_alignment = 1
+
+[node name="BrandShivoy" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/letter_spacing = 4
+theme_override_font_sizes/font_size = 20
+text = "SHIVOY"
+horizontal_alignment = 1
+
+[node name="Motto" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.78, 0.65, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_font_sizes/font_size = 14
+text = "Faith Gives Strength • Courage Gives Direction"
+horizontal_alignment = 1
+
+[node name="JourneyContinues" type="Label" parent="ScrollContainer/CreditsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.4, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/letter_spacing = 3
+theme_override_font_sizes/font_size = 16
+text = "THE JOURNEY CONTINUES..."
+horizontal_alignment = 1
+
+[node name="BottomSpacer" type="Control" parent="ScrollContainer/CreditsContent"]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+
+[node name="TopHUD" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 60.0
+grow_horizontal = 2
+
+[node name="SkipButton" type="Button" parent="TopHUD"]
+custom_minimum_size = Vector2(170, 36)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -190.0
+offset_top = 16.0
+offset_right = -20.0
+offset_bottom = 52.0
+grow_horizontal = 0
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.95, 0.85, 0.65, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+text = "Skip to Leaderboard »"
+
+[node name="BottomActions" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -65.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="HBox" type="HBoxContainer" parent="BottomActions"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -210.0
+offset_top = -20.0
+offset_right = 210.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="LeaderboardButton" type="Button" parent="BottomActions/HBox"]
+custom_minimum_size = Vector2(200, 40)
+layout_mode = 2
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.65, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 0.85, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+text = "🏆 View Leaderboard »"
+
+[node name="MenuButton" type="Button" parent="BottomActions/HBox"]
+custom_minimum_size = Vector2(160, 40)
+layout_mode = 2
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 0.75, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 0.9, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+text = "🏠 Main Menu"
+
+[node name="FadeOverlay" type="ColorRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)

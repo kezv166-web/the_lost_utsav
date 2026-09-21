@@ -44,18 +44,41 @@ var mouse_frames: SpriteFrames = preload("res://scenes/player/mushika_sprite_fra
 
 signal player_damaged(current_hp: int)
 signal player_died
+signal divine_energy_changed(current_energy: int, max_energy: int)
 
 @export var max_health: int = 250
 var health: int = 250
 var is_invulnerable: bool = false
 var invulnerable_timer: float = 0.0
 
+# Divine Energy Combo & Pasa Special
+var combo_hits: int = 0
+const COMBO_MAX: int = 3
+var combo_decay_timer: float = 0.0
+
+# Chota Asur Grab & Throw mechanics
+var held_chota_asur: Node3D = null
+var targeted_enemy: Node3D = null
+var target_reticle: Node3D = null
+@export var chota_asur_throw_damage: int = 38
+var target_reticle_scene: PackedScene = preload("res://scenes/ui/target_reticle.tscn")
+
 func _ready() -> void:
 	_setup_inputs()
 	if anim_sprite:
 		anim_sprite.animation_finished.connect(_on_animation_finished)
 		anim_sprite.frame_changed.connect(_on_anim_frame_changed)
+	if target_reticle_scene:
+		target_reticle = target_reticle_scene.instantiate()
+		call_deferred("_add_reticle_to_scene")
 	_update_animation()
+	call_deferred("emit_signal", "divine_energy_changed", combo_hits, COMBO_MAX)
+
+func _add_reticle_to_scene() -> void:
+	if target_reticle and is_instance_valid(target_reticle) and not target_reticle.is_inside_tree():
+		var p = get_parent()
+		if p:
+			p.add_child(target_reticle)
 
 func _setup_inputs() -> void:
 	_add_key_binding("move_left", KEY_A, KEY_LEFT)
@@ -74,10 +97,18 @@ func _setup_inputs() -> void:
 
 func _on_animation_finished() -> void:
 	if current_state == State.ATTACKING:
+		if is_instance_valid(held_chota_asur) and current_attack_type == "pasa_throw":
+			_launch_held_minion()
+		var finished_attack = current_attack_type
 		current_state = State.IDLE_WALK if is_on_floor() else State.JUMPING
 		current_attack_type = ""
 		attack_duration_timer = 0.0
-		attack_cooldown_timer = 0.38
+		if finished_attack == "pasa_throw":
+			attack_cooldown_timer = 1.0
+		elif finished_attack == "rope":
+			attack_cooldown_timer = 0.85
+		else:
+			attack_cooldown_timer = 0.38
 		_update_animation()
 
 func _add_key_binding(action_name: String, primary_key: Key, secondary_key: Key = KEY_NONE) -> void:
@@ -115,6 +146,18 @@ func _add_mouse_binding(action_name: String, button_index: MouseButton) -> void:
 	InputMap.action_add_event(action_name, ev)
 
 func _unhandled_input(event: InputEvent) -> void:
+	if is_instance_valid(held_chota_asur):
+		if event is InputEventKey and event.pressed and not event.is_echo():
+			var kc = event.physical_keycode if event.physical_keycode != KEY_NONE else event.keycode
+			if kc in [KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT]:
+				_handle_arrow_target_selection(kc)
+				get_viewport().set_input_as_handled()
+				return
+		if event.is_action_pressed("interact") or event.is_action_pressed("attack_axe") or event.is_action_pressed("attack_rope"):
+			throw_held_chota_asur()
+			get_viewport().set_input_as_handled()
+			return
+
 	if event.is_action_pressed("transform_1") or (event is InputEventKey and event.pressed and not event.is_echo() and (event.physical_keycode == KEY_1 or event.keycode == KEY_1)):
 		var current_sc = get_tree().current_scene if get_tree() else null
 		# If Level 1 controller handles transformation (full cutscene), defer to it
@@ -168,17 +211,34 @@ func _physics_process(delta: float) -> void:
 	if attack_duration_timer > 0.0:
 		attack_duration_timer -= delta
 		if attack_duration_timer <= 0.0 and current_state == State.ATTACKING:
+			var finished_attack = current_attack_type
 			current_state = State.IDLE_WALK if is_on_floor() else State.JUMPING
 			current_attack_type = ""
-			attack_cooldown_timer = 0.38
+			if finished_attack == "pasa_throw":
+				attack_cooldown_timer = 1.0
+			elif finished_attack == "rope":
+				attack_cooldown_timer = 0.85
+			else:
+				attack_cooldown_timer = 0.38
 			_update_animation()
+
+	if combo_hits > 0 and not is_instance_valid(held_chota_asur):
+		combo_decay_timer -= delta
+		if combo_decay_timer <= 0.0:
+			combo_hits = 0
+			emit_signal("divine_energy_changed", combo_hits, COMBO_MAX)
+			_set_hud_prompt("")
 
 	# Combat attack triggers (allowed on ground or airborne when in human form and not already attacking)
 	if current_state != State.ATTACKING and attack_cooldown_timer <= 0.0 and current_form == PlayerForm.HUMAN:
-		if Input.is_action_just_pressed("attack_axe"):
-			attack("axe")
-		elif Input.is_action_just_pressed("attack_rope"):
-			attack("rope")
+		if is_instance_valid(held_chota_asur):
+			if Input.is_action_just_pressed("attack_axe") or Input.is_action_just_pressed("attack_rope") or Input.is_action_just_pressed("interact"):
+				throw_held_chota_asur()
+		else:
+			if Input.is_action_just_pressed("attack_axe"):
+				attack("axe")
+			elif Input.is_action_just_pressed("attack_rope"):
+				attack("rope")
 
 	if current_state == State.ATTACKING:
 		if is_on_floor():
@@ -191,7 +251,19 @@ func _physics_process(delta: float) -> void:
 			velocity.z = move_toward(velocity.z, 0.0, friction * 0.25 * delta)
 	else:
 		# 2.5D X/Z plane movement
-		var input_vec = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+		var input_vec = Vector2.ZERO
+		if is_instance_valid(held_chota_asur):
+			# When holding minion, WASD moves while arrow keys select target
+			var mx = 0.0
+			var my = 0.0
+			if Input.is_key_pressed(KEY_D): mx += 1.0
+			if Input.is_key_pressed(KEY_A): mx -= 1.0
+			if Input.is_key_pressed(KEY_S): my += 1.0
+			if Input.is_key_pressed(KEY_W): my -= 1.0
+			input_vec = Vector2(mx, my).normalized()
+		else:
+			input_vec = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+
 		var move_dir = Vector3(input_vec.x, 0.0, input_vec.y).normalized()
 
 		if move_dir.length_squared() > 0.001:
@@ -234,29 +306,44 @@ func _play_attack_animation() -> void:
 	if not anim_sprite:
 		return
 	has_hit_in_current_attack = false
-	var dir_str: String
-	match current_direction:
-		Direction.LEFT:
-			dir_str = "left"
-		Direction.RIGHT:
-			dir_str = "right"
-		Direction.UP, Direction.DOWN:
-			dir_str = "left" if last_horizontal_facing == Direction.LEFT else "right"
+	var anim_name = ""
+	if current_attack_type == "pasa_throw":
+		var throw_dir_str = "left" if (current_direction == Direction.LEFT or last_horizontal_facing == Direction.LEFT) else "right"
+		if is_instance_valid(targeted_enemy):
+			var to_enemy = targeted_enemy.global_position - global_position
+			throw_dir_str = "left" if to_enemy.x < 0 else "right"
+			current_direction = Direction.LEFT if to_enemy.x < 0 else Direction.RIGHT
+			last_horizontal_facing = current_direction
+		anim_name = "pasa_throw_" + throw_dir_str
+	else:
+		var dir_str: String
+		match current_direction:
+			Direction.LEFT:
+				dir_str = "left"
+			Direction.RIGHT:
+				dir_str = "right"
+			Direction.UP, Direction.DOWN:
+				dir_str = "left" if last_horizontal_facing == Direction.LEFT else "right"
 
-	var anim_name = "attack_" + current_attack_type + "_" + dir_str
-	if anim_sprite.sprite_frames and not anim_sprite.sprite_frames.has_animation(anim_name):
-		var fallback_dir = "left" if (current_direction == Direction.LEFT or last_horizontal_facing == Direction.LEFT) else "right"
-		anim_name = "attack_" + current_attack_type + "_" + fallback_dir
+		anim_name = "attack_" + current_attack_type + "_" + dir_str
+		if anim_sprite.sprite_frames and not anim_sprite.sprite_frames.has_animation(anim_name):
+			var fallback_dir = "left" if (current_direction == Direction.LEFT or last_horizontal_facing == Direction.LEFT) else "right"
+			anim_name = "attack_" + current_attack_type + "_" + fallback_dir
 
 	anim_sprite.speed_scale = 1.0
 	anim_sprite.play(anim_name)
-	attack_duration_timer = 0.42
-	_execute_attack_hit()
+	attack_duration_timer = 0.48 if current_attack_type == "pasa_throw" else 0.42
+	if current_attack_type != "pasa_throw":
+		_execute_attack_hit()
 
 func _on_anim_frame_changed() -> void:
-	if current_state == State.ATTACKING and not has_hit_in_current_attack:
-		if anim_sprite and anim_sprite.frame in [1, 2, 3]:
-			_execute_attack_hit()
+	if current_state == State.ATTACKING:
+		if current_attack_type == "pasa_throw":
+			if is_instance_valid(held_chota_asur) and anim_sprite and anim_sprite.frame == 2:
+				_launch_held_minion()
+		elif not has_hit_in_current_attack:
+			if anim_sprite and anim_sprite.frame in [1, 2, 3]:
+				_execute_attack_hit()
 
 func _execute_attack_hit() -> void:
 	if has_hit_in_current_attack:
@@ -310,6 +397,19 @@ func _execute_attack_hit() -> void:
 				
 		if hit_connected:
 			has_hit_in_current_attack = true
+			if current_attack_type == "rope" and enemy.is_in_group("chota_asur") and combo_hits >= COMBO_MAX and not is_instance_valid(held_chota_asur):
+				grab_chota_asur(enemy)
+				return
+				
+			# Accumulate Divine Energy combo on normal hits
+			if combo_hits < COMBO_MAX:
+				combo_hits += 1
+				combo_decay_timer = 6.0
+				emit_signal("divine_energy_changed", combo_hits, COMBO_MAX)
+				if combo_hits >= COMBO_MAX:
+					_trigger_camera_shake(0.15, 8.0)
+					_set_hud_prompt("★ PASA SPECIAL READY! ★  [Press G to Grab & Throw]")
+				
 			if enemy.has_method("take_damage"):
 				enemy.take_damage(damage_amount)
 			elif enemy.has_method("take_hit"):
@@ -469,10 +569,19 @@ func take_damage(amount: int = 1, knockback_source: Vector3 = Vector3.ZERO) -> v
 	
 	emit_signal("player_damaged", health)
 	if health <= 0:
+		if is_instance_valid(held_chota_asur):
+			held_chota_asur.queue_free()
+			held_chota_asur = null
+			is_carrying = false
+		if is_instance_valid(target_reticle):
+			target_reticle.clear_target()
+		_set_hud_prompt("")
 		emit_signal("player_died")
 
 func _exit_tree() -> void:
 	Engine.time_scale = 1.0
+	if is_instance_valid(target_reticle):
+		target_reticle.queue_free()
 
 func reset_health() -> void:
 	Engine.time_scale = 1.0
@@ -482,3 +591,158 @@ func reset_health() -> void:
 	if anim_sprite:
 		anim_sprite.modulate.a = 1.0
 	emit_signal("player_damaged", health)
+
+# -------------------------------------------------------------------------
+# Chota Asur Grab, Reticle Aim & Pasa Throw
+# -------------------------------------------------------------------------
+func grab_chota_asur(minion: Node3D) -> void:
+	if not is_instance_valid(minion) or is_instance_valid(held_chota_asur):
+		return
+	held_chota_asur = minion
+	is_carrying = false
+	if minion.has_method("grab_by_player"):
+		minion.grab_by_player(self)
+	_pick_initial_target()
+	_set_hud_prompt("[Arrow Keys] Aim Target  •  [G / F / Left-Click] Throw Minion!")
+	_trigger_camera_shake(0.18, 12.0)
+
+func throw_held_chota_asur() -> void:
+	if not is_instance_valid(held_chota_asur) or current_state == State.ATTACKING:
+		return
+	current_state = State.ATTACKING
+	current_attack_type = "pasa_throw"
+	is_walking = false
+	_play_attack_animation()
+	var tree = get_tree()
+	if tree:
+		tree.create_timer(0.20).timeout.connect(func():
+			_launch_held_minion()
+		)
+
+func _launch_held_minion() -> void:
+	if not is_instance_valid(held_chota_asur):
+		return
+	var minion = held_chota_asur
+	held_chota_asur = null
+	is_carrying = false
+	
+	var start_pos = global_position + Vector3(0, 0.8, 0)
+	if is_instance_valid(minion):
+		start_pos = minion.global_position + Vector3(0, 0.4, 0)
+	var target_pos = start_pos
+	if is_instance_valid(targeted_enemy) and targeted_enemy.is_inside_tree():
+		target_pos = targeted_enemy.global_position
+		target_pos.y = 0.35
+	else:
+		var throw_dir = Vector3.FORWARD
+		match current_direction:
+			Direction.UP: throw_dir = Vector3(0, 0, -1)
+			Direction.DOWN: throw_dir = Vector3(0, 0, 1)
+			Direction.LEFT: throw_dir = Vector3(-1, 0, 0)
+			Direction.RIGHT: throw_dir = Vector3(1, 0, 0)
+		target_pos = start_pos + throw_dir * 7.0
+		target_pos.y = 0.35
+		
+	if minion.has_method("throw_as_projectile"):
+		minion.throw_as_projectile(start_pos, target_pos, targeted_enemy, chota_asur_throw_damage)
+		
+	if is_instance_valid(target_reticle):
+		target_reticle.clear_target()
+	targeted_enemy = null
+	combo_hits = 0
+	combo_decay_timer = 0.0
+	emit_signal("divine_energy_changed", combo_hits, COMBO_MAX)
+	_set_hud_prompt("")
+
+func _handle_arrow_target_selection(key: Key) -> void:
+	var candidates: Array[Node3D] = []
+	var tree = get_tree()
+	if not tree:
+		return
+		
+	for b in tree.get_nodes_in_group("boss"):
+		if is_instance_valid(b) and b is Node3D and b.visible:
+			candidates.append(b)
+			
+	for e in tree.get_nodes_in_group("enemy"):
+		if is_instance_valid(e) and e is Node3D and e != self and e != held_chota_asur and e.visible:
+			if "current_state" in e and e.current_state == 7: # State.DEAD
+				continue
+			if not candidates.has(e):
+				candidates.append(e)
+				
+	if candidates.is_empty():
+		targeted_enemy = null
+		if is_instance_valid(target_reticle):
+			target_reticle.clear_target()
+		return
+		
+	if candidates.size() == 1:
+		targeted_enemy = candidates[0]
+		if is_instance_valid(target_reticle):
+			target_reticle.set_target(targeted_enemy)
+		return
+
+	var chosen: Node3D = null
+	match key:
+		KEY_UP:
+			candidates.sort_custom(func(a, b): return a.global_position.z < b.global_position.z)
+			chosen = candidates[0]
+		KEY_DOWN:
+			candidates.sort_custom(func(a, b): return a.global_position.z > b.global_position.z)
+			chosen = candidates[0]
+		KEY_LEFT:
+			candidates.sort_custom(func(a, b): return a.global_position.x < b.global_position.x)
+			chosen = candidates[0]
+		KEY_RIGHT:
+			candidates.sort_custom(func(a, b): return a.global_position.x > b.global_position.x)
+			chosen = candidates[0]
+
+	if chosen == targeted_enemy and candidates.size() > 1:
+		var curr_idx = candidates.find(targeted_enemy)
+		var next_idx = (curr_idx + 1) % candidates.size()
+		chosen = candidates[next_idx]
+
+	targeted_enemy = chosen
+	if is_instance_valid(target_reticle):
+		target_reticle.set_target(targeted_enemy)
+
+func _pick_initial_target() -> void:
+	var tree = get_tree()
+	if not tree:
+		return
+	var candidates: Array[Node3D] = []
+	for b in tree.get_nodes_in_group("boss"):
+		if is_instance_valid(b) and b is Node3D and b.visible:
+			candidates.append(b)
+			
+	for e in tree.get_nodes_in_group("enemy"):
+		if is_instance_valid(e) and e is Node3D and e != self and e != held_chota_asur and e.visible:
+			if "current_state" in e and e.current_state == 7: # State.DEAD
+				continue
+			if not candidates.has(e):
+				candidates.append(e)
+
+	if candidates.is_empty():
+		targeted_enemy = null
+		if is_instance_valid(target_reticle):
+			target_reticle.clear_target()
+		return
+
+	# Sort by distance to player ascending -> closest enemy is candidates[0]
+	candidates.sort_custom(func(a, b):
+		return global_position.distance_to(a.global_position) < global_position.distance_to(b.global_position)
+	)
+	targeted_enemy = candidates[0]
+	if is_instance_valid(target_reticle) and targeted_enemy:
+		target_reticle.set_target(targeted_enemy)
+
+func _set_hud_prompt(msg: String) -> void:
+	var hud_prompt = get_tree().get_first_node_in_group("hud_prompt") if get_tree() else null
+	if not hud_prompt and get_tree():
+		var scene = get_tree().current_scene
+		if scene:
+			hud_prompt = scene.get_node_or_null("UI/HUD/ActionPrompt")
+	if hud_prompt and "text" in hud_prompt:
+		hud_prompt.text = msg
+
