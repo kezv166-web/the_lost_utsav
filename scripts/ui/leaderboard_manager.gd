@@ -9,20 +9,23 @@ extends RefCounted
 const DATA_FILE_PATH: String = "user://leaderboard_data.json"
 const PROFILE_FILE_PATH: String = "user://player_profile.json"
 
-const WEB_KEY_LEADERBOARD: String = "lost_utsav_leaderboard_real"
-const WEB_KEY_PROFILE: String = "lost_utsav_profile_real"
+const WEB_KEY_LEADERBOARD: String = "lost_utsav_leaderboard_v5"
+const WEB_KEY_PROFILE: String = "lost_utsav_profile_v5"
 
-# SilentWolf Global Leaderboard Backend Credentials
-const SILENTWOLF_GAME_ID: String = "thelostutsav"
-const SILENTWOLF_API_KEY: String = "XEiVMbvzWaAkzQDxzu5uaf7TEu3RxR28O3ScIgAg"
-const SILENTWOLF_POST_SCORE_URL: String = "https://api.silentwolf.com/post_new_score"
-const SILENTWOLF_GET_SCORES_URL: String = "https://api.silentwolf.com/get_scores/thelostutsav"
+# Talo Global Leaderboard Backend Credentials (CORS & Web Verified)
+const TALO_API_URL: String = "https://api.trytalo.com"
+const TALO_API_KEY: String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIyNzQsImFwaSI6dHJ1ZSwiaWF0IjoxNzkwMDU4MDQzfQ.UFdLMNTU68ZA2EmEmOabc12rqV_xCgrVCgxFy0_K4zg"
+const TALO_LEADERBOARD_NAME: String = "main"
 
 static var _instance: LeaderboardManager = null
 
 var player_profile: Dictionary = {}
 var leaderboard_entries: Array = []
 var is_cloud_connected: bool = false
+var talo_alias_id: int = -1
+var talo_player_id: String = ""
+var _cloud_fetch_retries: int = 0
+const _CLOUD_MAX_RETRIES: int = 2
 
 static func get_instance() -> LeaderboardManager:
 	if _instance == null:
@@ -31,8 +34,12 @@ static func get_instance() -> LeaderboardManager:
 	return _instance
 
 func initialize() -> void:
+	# Clean up any legacy localStorage cache on web
+	if OS.has_feature("web"):
+		JavaScriptBridge.eval("try { ['lost_utsav_leaderboard_real', 'lost_utsav_leaderboard_v2', 'lost_utsav_leaderboard_v3', 'lost_utsav_leaderboard_v4', 'lost_utsav_profile_real', 'lost_utsav_profile_v2', 'lost_utsav_profile_v3', 'lost_utsav_profile_v4'].forEach(function(k){ localStorage.removeItem(k); }); } catch(e){}")
 	load_player_profile()
 	load_leaderboard_data()
+	_deduplicate_self_entries()
 	_recalc_profile_stats()
 
 # ---------------------------------------------------------------------------
@@ -76,6 +83,10 @@ func load_player_profile() -> void:
 		var parsed = JSON.parse_string(loaded_data)
 		if parsed is Dictionary and parsed.has("id"):
 			player_profile = parsed
+			# Graceful upgrade for legacy accounts still using generic "BraveWarrior"
+			if not player_profile.get("is_custom_name", false) and player_profile.get("name", "") == "BraveWarrior":
+				player_profile["name"] = generate_unique_display_name()
+				save_player_profile()
 			return
 
 	# 4. Generate unique profile if missing or invalid
@@ -94,12 +105,65 @@ func save_player_profile() -> void:
 	# Mirror to browser localStorage for Itch.io / Vercel resilience
 	_save_web_storage(WEB_KEY_PROFILE, json_str)
 
+# ---------------------------------------------------------------------------
+# AMONG US-STYLE PROCEDURAL UNIQUE NAMES & TRUE CRYPTOGRAPHIC UUIDs
+# ---------------------------------------------------------------------------
+
+const NAME_ADJECTIVES: Array[String] = [
+	"Swift", "Mighty", "Brave", "Fierce", "Noble", "Radiant", "Golden", "Iron",
+	"Shadow", "Solar", "Thunder", "Cosmic", "Astral", "Valiant", "Storm", "Wild",
+	"Blazing", "Ancient", "Sacred", "Mystic"
+]
+
+const NAME_ARCHETYPES: Array[String] = [
+	"Tiger", "Falcon", "Lion", "Archer", "Sage", "Guardian", "Slayer", "Rider",
+	"Seeker", "Champion", "Knight", "Avenger", "Hero", "Yodha", "Warrior"
+]
+
+static func generate_unique_display_name() -> String:
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
+	var adj = NAME_ADJECTIVES[rng.randi() % NAME_ADJECTIVES.size()]
+	var noun = NAME_ARCHETYPES[rng.randi() % NAME_ARCHETYPES.size()]
+	var num = rng.randi_range(10, 99)
+	return "%s%s%d" % [adj, noun, num]
+
+static func generate_unique_id() -> String:
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
+	var h1 = "%08x" % (rng.randi() & 0xffffffff)
+	var h2 = "%04x" % (rng.randi() & 0xffff)
+	return "USR-%s%s" % [h1, h2]
+
+static func sanitize_player_name(raw_name: String) -> String:
+	if raw_name.is_empty():
+		return ""
+	var clean = raw_name
+	# Strip HTML and BBCode tags
+	var tag_regex = RegEx.new()
+	tag_regex.compile("[\\[<][^\\]>]*[\\]>]")
+	clean = tag_regex.sub(clean, "", true)
+	
+	# Allow only alphanumeric characters, spaces, underscores, and hyphens
+	var char_regex = RegEx.new()
+	char_regex.compile("[^a-zA-Z0-9_ \\-]")
+	clean = char_regex.sub(clean, "", true)
+	
+	# Collapse consecutive spaces into one and trim
+	var space_regex = RegEx.new()
+	space_regex.compile("\\s+")
+	clean = space_regex.sub(clean, " ", true).strip_edges()
+	
+	if clean.length() > 16:
+		clean = clean.substr(0, 16).strip_edges()
+	return clean
+
 func _generate_new_profile() -> Dictionary:
-	randomize()
-	var unique_num = randi_range(1000, 9999)
 	var profile = {
-		"id": "USR-%d" % unique_num,
-		"name": "BraveWarrior",
+		"id": generate_unique_id(),
+		"name": generate_unique_display_name(),
+		"is_custom_name": false,
+		"is_custom_name_chosen": false,
 		"avatar": "avatar_4",
 		"best_time": "--:--:--",
 		"best_level": 0,
@@ -114,24 +178,125 @@ func get_player_profile() -> Dictionary:
 		load_player_profile()
 	return player_profile
 
-func update_player_name(new_name: String) -> void:
-	var clean_name = new_name.strip_edges()
-	if clean_name.is_empty():
-		return
+func lock_custom_name() -> void:
+	player_profile["is_custom_name_chosen"] = true
+	save_player_profile()
+	print("[LeaderboardManager] Warrior name locked permanently: '%s'" % player_profile.get("name", ""))
+
+func update_player_name(new_name: String, force: bool = false) -> String:
+	if player_profile.get("is_custom_name_chosen", false) and not force:
+		print("[LeaderboardManager] Name is locked and cannot be changed.")
+		return player_profile.get("name", "")
+
+	var clean_name = sanitize_player_name(new_name)
+	if clean_name.length() < 3:
+		print("[LeaderboardManager] Name rejected (minimum 3 characters required): '%s'" % new_name)
+		return ""
 	player_profile["name"] = clean_name
+	player_profile["is_custom_name"] = true
 	save_player_profile()
 
-	# Update player's runs in leaderboard data
-	var user_id = player_profile.get("id", "")
+	# Update player's runs in local leaderboard data
+	var user_guest_id = player_profile.get("id", "")
+	var user_google_id = str(player_profile.get("google_id", ""))
+	var is_google_linked = player_profile.get("is_google_linked", false)
+
 	for entry in leaderboard_entries:
-		if entry.get("id") == user_id or entry.get("is_self", false):
+		var e_id = str(entry.get("id", ""))
+		var is_user = (entry.get("is_self", false) or (not user_guest_id.is_empty() and e_id == user_guest_id) or (is_google_linked and not user_google_id.is_empty() and e_id == user_google_id))
+		if is_user:
 			entry["player"] = clean_name
+			entry["is_self"] = true
+			if is_google_linked and not user_google_id.is_empty():
+				entry["id"] = user_google_id
+
+	_deduplicate_self_entries()
+	sort_and_rank()
 	save_leaderboard_data()
 
+	# Immediately update Talo live player properties (syncs live name to other players)
+	update_talo_player_props(clean_name)
+
+	# Immediately update Talo cloud row with the new display name
+	var best_entry: Dictionary = {}
+	for entry in leaderboard_entries:
+		if entry.get("is_self", false):
+			best_entry = entry
+			break
+
+	if not best_entry.is_empty():
+		post_global_score(best_entry)
+		print("[LeaderboardManager] Updated display name to '%s' and synchronized with cloud!" % clean_name)
+	else:
+		print("[LeaderboardManager] Updated display name to '%s'" % clean_name)
+
+	return clean_name
+
+func _deduplicate_self_entries() -> void:
+	var user_guest_id = player_profile.get("id", "")
+	var user_google_id = str(player_profile.get("google_id", ""))
+	var is_google_linked = player_profile.get("is_google_linked", false)
+	var active_name = player_profile.get("name", "Warrior")
+	
+	var user_entry: Dictionary = {}
+	var other_entries: Array = []
+	var other_ids_seen: Dictionary = {}
+
+	for entry in leaderboard_entries:
+		var e_id = str(entry.get("id", ""))
+		var e_name = str(entry.get("player", ""))
+		
+		# Discard obsolete placeholders or test runs
+		if e_name == "BraveWarrior" or e_name == "TestWarrior" or e_id.begins_with("BOT-"):
+			continue
+			
+		var is_user = (entry.get("is_self", false) or (not user_guest_id.is_empty() and e_id == user_guest_id) or (is_google_linked and not user_google_id.is_empty() and e_id == user_google_id))
+		
+		if is_user:
+			if user_entry.is_empty():
+				user_entry = entry.duplicate()
+				user_entry["is_self"] = true
+				user_entry["player"] = active_name
+				if is_google_linked and not user_google_id.is_empty():
+					user_entry["id"] = user_google_id
+				else:
+					user_entry["id"] = user_guest_id
+			else:
+				# Merge with previous user entry, keeping highest score and best time
+				var s1 = int(user_entry.get("score", 0))
+				var s2 = int(entry.get("score", 0))
+				if s2 > s1:
+					user_entry = entry.duplicate()
+					user_entry["is_self"] = true
+					user_entry["player"] = active_name
+					if is_google_linked and not user_google_id.is_empty():
+						user_entry["id"] = user_google_id
+					else:
+						user_entry["id"] = user_guest_id
+				elif s2 == s1:
+					var t1 = float(user_entry.get("raw_time", 999999.0))
+					var t2 = float(entry.get("raw_time", 999999.0))
+					if t2 < t1:
+						user_entry["raw_time"] = t2
+						user_entry["time"] = entry.get("time", user_entry.get("time"))
+		else:
+			# For other players, deduplicate by ID so cloud doesn't return duplicate entries
+			if not e_id.is_empty() and other_ids_seen.has(e_id):
+				continue
+			if not e_id.is_empty():
+				other_ids_seen[e_id] = true
+			other_entries.append(entry)
+
+	leaderboard_entries.clear()
+	for o in other_entries:
+		leaderboard_entries.append(o)
+	if not user_entry.is_empty():
+		leaderboard_entries.append(user_entry)
+
 func _recalc_profile_stats() -> void:
-	if leaderboard_entries.is_empty():
-		return
-	var user_id = player_profile.get("id", "")
+	var user_guest_id = player_profile.get("id", "")
+	var user_google_id = str(player_profile.get("google_id", ""))
+	var is_google_linked = player_profile.get("is_google_linked", false)
 	var best_sc: int = 0
 	var best_tm: String = "--:--:--"
 	var best_raw_tm: float = 999999.0
@@ -139,7 +304,9 @@ func _recalc_profile_stats() -> void:
 	var count: int = 0
 
 	for e in leaderboard_entries:
-		if e.get("id") == user_id or e.get("is_self", false):
+		var e_id = str(e.get("id", ""))
+		var is_user = (e.get("is_self", false) or (not user_guest_id.is_empty() and e_id == user_guest_id) or (is_google_linked and not user_google_id.is_empty() and e_id == user_google_id))
+		if is_user:
 			count += 1
 			var sc = int(e.get("score", 0))
 			# Exclude legacy placeholder
@@ -159,7 +326,12 @@ func _recalc_profile_stats() -> void:
 		player_profile["best_time"] = best_tm
 		player_profile["best_level"] = best_lvl
 		player_profile["total_runs"] = count
-		save_player_profile()
+	else:
+		player_profile["best_score"] = 0
+		player_profile["best_time"] = "--:--:--"
+		player_profile["best_level"] = 0
+		player_profile["total_runs"] = 0
+	save_player_profile()
 
 # ---------------------------------------------------------------------------
 # REAL LEADERBOARD DATA MANAGEMENT (ZERO FAKE BOTS)
@@ -187,15 +359,28 @@ func load_leaderboard_data() -> void:
 			for item in parsed:
 				if item is Dictionary:
 					var item_id = str(item.get("id", ""))
+					var p_name = str(item.get("player", ""))
 					var sc = int(item.get("score", 0))
-					# Filter out legacy dummy bot rows or 490k test benchmark
-					if not item_id.begins_with("BOT-") and sc < 50000:
+					# Filter out legacy dummy bot rows, BraveWarrior/TestWarrior placeholders, and test benchmarks
+					if not item_id.begins_with("BOT-") and p_name != "BraveWarrior" and p_name != "TestWarrior" and sc < 50000:
 						leaderboard_entries.append(item)
+			_deduplicate_self_entries()
 			sort_and_rank()
 			return
 
 	leaderboard_entries = []
 	save_leaderboard_data()
+
+func clear_all_leaderboard_data() -> void:
+	leaderboard_entries.clear()
+	save_leaderboard_data()
+	if player_profile is Dictionary:
+		player_profile["best_score"] = 0
+		player_profile["best_time"] = "--:--:--"
+		player_profile["best_level"] = 0
+		player_profile["total_runs"] = 0
+		save_player_profile()
+	print("[LeaderboardManager] All local leaderboard data and profile run stats wiped clean!")
 
 func save_leaderboard_data() -> void:
 	var json_str = JSON.stringify(leaderboard_entries, "\t")
@@ -210,8 +395,12 @@ func save_leaderboard_data() -> void:
 	_save_web_storage(WEB_KEY_LEADERBOARD, json_str)
 
 func add_run_entry(run_data: Dictionary) -> void:
-	var p_id = run_data.get("id", player_profile.get("id", "USR-1000"))
-	var p_name = run_data.get("player", player_profile.get("name", "BraveWarrior"))
+	var user_guest_id = player_profile.get("id", "USR-1000")
+	var user_google_id = str(player_profile.get("google_id", ""))
+	var is_google_linked = player_profile.get("is_google_linked", false)
+
+	var p_id = user_google_id if (is_google_linked and not user_google_id.is_empty()) else user_guest_id
+	var p_name = player_profile.get("name", run_data.get("player", "Warrior"))
 	var score = int(run_data.get("score", 0))
 	var raw_time = float(run_data.get("raw_time", 0.0))
 	var formatted_time = str(run_data.get("time", "00:00:00"))
@@ -241,20 +430,70 @@ func add_run_entry(run_data: Dictionary) -> void:
 		"level3_points": run_data.get("level3_points", calculate_level_3_points(l3_t, l3_a)),
 		"level3_attempts": l3_a,
 		"date": run_data.get("date", Time.get_date_string_from_system()),
-		"is_self": true
+		"is_self": true,
+		"created_at_utc": Time.get_datetime_string_from_system(true) + "Z"
 	}
 
-	leaderboard_entries.append(entry)
+	# --- SINGLE ENTRY PER PLAYER (IN-PLACE UPSERT) ---
+	var existing_idx = -1
+	for i in range(leaderboard_entries.size()):
+		var e = leaderboard_entries[i]
+		var e_id = str(e.get("id", ""))
+		if e.get("is_self", false) or e_id == p_id or (not user_guest_id.is_empty() and e_id == user_guest_id) or (is_google_linked and not user_google_id.is_empty() and e_id == user_google_id):
+			existing_idx = i
+			break
+
+	var is_new_high_score = false
+	if existing_idx >= 0:
+		var old_entry = leaderboard_entries[existing_idx]
+		var old_score = int(old_entry.get("score", 0))
+		var old_time = float(old_entry.get("raw_time", 999999.0))
+		
+		# Better score, OR same score with faster speedrun time:
+		if score > old_score or (score == old_score and raw_time < old_time):
+			# Preserve higher level stats if old_entry had later levels
+			if entry.get("level2_time", 0.0) == 0.0 and float(old_entry.get("level2_time", 0.0)) > 0.0:
+				entry["level2_time"] = old_entry["level2_time"]
+				entry["level2_points"] = old_entry.get("level2_points", 0)
+				entry["level2_modaks"] = old_entry.get("level2_modaks", 0)
+			if entry.get("level3_time", 0.0) == 0.0 and float(old_entry.get("level3_time", 0.0)) > 0.0:
+				entry["level3_time"] = old_entry["level3_time"]
+				entry["level3_points"] = old_entry.get("level3_points", 0)
+				entry["level3_attempts"] = old_entry.get("level3_attempts", 1)
+			leaderboard_entries[existing_idx] = entry
+			is_new_high_score = true
+			print("[LeaderboardManager] Personal best updated in-place! Old: %d pts -> New: %d pts" % [old_score, score])
+		else:
+			# Update level-specific stats in old_entry if improved or missing
+			if l1_t > 0.0 and (float(old_entry.get("level1_time", 0.0)) <= 0.0 or l1_t < float(old_entry.get("level1_time", 999999.0))):
+				old_entry["level1_time"] = l1_t
+				old_entry["level1_points"] = entry.get("level1_points", calculate_level_1_points(l1_t))
+			if l2_t > 0.0 and (float(old_entry.get("level2_time", 0.0)) <= 0.0 or l2_t < float(old_entry.get("level2_time", 999999.0)) or l2_m > int(old_entry.get("level2_modaks", 0))):
+				old_entry["level2_time"] = l2_t
+				old_entry["level2_points"] = entry.get("level2_points", calculate_level_2_points(l2_t, l2_m))
+				old_entry["level2_modaks"] = l2_m
+			if l3_t > 0.0 and (float(old_entry.get("level3_time", 0.0)) <= 0.0 or l3_t < float(old_entry.get("level3_time", 999999.0))):
+				old_entry["level3_time"] = l3_t
+				old_entry["level3_points"] = entry.get("level3_points", calculate_level_3_points(l3_t, l3_a))
+				old_entry["level3_attempts"] = l3_a
+			print("[LeaderboardManager] Run finished with %d pts. Keeping existing personal best (%d pts) on leaderboard." % [score, old_score])
+	else:
+		# First time on leaderboard - append single row
+		leaderboard_entries.append(entry)
+		is_new_high_score = true
+		print("[LeaderboardManager] Added initial authentic run: %s, Score: %d, Time: %s" % [p_name, score, formatted_time])
+
+	_deduplicate_self_entries()
 	sort_and_rank()
 	_recalc_profile_stats()
 	save_leaderboard_data()
-	print("[LeaderboardManager] Added authentic run: %s, Score: %d, Time: %s" % [p_name, score, formatted_time])
 
-	# Post authentic score to SilentWolf global leaderboard backend
-	post_global_score(entry)
+	# Post authentic score and level props to Talo global leaderboard backend
+	var best_entry_to_post = leaderboard_entries[existing_idx] if existing_idx >= 0 else entry
+	post_global_score(best_entry_to_post)
 
 # ---------------------------------------------------------------------------
-# SILENTWOLF GLOBAL ONLINE LEADERBOARD INTEGRATION (ITCH.IO HTTPS)
+# TALO GLOBAL ONLINE LEADERBOARD INTEGRATION (CORS & ITCH.IO VERIFIED)
 # ---------------------------------------------------------------------------
 
 func _create_http_node() -> HTTPRequest:
@@ -268,7 +507,122 @@ func _create_http_node() -> HTTPRequest:
 		return http
 	return null
 
+func identify_talo_player(callback: Callable = Callable()) -> void:
+	if talo_alias_id > 0:
+		if callback.is_valid():
+			callback.call(true, talo_alias_id)
+		return
+
+	var service_name = "username"
+	var identifier_val = player_profile.get("id", "USR-1000")
+	if player_profile.get("is_google_linked", false) and not str(player_profile.get("google_id", "")).is_empty():
+		service_name = "google"
+		identifier_val = str(player_profile["google_id"])
+
+	var http = _create_http_node()
+	if not http:
+		if callback.is_valid():
+			callback.call(false, -1)
+		return
+
+	var url = "%s/v1/players/identify?service=%s&identifier=%s" % [TALO_API_URL, service_name, identifier_val]
+	var headers = [
+		"Authorization: Bearer " + TALO_API_KEY,
+		"Accept: application/json",
+		"X-Talo-Client: godot:1.1.0"
+	]
+
+	http.request_completed.connect(func(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray):
+		http.queue_free()
+		var success = (response_code >= 200 and response_code < 300)
+		if success:
+			var parsed = JSON.parse_string(body.get_string_from_utf8())
+			if parsed is Dictionary and parsed.has("alias") and parsed["alias"] is Dictionary:
+				talo_alias_id = int(parsed["alias"].get("id", -1))
+				var p_obj = parsed["alias"].get("player", {})
+				if p_obj is Dictionary:
+					talo_player_id = str(p_obj.get("id", ""))
+				print("[LeaderboardManager] Talo player identified (%s). Alias ID: %d, Player ID: %s" % [service_name, talo_alias_id, talo_player_id])
+		if callback.is_valid():
+			callback.call(success, talo_alias_id)
+	)
+
+	var err = http.request(url, headers, HTTPClient.METHOD_GET)
+	if err != OK:
+		http.queue_free()
+		if callback.is_valid():
+			callback.call(false, -1)
+
+func update_talo_player_props(new_name: String, callback: Callable = Callable()) -> void:
+	if talo_player_id.is_empty():
+		identify_talo_player(func(ok: bool, _alias: int):
+			if ok and not talo_player_id.is_empty():
+				update_talo_player_props(new_name, callback)
+			else:
+				if callback.is_valid():
+					callback.call(false)
+		)
+		return
+
+	var http = _create_http_node()
+	if not http:
+		if callback.is_valid():
+			callback.call(false)
+		return
+
+	var url = "%s/v1/players/%s" % [TALO_API_URL, talo_player_id]
+	var headers = [
+		"Authorization: Bearer " + TALO_API_KEY,
+		"Content-Type: application/json",
+		"Accept: application/json",
+		"X-Talo-Client: godot:1.1.0"
+	]
+	var payload = {
+		"props": [
+			{"key": "player", "value": new_name}
+		]
+	}
+	var json_payload = JSON.stringify(payload)
+	http.request_completed.connect(func(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray):
+		http.queue_free()
+		var success = (response_code >= 200 and response_code < 300)
+		if success:
+			print("[LeaderboardManager] Synced live player name '%s' to Talo (HTTP %d)" % [new_name, response_code])
+		if callback.is_valid():
+			callback.call(success)
+	)
+
+	var err = http.request(url, headers, HTTPClient.METHOD_PATCH, json_payload)
+	if err != OK:
+		http.queue_free()
+		if callback.is_valid():
+			callback.call(false)
+
+func link_talo_google_account(google_sub: String, callback: Callable = Callable()) -> void:
+	talo_alias_id = -1 # Force re-identification under Google
+	talo_player_id = ""
+	player_profile["google_id"] = google_sub
+	player_profile["is_google_linked"] = true
+	save_player_profile()
+	_deduplicate_self_entries()
+	sort_and_rank()
+	save_leaderboard_data()
+	identify_talo_player(func(success: bool, _alias: int):
+		if callback.is_valid():
+			callback.call(success)
+	)
+
 func post_global_score(entry: Dictionary, callback: Callable = Callable()) -> void:
+	if talo_alias_id <= 0:
+		identify_talo_player(func(ok: bool, _alias: int):
+			if ok:
+				post_global_score(entry, callback)
+			else:
+				if callback.is_valid():
+					callback.call(false)
+		)
+		return
+
 	var http = _create_http_node()
 	if not http:
 		if callback.is_valid():
@@ -277,46 +631,56 @@ func post_global_score(entry: Dictionary, callback: Callable = Callable()) -> vo
 
 	var p_name = str(entry.get("player", player_profile.get("name", "BraveWarrior")))
 	var score_val = int(entry.get("score", 0))
-	var meta = {
-		"id": str(entry.get("id", player_profile.get("id", "USR-1000"))),
-		"time": str(entry.get("time", "00:00:00")),
-		"raw_time": float(entry.get("raw_time", 0.0)),
-		"avatar": str(entry.get("avatar", "avatar_4")),
-		"level": int(entry.get("level", 1)),
-		"level_reached_str": str(entry.get("level_reached_str", "1.0")),
-		"date": str(entry.get("date", Time.get_date_string_from_system()))
-	}
+
+	# Format props as array of {key, value} objects as expected by Talo
+	var props_array: Array[Dictionary] = [
+		{"key": "player", "value": p_name},
+		{"key": "time", "value": str(entry.get("time", "00:00:00"))},
+		{"key": "raw_time", "value": str(entry.get("raw_time", 0.0))},
+		{"key": "avatar", "value": str(entry.get("avatar", "avatar_4"))},
+		{"key": "level", "value": str(entry.get("level", 1))},
+		{"key": "level_reached_str", "value": str(entry.get("level_reached_str", "1.0"))},
+		{"key": "date", "value": str(entry.get("date", Time.get_date_string_from_system()))},
+		{"key": "level1_time", "value": str(entry.get("level1_time", 0.0))},
+		{"key": "level1_points", "value": str(entry.get("level1_points", 0))},
+		{"key": "level2_time", "value": str(entry.get("level2_time", 0.0))},
+		{"key": "level2_points", "value": str(entry.get("level2_points", 0))},
+		{"key": "level2_modaks", "value": str(entry.get("level2_modaks", 0))},
+		{"key": "level3_time", "value": str(entry.get("level3_time", 0.0))},
+		{"key": "level3_points", "value": str(entry.get("level3_points", 0))},
+		{"key": "level3_attempts", "value": str(entry.get("level3_attempts", 1))}
+	]
 
 	var payload = {
-		"game_id": SILENTWOLF_GAME_ID,
-		"api_key": SILENTWOLF_API_KEY,
-		"player_name": p_name,
 		"score": score_val,
-		"ldboard_name": "main",
-		"metadata": meta
+		"props": props_array
 	}
 
 	var json_payload = JSON.stringify(payload)
+	var url = "%s/v1/leaderboards/%s/entries" % [TALO_API_URL, TALO_LEADERBOARD_NAME]
 	var headers = [
+		"Authorization: Bearer " + TALO_API_KEY,
+		"X-Talo-Alias: %d" % talo_alias_id,
 		"Content-Type: application/json",
-		"x-api-key: " + SILENTWOLF_API_KEY
+		"Accept: application/json",
+		"X-Talo-Client: godot:1.1.0"
 	]
 
-	http.request_completed.connect(func(_result: int, response_code: int, _headers: PackedStringArray, _body: PackedByteArray):
+	http.request_completed.connect(func(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray):
 		http.queue_free()
 		var success = (response_code >= 200 and response_code < 300)
 		is_cloud_connected = success
 		if success:
-			print("[LeaderboardManager] Successfully posted global score to SilentWolf for %s!" % p_name)
+			print("[LeaderboardManager] Successfully posted global score to Talo for %s!" % p_name)
 		else:
-			print("[LeaderboardManager] SilentWolf post response: HTTP %d (Offline/Cached locally)" % response_code)
+			print("[LeaderboardManager] Talo post response: HTTP %d: %s" % [response_code, body.get_string_from_utf8().substr(0, 200)])
 		if callback.is_valid():
 			callback.call(success)
 	)
 
-	var err = http.request(SILENTWOLF_POST_SCORE_URL, headers, HTTPClient.METHOD_POST, json_payload)
+	var err = http.request(url, headers, HTTPClient.METHOD_POST, json_payload)
 	if err != OK:
-		print("[LeaderboardManager] SilentWolf HTTP POST dispatch failed: code %d" % err)
+		print("[LeaderboardManager] Talo HTTP POST dispatch failed: code %d" % err)
 		http.queue_free()
 		if callback.is_valid():
 			callback.call(false)
@@ -328,10 +692,11 @@ func fetch_global_leaderboard(callback: Callable = Callable()) -> void:
 			callback.call(false, leaderboard_entries)
 		return
 
-	var url = "%s?api_key=%s&ldboard_name=main" % [SILENTWOLF_GET_SCORES_URL, SILENTWOLF_API_KEY]
+	var url = "%s/v1/leaderboards/%s/entries?page=0&limit=100" % [TALO_API_URL, TALO_LEADERBOARD_NAME]
 	var headers = [
-		"Content-Type: application/json",
-		"x-api-key: " + SILENTWOLF_API_KEY
+		"Authorization: Bearer " + TALO_API_KEY,
+		"Accept: application/json",
+		"X-Talo-Client: godot:1.1.0"
 	]
 
 	http.request_completed.connect(func(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray):
@@ -340,25 +705,27 @@ func fetch_global_leaderboard(callback: Callable = Callable()) -> void:
 		if response_code >= 200 and response_code < 300:
 			var body_str = body.get_string_from_utf8()
 			var parsed = JSON.parse_string(body_str)
-			var raw_scores: Array = []
-			if parsed is Array:
-				raw_scores = parsed
-			elif parsed is Dictionary:
-				if parsed.has("top_scores") and parsed["top_scores"] is Array:
-					raw_scores = parsed["top_scores"]
-				elif parsed.has("scores") and parsed["scores"] is Array:
-					raw_scores = parsed["scores"]
-				elif parsed.has("result") and parsed["result"] is Array:
-					raw_scores = parsed["result"]
+			var raw_entries: Array = []
+			if parsed is Dictionary and parsed.has("entries") and parsed["entries"] is Array:
+				raw_entries = parsed["entries"]
 
-			if not raw_scores.is_empty():
-				_merge_cloud_scores(raw_scores)
-				success = true
-				is_cloud_connected = true
-				print("[LeaderboardManager] Successfully synced %d global scores from SilentWolf" % raw_scores.size())
+			_merge_talo_scores(raw_entries)
+			success = true
+			is_cloud_connected = true
+			_cloud_fetch_retries = 0
+			print("[LeaderboardManager] Successfully synced %d global scores from Talo" % raw_entries.size())
 
 		if not success:
-			print("[LeaderboardManager] SilentWolf fetch response: HTTP %d. Serving %d local authentic runs." % [response_code, leaderboard_entries.size()])
+			print("[LeaderboardManager] Talo fetch response: HTTP %d. Serving %d local authentic runs." % [response_code, leaderboard_entries.size()])
+			if _cloud_fetch_retries < _CLOUD_MAX_RETRIES:
+				_cloud_fetch_retries += 1
+				print("[LeaderboardManager] Retrying Talo fetch in 3s (attempt %d/%d)..." % [_cloud_fetch_retries, _CLOUD_MAX_RETRIES])
+				var tree = Engine.get_main_loop() as SceneTree
+				if tree:
+					tree.create_timer(3.0).timeout.connect(func():
+						fetch_global_leaderboard(callback)
+					)
+					return
 
 		if callback.is_valid():
 			callback.call(success, leaderboard_entries)
@@ -366,55 +733,146 @@ func fetch_global_leaderboard(callback: Callable = Callable()) -> void:
 
 	var err = http.request(url, headers, HTTPClient.METHOD_GET)
 	if err != OK:
-		print("[LeaderboardManager] SilentWolf HTTP GET dispatch failed: code %d" % err)
+		print("[LeaderboardManager] Talo HTTP GET dispatch failed: code %d" % err)
 		http.queue_free()
 		if callback.is_valid():
 			callback.call(false, leaderboard_entries)
 
-func _merge_cloud_scores(raw_scores: Array) -> void:
-	var user_id = player_profile.get("id", "")
-	for item in raw_scores:
+func _merge_talo_scores(raw_entries: Array) -> void:
+	var user_guest_id = player_profile.get("id", "")
+	var user_google_id = str(player_profile.get("google_id", ""))
+	var is_google_linked = player_profile.get("is_google_linked", false)
+	var active_name = player_profile.get("name", "Warrior")
+
+	# Find any existing local run for 'self'
+	var local_self_entry: Dictionary = {}
+	for e in leaderboard_entries:
+		var e_id = str(e.get("id", ""))
+		var is_user = (e.get("is_self", false) or (not user_guest_id.is_empty() and e_id == user_guest_id) or (is_google_linked and not user_google_id.is_empty() and e_id == user_google_id))
+		if is_user:
+			local_self_entry = e.duplicate()
+			break
+
+	var new_entries: Array = []
+	var other_ids_seen: Dictionary = {}
+	var user_entry_found: bool = false
+
+	for item in raw_entries:
 		if not (item is Dictionary):
 			continue
-		var meta = item.get("metadata", {})
-		if typeof(meta) == TYPE_STRING:
-			meta = JSON.parse_string(meta) if not meta.is_empty() else {}
-		if not (meta is Dictionary):
-			meta = {}
 
-		var p_name = str(item.get("player_name", meta.get("player", "Warrior")))
 		var score_val = int(item.get("score", 0))
-		var p_id = str(meta.get("id", item.get("score_id", "")))
-		var is_self = (p_id == user_id or p_name == player_profile.get("name", ""))
+		var alias = item.get("playerAlias", {})
+		var p_id = ""
+		if alias is Dictionary:
+			p_id = str(alias.get("identifier", ""))
 
-		# Check if already present in local entries
-		var found_index = -1
-		for i in range(leaderboard_entries.size()):
-			var e = leaderboard_entries[i]
-			if (not p_id.is_empty() and e.get("id") == p_id) or (e.get("player") == p_name):
-				found_index = i
-				break
+		# Convert props array into a dictionary map for direct lookup
+		var props_map: Dictionary = {}
+		var props_list = item.get("props", [])
+		if props_list is Array:
+			for p in props_list:
+				if p is Dictionary and p.has("key") and p.has("value"):
+					props_map[str(p["key"])] = p["value"]
+
+		# Also check live player props on playerAlias.player.props (takes precedence over static score snapshot)
+		var player_props_map: Dictionary = {}
+		if alias is Dictionary and alias.has("player") and alias["player"] is Dictionary:
+			var pl_props = alias["player"].get("props", [])
+			if pl_props is Array:
+				for pp in pl_props:
+					if pp is Dictionary and pp.has("key") and pp.has("value"):
+						player_props_map[str(pp["key"])] = pp["value"]
+
+		var created_at = str(item.get("createdAt", ""))
+		# Use live player name if available, otherwise entry snapshot name, fallback to Warrior
+		var p_name = str(player_props_map.get("player", props_map.get("player", "Warrior")))
+
+		# Discard obsolete placeholders or old test runs
+		if p_name == "BraveWarrior" or p_name == "TestWarrior" or p_id.begins_with("BOT-"):
+			continue
+
+		var is_self = false
+		if not p_id.is_empty():
+			if p_id == user_guest_id:
+				is_self = true
+			elif is_google_linked and not user_google_id.is_empty() and p_id == user_google_id:
+				is_self = true
+
+		if is_self:
+			p_name = active_name
+			user_entry_found = true
+
+		var time_val = str(props_map.get("time", "00:00:00"))
+		var raw_t = float(props_map.get("raw_time", time_str_to_seconds(time_val)))
+		var lvl = int(props_map.get("level", 1))
+
+		var canonical_id = p_id
+		if is_self:
+			canonical_id = user_google_id if (is_google_linked and not user_google_id.is_empty()) else user_guest_id
 
 		var entry_dict = {
-			"id": p_id if not p_id.is_empty() else "CLOUD-%d" % randi_range(1000, 9999),
+			"id": canonical_id if not canonical_id.is_empty() else "TALO-%d" % randi_range(1000, 9999),
 			"player": p_name,
-			"avatar": str(meta.get("avatar", "avatar_4")),
-			"level": int(meta.get("level", 1)),
-			"level_reached_str": str(meta.get("level_reached_str", "%.1f" % int(meta.get("level", 1)))),
-			"time": str(meta.get("time", "00:00:00")),
-			"raw_time": float(meta.get("raw_time", time_str_to_seconds(str(meta.get("time", "00:00:00"))))),
+			"avatar": str(props_map.get("avatar", "avatar_4")),
+			"level": lvl,
+			"level_reached_str": str(props_map.get("level_reached_str", "%.1f" % lvl)),
+			"time": time_val,
+			"raw_time": raw_t,
 			"score": score_val,
-			"date": str(meta.get("date", Time.get_date_string_from_system())),
-			"is_self": is_self
+			"date": str(props_map.get("date", Time.get_date_string_from_system())),
+			"is_self": is_self,
+			"level1_time": float(props_map.get("level1_time", 0.0)),
+			"level1_points": int(props_map.get("level1_points", 0)),
+			"level2_time": float(props_map.get("level2_time", 0.0)),
+			"level2_points": int(props_map.get("level2_points", 0)),
+			"level2_modaks": int(props_map.get("level2_modaks", 0)),
+			"level3_time": float(props_map.get("level3_time", 0.0)),
+			"level3_points": int(props_map.get("level3_points", 0)),
+			"level3_attempts": int(props_map.get("level3_attempts", 1)),
+			"created_at_utc": created_at
 		}
 
-		if found_index >= 0:
-			var existing_score = int(leaderboard_entries[found_index].get("score", 0))
-			if score_val >= existing_score:
-				leaderboard_entries[found_index] = entry_dict
-		else:
-			leaderboard_entries.append(entry_dict)
+		if is_self and not local_self_entry.is_empty():
+			var loc_sc = int(local_self_entry.get("score", 0))
+			var loc_raw_t = float(local_self_entry.get("raw_time", 999999.0))
+			if loc_sc > score_val or (loc_sc == score_val and loc_raw_t < raw_t):
+				entry_dict["score"] = loc_sc
+				entry_dict["time"] = local_self_entry.get("time", entry_dict["time"])
+				entry_dict["raw_time"] = loc_raw_t
+				entry_dict["level"] = local_self_entry.get("level", entry_dict["level"])
+				entry_dict["level_reached_str"] = local_self_entry.get("level_reached_str", entry_dict["level_reached_str"])
+			if entry_dict["level1_time"] == 0.0 and float(local_self_entry.get("level1_time", 0.0)) > 0.0:
+				entry_dict["level1_time"] = local_self_entry.get("level1_time", 0.0)
+				entry_dict["level1_points"] = local_self_entry.get("level1_points", 0)
+			if entry_dict["level2_time"] == 0.0 and float(local_self_entry.get("level2_time", 0.0)) > 0.0:
+				entry_dict["level2_time"] = local_self_entry.get("level2_time", 0.0)
+				entry_dict["level2_points"] = local_self_entry.get("level2_points", 0)
+				entry_dict["level2_modaks"] = local_self_entry.get("level2_modaks", 0)
+			if entry_dict["level3_time"] == 0.0 and float(local_self_entry.get("level3_time", 0.0)) > 0.0:
+				entry_dict["level3_time"] = local_self_entry.get("level3_time", 0.0)
+				entry_dict["level3_points"] = local_self_entry.get("level3_points", 0)
+				entry_dict["level3_attempts"] = local_self_entry.get("level3_attempts", 1)
 
+		if not is_self:
+			if not canonical_id.is_empty() and other_ids_seen.has(canonical_id):
+				continue
+			if not canonical_id.is_empty():
+				other_ids_seen[canonical_id] = true
+
+		new_entries.append(entry_dict)
+
+	# If local player had a run that wasn't on Talo yet, keep it!
+	if not user_entry_found and not local_self_entry.is_empty():
+		var sc = int(local_self_entry.get("score", 0))
+		if sc > 0 and sc <= 50000:
+			local_self_entry["is_self"] = true
+			local_self_entry["player"] = active_name
+			new_entries.append(local_self_entry)
+
+	# Authoritatively replace leaderboard_entries with fresh entries
+	leaderboard_entries = new_entries
+	_deduplicate_self_entries()
 	sort_and_rank()
 	_recalc_profile_stats()
 	save_leaderboard_data()
@@ -489,13 +947,15 @@ func get_filtered_entries(level_filter: String, tab_filter: String) -> Array:
 			"level_1":
 				# Any run that completed Level 1 (i.e. lvl >= 1 or has level1_time)
 				var l1_t = float(orig.get("level1_time", 0.0))
-				if l1_t <= 0.0 and lvl >= 1:
+				if l1_t <= 0.0 and lvl == 1:
 					l1_t = float(orig.get("raw_time", 0.0))
-				entry["display_level"] = "L1 GATE"
-				entry["display_time"] = format_time(l1_t)
-				entry["display_raw_time"] = l1_t
-				var l1_pts = orig.get("level1_points", calculate_level_1_points(l1_t))
-				entry["display_score"] = int(l1_pts)
+				entry["display_level"] = "GATE 1"
+				entry["display_time"] = format_time(l1_t) if l1_t > 0.0 else "--:--:--"
+				entry["display_raw_time"] = l1_t if l1_t > 0.0 else 999999.0
+				var l1_pts = int(orig.get("level1_points", 0))
+				if l1_pts <= 0 and l1_t > 0.0:
+					l1_pts = calculate_level_1_points(l1_t)
+				entry["display_score"] = l1_pts
 				filtered.append(entry)
 
 			"level_2":
@@ -504,11 +964,13 @@ func get_filtered_entries(level_filter: String, tab_filter: String) -> Array:
 					continue
 				var l2_t = float(orig.get("level2_time", 0.0))
 				var modaks = int(orig.get("level2_modaks", 0))
-				entry["display_level"] = "🍬 %d/5" % modaks
-				entry["display_time"] = format_time(l2_t) if l2_t > 0.0 else entry.get("time", "00:00:00")
-				entry["display_raw_time"] = l2_t if l2_t > 0.0 else float(orig.get("raw_time", 9999.0))
-				var l2_pts = orig.get("level2_points", calculate_level_2_points(l2_t, modaks))
-				entry["display_score"] = int(l2_pts)
+				entry["display_level"] = "%d/5" % modaks
+				entry["display_time"] = format_time(l2_t) if l2_t > 0.0 else "--:--:--"
+				entry["display_raw_time"] = l2_t if l2_t > 0.0 else 999999.0
+				var l2_pts = int(orig.get("level2_points", 0))
+				if l2_pts <= 0 and l2_t > 0.0:
+					l2_pts = calculate_level_2_points(l2_t, modaks)
+				entry["display_score"] = l2_pts
 				filtered.append(entry)
 
 			"level_3":
@@ -517,11 +979,13 @@ func get_filtered_entries(level_filter: String, tab_filter: String) -> Array:
 					continue
 				var l3_t = float(orig.get("level3_time", 0.0))
 				var att = int(orig.get("level3_attempts", 1))
-				entry["display_level"] = "⚔ Att %d" % att
-				entry["display_time"] = format_time(l3_t) if l3_t > 0.0 else entry.get("time", "00:00:00")
-				entry["display_raw_time"] = l3_t if l3_t > 0.0 else float(orig.get("raw_time", 9999.0))
-				var l3_pts = orig.get("level3_points", calculate_level_3_points(l3_t, att))
-				entry["display_score"] = int(l3_pts)
+				entry["display_level"] = "Att %d" % att
+				entry["display_time"] = format_time(l3_t) if l3_t > 0.0 else "--:--:--"
+				entry["display_raw_time"] = l3_t if l3_t > 0.0 else 999999.0
+				var l3_pts = int(orig.get("level3_points", 0))
+				if l3_pts <= 0 and l3_t > 0.0:
+					l3_pts = calculate_level_3_points(l3_t, att)
+				entry["display_score"] = l3_pts
 				filtered.append(entry)
 
 			_: # "all" full playthrough
@@ -611,6 +1075,9 @@ static func format_time(seconds: float) -> String:
 		return "%02d:%02d:%02d" % [hours, minutes, sec]
 	else:
 		return "%02d:%02d:%02d" % [minutes, sec, cs]
+
+static func seconds_to_time_str(seconds: float) -> String:
+	return format_time(seconds)
 
 static func time_str_to_seconds(time_str: String) -> float:
 	var clean = time_str.strip_edges()

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/ui/start_page.gd" id="1_start_script"]
 [ext_resource type="Texture2D" uid="uid://dhl0lsbtmvsem" path="res://assets/start-pages/start_page_elements.png" id="2_elements_tex"]
+[ext_resource type="Texture2D" path="res://assets/lost-utsav-text.png" id="3_logo_tex"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_StartBg"]
 atlas = ExtResource("2_elements_tex")
@@ -230,7 +231,7 @@ offset_left = 32.0
 offset_top = 22.0
 offset_right = 352.0
 offset_bottom = 192.0
-texture = SubResource("AtlasTexture_StartLogo")
+texture = ExtResource("3_logo_tex")
 expand_mode = 1
 stretch_mode = 5
 
@@ -240,7 +241,7 @@ anchors_preset = 0
 offset_left = 48.0
 offset_top = 205.0
 offset_right = 240.0
-offset_bottom = 455.0
+offset_bottom = 485.0
 
 [node name="MenuPanel" type="Panel" parent="MenuContainer"]
 layout_mode = 1
@@ -262,15 +263,15 @@ offset_right = -10.0
 offset_bottom = -12.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
 
 [node name="PlayButton" type="Button" parent="MenuContainer/VBoxButtons"]
-custom_minimum_size = Vector2(172, 46)
+custom_minimum_size = Vector2(172, 42)
 layout_mode = 2
 focus_mode = 2
 theme_override_colors/font_color = Color(1, 0.96, 0.85, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 15
 theme_override_styles/normal = SubResource("StyleBox_BtnPlay_Normal")
 theme_override_styles/hover = SubResource("StyleBox_BtnPlay_Hover")
 theme_override_styles/pressed = SubResource("StyleBox_BtnPlay_Pressed")
@@ -278,12 +279,12 @@ text = "  ▶   PLAY"
 alignment = 1
 
 [node name="StoryButton" type="Button" parent="MenuContainer/VBoxButtons"]
-custom_minimum_size = Vector2(172, 42)
+custom_minimum_size = Vector2(172, 38)
 layout_mode = 2
 focus_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.85, 0.65, 1)
 theme_override_colors/font_hover_color = Color(1, 0.96, 0.85, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
 theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
 theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
@@ -291,25 +292,38 @@ text = "  📖   STORY"
 alignment = 1
 
 [node name="LeaderboardButton" type="Button" parent="MenuContainer/VBoxButtons"]
-custom_minimum_size = Vector2(172, 42)
+custom_minimum_size = Vector2(172, 38)
 layout_mode = 2
 focus_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.85, 0.65, 1)
 theme_override_colors/font_hover_color = Color(1, 0.96, 0.85, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
 theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
 theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
 text = "  🏆   LEADERBOARD"
 alignment = 1
 
-[node name="ExitButton" type="Button" parent="MenuContainer/VBoxButtons"]
-custom_minimum_size = Vector2(172, 42)
+[node name="SettingsButton" type="Button" parent="MenuContainer/VBoxButtons"]
+custom_minimum_size = Vector2(172, 38)
 layout_mode = 2
 focus_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.85, 0.65, 1)
 theme_override_colors/font_hover_color = Color(1, 0.96, 0.85, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "  ⚙   SETTINGS"
+alignment = 1
+
+[node name="ExitButton" type="Button" parent="MenuContainer/VBoxButtons"]
+custom_minimum_size = Vector2(172, 38)
+layout_mode = 2
+focus_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.85, 0.65, 1)
+theme_override_colors/font_hover_color = Color(1, 0.96, 0.85, 1)
+theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
 theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
 theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
@@ -400,9 +414,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -260.0
-offset_top = -210.0
+offset_top = -230.0
 offset_right = 260.0
-offset_bottom = 210.0
+offset_bottom = 230.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -504,6 +518,23 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
 theme_override_font_sizes/font_size = 14
 text = "[Escape]"
+
+[node name="Lbl6" type="Label" parent="ModalLayer/ControlsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
+theme_override_font_sizes/font_size = 14
+text = "Gamepad / Touch Mode:"
+
+[node name="GamepadToggleBtn" type="Button" parent="ModalLayer/ControlsModal/Panel/VBox/Grid"]
+custom_minimum_size = Vector2(110, 32)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(1, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "[ OFF ]"
 
 [node name="CloseButton" type="Button" parent="ModalLayer/ControlsModal/Panel/VBox"]
 custom_minimum_size = Vector2(140, 36)
@@ -705,6 +736,118 @@ theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
 theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
 theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
 text = "Understood"
+
+[node name="SettingsModal" type="Control" parent="ModalLayer"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -230.0
+offset_top = -180.0
+offset_right = 230.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="ModalLayer/SettingsModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_ModalPanel")
+
+[node name="VBox" type="VBoxContainer" parent="ModalLayer/SettingsModal/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 20.0
+offset_right = -24.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="ModalLayer/SettingsModal/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_font_sizes/font_size = 20
+text = "⚙ REALM SETTINGS ⚙"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="ModalLayer/SettingsModal/Panel/VBox"]
+layout_mode = 2
+
+[node name="Grid" type="GridContainer" parent="ModalLayer/SettingsModal/Panel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 12
+columns = 2
+
+[node name="LblMaster" type="Label" parent="ModalLayer/SettingsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 0.75, 1)
+theme_override_font_sizes/font_size = 14
+text = "Master Volume:"
+
+[node name="MasterSlider" type="HSlider" parent="ModalLayer/SettingsModal/Panel/VBox/Grid"]
+custom_minimum_size = Vector2(200, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+value = 80.0
+
+[node name="LblMusic" type="Label" parent="ModalLayer/SettingsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 0.75, 1)
+theme_override_font_sizes/font_size = 14
+text = "Music Volume:"
+
+[node name="MusicSlider" type="HSlider" parent="ModalLayer/SettingsModal/Panel/VBox/Grid"]
+custom_minimum_size = Vector2(200, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+value = 75.0
+
+[node name="LblSFX" type="Label" parent="ModalLayer/SettingsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 0.75, 1)
+theme_override_font_sizes/font_size = 14
+text = "Effects Volume:"
+
+[node name="SFXSlider" type="HSlider" parent="ModalLayer/SettingsModal/Panel/VBox/Grid"]
+custom_minimum_size = Vector2(200, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+value = 85.0
+
+[node name="LblFullscreen" type="Label" parent="ModalLayer/SettingsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 0.75, 1)
+theme_override_font_sizes/font_size = 14
+text = "Fullscreen Mode:"
+
+[node name="FullscreenChk" type="CheckBox" parent="ModalLayer/SettingsModal/Panel/VBox/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+text = " Enable Fullscreen"
+
+[node name="CloseButton" type="Button" parent="ModalLayer/SettingsModal/Panel/VBox"]
+custom_minimum_size = Vector2(140, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "Save & Close"
 
 [node name="ExitConfirmModal" type="Control" parent="ModalLayer"]
 visible = false

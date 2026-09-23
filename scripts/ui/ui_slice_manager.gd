@@ -12,10 +12,25 @@ const PATH_LB_ELEMENTS: String = "res://assets/start-pages/leaderboard_elements.
 const PATH_SP_ELEMENTS: String = "res://assets/start-pages/start_page_elements.png"
 const SLICES_DIR: String = "res://assets/start-pages/slices/"
 
+const PATH_LOST_UTSAV_LOGO: String = "res://assets/lost-utsav-text.png"
+const PATH_SCROLL_NOTE: String = "res://assets/scroll.png"
+
 static var _instance: UISliceManager = null
 static var _cache: Dictionary = {}
 static var _lb_image: Image = null
 static var _sp_image: Image = null
+
+static func load_clean_texture(path: String) -> Texture2D:
+	if ResourceLoader.exists(path):
+		var tex = load(path)
+		if tex and tex is Texture2D:
+			return tex
+	var global_path = ProjectSettings.globalize_path(path)
+	if FileAccess.file_exists(path) or FileAccess.file_exists(global_path):
+		var img = Image.load_from_file(global_path)
+		if img != null:
+			return ImageTexture.create_from_image(img)
+	return null
 
 # Exact bounding regions on leaderboard_elements.png (1536 x 1024)
 const LB_REGIONS = {
@@ -28,31 +43,31 @@ const LB_REGIONS = {
 	"scroll_note": Rect2i(915, 770, 210, 175),
 	"divider_gold": Rect2i(1150, 790, 365, 45),
 	"divider_red": Rect2i(1150, 848, 365, 45),
-	"crown_gold": Rect2i(18, 780, 64, 65),
-	"crown_silver": Rect2i(86, 780, 64, 65),
-	"crown_bronze": Rect2i(154, 780, 64, 65),
+	"crown_gold": Rect2i(25, 828, 52, 56),
+	"crown_silver": Rect2i(93, 828, 52, 56),
+	"crown_bronze": Rect2i(161, 828, 52, 56),
 	# Avatars
-	"avatar_0": Rect2i(222, 780, 64, 65),
-	"avatar_1": Rect2i(290, 780, 64, 65),
-	"avatar_2": Rect2i(358, 780, 64, 65),
-	"avatar_3": Rect2i(426, 780, 64, 65),
-	"avatar_4": Rect2i(494, 780, 64, 65),
-	"avatar_5": Rect2i(562, 780, 64, 65),
-	"avatar_6": Rect2i(630, 780, 64, 65),
-	"avatar_7": Rect2i(698, 780, 64, 65),
-	"avatar_8": Rect2i(766, 780, 64, 65),
-	"avatar_9": Rect2i(834, 780, 64, 65),
+	"avatar_0": Rect2i(233, 828, 52, 56),
+	"avatar_1": Rect2i(301, 828, 52, 56),
+	"avatar_2": Rect2i(369, 828, 52, 56),
+	"avatar_3": Rect2i(437, 828, 52, 56),
+	"avatar_4": Rect2i(505, 828, 52, 56),
+	"avatar_5": Rect2i(573, 828, 52, 56),
+	"avatar_6": Rect2i(641, 828, 52, 56),
+	"avatar_7": Rect2i(709, 828, 52, 56),
+	"avatar_8": Rect2i(777, 828, 52, 56),
+	"avatar_9": Rect2i(845, 828, 52, 56),
 	# Named avatars mapped to indices
-	"avatar_keshav": Rect2i(222, 780, 64, 65),
-	"avatar_aryan": Rect2i(290, 780, 64, 65),
-	"avatar_ritvik": Rect2i(358, 780, 64, 65),
-	"avatar_aditya": Rect2i(426, 780, 64, 65),
-	"avatar_ishaan": Rect2i(494, 780, 64, 65),
-	"avatar_sneha": Rect2i(562, 780, 64, 65),
-	"avatar_harshal": Rect2i(630, 780, 64, 65),
-	"avatar_zyaan": Rect2i(698, 780, 64, 65),
-	"avatar_dev": Rect2i(766, 780, 64, 65),
-	"avatar_meera": Rect2i(834, 780, 64, 65)
+	"avatar_keshav": Rect2i(233, 828, 52, 56),
+	"avatar_aryan": Rect2i(301, 828, 52, 56),
+	"avatar_ritvik": Rect2i(369, 828, 52, 56),
+	"avatar_aditya": Rect2i(437, 828, 52, 56),
+	"avatar_ishaan": Rect2i(505, 828, 52, 56),
+	"avatar_sneha": Rect2i(573, 828, 52, 56),
+	"avatar_harshal": Rect2i(641, 828, 52, 56),
+	"avatar_zyaan": Rect2i(709, 828, 52, 56),
+	"avatar_dev": Rect2i(777, 828, 52, 56),
+	"avatar_meera": Rect2i(845, 828, 52, 56)
 }
 
 # Elements that have outer checkerboard patterns that need flood-fill transparency
@@ -100,8 +115,8 @@ static func _is_checkerboard_color(c: Color) -> bool:
 	var diff2 = abs(c.g - c.b)
 	var diff3 = abs(c.r - c.b)
 	if diff1 <= 0.08 and diff2 <= 0.08 and diff3 <= 0.08:
-		# Checkerboard grays (0.38 to 0.88) or white border (>= 0.92)
-		if (c.r >= 0.38 and c.r <= 0.88) or (c.r >= 0.92 and c.g >= 0.92 and c.b >= 0.92):
+		# Checkerboard grays (0.12 to 0.88) or white border (>= 0.90)
+		if (c.r >= 0.12 and c.r <= 0.88) or (c.r >= 0.90 and c.g >= 0.90 and c.b >= 0.90):
 			return true
 	return false
 
@@ -198,9 +213,22 @@ static func get_texture(element_id: String) -> Texture2D:
 	if _cache.has(element_id):
 		return _cache[element_id]
 
-	# 1. Check if a pre-existing clean slice is already on disk
+	# Clean replacements provided by user
+	if element_id == "title_logo" or element_id == "sp_title_logo":
+		var logo_tex = load_clean_texture(PATH_LOST_UTSAV_LOGO)
+		if logo_tex:
+			_cache[element_id] = logo_tex
+			return logo_tex
+
+	if element_id == "scroll_note":
+		var sn_tex = load_clean_texture(PATH_SCROLL_NOTE)
+		if sn_tex:
+			_cache[element_id] = sn_tex
+			return sn_tex
+
+	# 1. Check if a pre-existing clean slice is already on disk (bypass for leaderboard_header to ensure fresh cleanup)
 	var slice_path = SLICES_DIR + element_id + ".png"
-	if ResourceLoader.exists(slice_path):
+	if element_id != "leaderboard_header" and ResourceLoader.exists(slice_path):
 		var tex = load(slice_path)
 		if tex:
 			_cache[element_id] = tex
@@ -225,6 +253,12 @@ static func get_texture(element_id: String) -> Texture2D:
 		# If element has checkerboard, strip it with BFS flood fill
 		if element_id in ELEMENTS_WITH_CHECKERBOARD:
 			target_img = remove_checkerboard_flood(target_img)
+			if element_id == "leaderboard_header":
+				for py in range(target_img.get_height()):
+					for px in range(target_img.get_width()):
+						var c = target_img.get_pixel(px, py)
+						if c.a > 0.0 and _is_checkerboard_color(c):
+							target_img.set_pixel(px, py, Color(0, 0, 0, 0))
 
 		# Try saving to slices directory if possible
 		var dir = DirAccess.open("res://")
@@ -258,6 +292,9 @@ static func get_start_page_bg() -> Texture2D:
 	return get_texture("bg_start_page")
 
 static func get_title_logo() -> Texture2D:
+	var logo_tex = load_clean_texture(PATH_LOST_UTSAV_LOGO)
+	if logo_tex:
+		return logo_tex
 	return get_texture("title_logo")
 
 static func get_leaderboard_header() -> Texture2D:
@@ -273,6 +310,9 @@ static func get_level_dropdown() -> Texture2D:
 	return get_texture("level_dropdown")
 
 static func get_scroll_note() -> Texture2D:
+	var sn_tex = load_clean_texture(PATH_SCROLL_NOTE)
+	if sn_tex:
+		return sn_tex
 	return get_texture("scroll_note")
 
 static func get_crown(crown_type: String) -> Texture2D:

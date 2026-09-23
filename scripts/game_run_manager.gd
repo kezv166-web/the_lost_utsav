@@ -121,6 +121,7 @@ func complete_level_1() -> void:
 
 	level1_points = base_pts + speed_bonus
 	award_points(level1_points, "Level 1 Great Gate Puzzle Solved (Base %d + Speed %d)" % [base_pts, speed_bonus])
+	save_run_to_leaderboard()
 
 func collect_modak() -> void:
 	if level2_modaks >= MAX_MODAKS:
@@ -140,7 +141,7 @@ func complete_level_2() -> void:
 		return
 	level2_cleared = true
 
-	# Level 2 score: Base 400 + Speed Bonus
+	# Level 2 score: Base 400 + Speed Bonus + Modaks + Key
 	var base_pts: int = 400
 	var speed_bonus: int = 20
 	if level2_time <= 45.0:
@@ -150,8 +151,9 @@ func complete_level_2() -> void:
 	elif level2_time <= 150.0:
 		speed_bonus = 50
 
-	level2_points = base_pts + speed_bonus
-	award_points(level2_points, "Level 2 Underground Maze Cleared (Base %d + Speed %d)" % [base_pts, speed_bonus])
+	level2_points = base_pts + speed_bonus + (level2_modaks * 50) + (100 if key_collected else 0)
+	award_points(base_pts + speed_bonus, "Level 2 Underground Maze Cleared (Base %d + Speed %d)" % [base_pts, speed_bonus])
+	save_run_to_leaderboard()
 
 func record_boss_hit() -> void:
 	award_points(25, "Asur Stun Hit")

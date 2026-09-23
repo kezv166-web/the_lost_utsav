@@ -48,11 +48,12 @@ func _init() -> void:
 	assert_not_null(start_page.btn_play, "PlayButton exists")
 	assert_not_null(start_page.btn_story, "StoryButton exists")
 	assert_not_null(start_page.btn_leaderboard, "LeaderboardButton exists")
+	assert_not_null(start_page.btn_settings, "SettingsButton exists")
 	assert_not_null(start_page.btn_exit, "ExitButton exists")
 	assert_not_null(start_page.btn_controls, "ControlsButton exists")
 	assert_not_null(start_page.btn_credits, "CreditsButton exists")
 	assert_not_null(start_page.btn_help, "HelpButton exists")
-	print("  PASS: All 7 primary interactive buttons verified on Start Page.")
+	print("  PASS: All 8 primary interactive buttons verified on Start Page.")
 	
 	# Verify background texture is loaded
 	var bg_rect: TextureRect = start_page.get_node_or_null("Background") as TextureRect
@@ -61,6 +62,14 @@ func _init() -> void:
 		quit(1)
 		return
 	print("  PASS: Start Page clean background texture loaded (", bg_rect.texture.get_class(), ")")
+	
+	# Verify clean TitleLogo texture is loaded
+	var title_logo_rect: TextureRect = start_page.get_node_or_null("TitleLogo") as TextureRect
+	if title_logo_rect == null or title_logo_rect.texture == null:
+		printerr("FAILED: StartPage TitleLogo TextureRect or texture missing")
+		quit(1)
+		return
+	print("  PASS: Start Page clean TitleLogo texture loaded.")
 	
 	# Verify modals functionality
 	start_page._on_controls_pressed()
@@ -91,6 +100,21 @@ func _init() -> void:
 		quit(1)
 		return
 	print("  PASS: Help modal opens on request.")
+	start_page._close_modals()
+
+	start_page._on_settings_pressed()
+	if not start_page.settings_modal.visible:
+		printerr("FAILED: settings_modal should be visible")
+		quit(1)
+		return
+	start_page._close_modals()
+
+	start_page._on_exit_pressed()
+	if not start_page.exit_modal.visible:
+		printerr("FAILED: exit_modal should be visible")
+		quit(1)
+		return
+	print("  PASS: Exit confirmation modal opens on request.")
 	start_page._close_modals()
 	
 	# Clean up start page
@@ -143,6 +167,21 @@ func _init() -> void:
 		quit(1)
 		return
 	print("  PASS: Clean Leaderboard background texture loaded (", lb_bg.texture.get_class(), ")")
+
+	# Verify clean TitleLogo and ScrollNote textures
+	var lb_logo: TextureRect = lb_page.get_node_or_null("TitleLogo") as TextureRect
+	if lb_logo == null or lb_logo.texture == null:
+		printerr("FAILED: Leaderboard TitleLogo TextureRect or texture missing")
+		quit(1)
+		return
+	print("  PASS: Leaderboard clean TitleLogo texture loaded.")
+
+	var lb_scroll: TextureRect = lb_page.get_node_or_null("RightSideArea/ScrollNote") as TextureRect
+	if lb_scroll == null or lb_scroll.texture == null:
+		printerr("FAILED: Leaderboard ScrollNote TextureRect or texture missing")
+		quit(1)
+		return
+	print("  PASS: Leaderboard clean ScrollNote texture loaded.")
 	
 	# Verify that the glaring red square glitch (CrestGlow) was completely removed
 	var crest_glow = lb_page.get_node_or_null("AmbientVFX/CrestGlow")

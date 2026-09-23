@@ -44,6 +44,12 @@ anim_defs = [
     ("carry_right", ["carry_right.png"], 5.0, 1),
     ("carry_rock", ["carry_rock.png"], 5.0, 1),
     
+    # Carry Walk animations (4 directions, 4 frames each, looping at speed 8.0)
+    ("carry_walk_down", [f"carry_walk_down_{i}.png" for i in range(4)], 8.0, 1),
+    ("carry_walk_up", [f"carry_walk_up_{i}.png" for i in range(4)], 8.0, 1),
+    ("carry_walk_left", [f"carry_walk_left_{i}.png" for i in range(4)], 8.0, 1),
+    ("carry_walk_right", [f"carry_walk_right_{i}.png" for i in range(4)], 8.0, 1),
+    
     # Idle (3 frames: 0, 1, 2; non-looping, holds 3rd frame prayer pose until movement)
     ("idle_down", [f"idle_down_{i}.png" for i in range(3)], 5.0, 0),
     ("idle_left", [f"idle_left_{i}.png" for i in range(3)], 5.0, 0),

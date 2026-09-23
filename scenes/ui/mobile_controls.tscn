@@ -1,0 +1,129 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/mobile_controls.gd" id="1_mobile"]
+[ext_resource type="Script" path="res://scripts/ui/virtual_joystick.gd" id="2_joystick"]
+[ext_resource type="Script" path="res://scripts/ui/mobile_button.gd" id="3_button"]
+[ext_resource type="Texture2D" path="res://assets/ui/mobile/btn_axe.png" id="4_axe"]
+[ext_resource type="Texture2D" path="res://assets/ui/mobile/btn_pasa.png" id="5_pasa"]
+[ext_resource type="Texture2D" path="res://assets/ui/mobile/btn_jump.png" id="6_jump"]
+[ext_resource type="Texture2D" path="res://assets/ui/mobile/btn_interact.png" id="7_interact"]
+[ext_resource type="Texture2D" path="res://assets/ui/mobile/btn_mushika.png" id="8_mushika"]
+
+[node name="MobileControls" type="CanvasLayer"]
+process_mode = 3
+layer = 90
+script = ExtResource("1_mobile")
+
+[node name="RootControl" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="JoystickZone" type="Control" parent="RootControl"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = -230.0
+offset_right = 230.0
+offset_bottom = -30.0
+grow_vertical = 0
+mouse_filter = 0
+
+[node name="VirtualJoystick" type="Control" parent="RootControl/JoystickZone"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("2_joystick")
+
+[node name="ButtonsZone" type="Control" parent="RootControl"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -440.0
+offset_top = -300.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="AxeButton" type="Control" parent="RootControl/ButtonsZone"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 310.0
+offset_top = 170.0
+offset_right = 418.0
+offset_bottom = 278.0
+mouse_filter = 0
+script = ExtResource("3_button")
+action_name = "attack_axe"
+button_label = "AXE"
+icon_texture = ExtResource("4_axe")
+button_radius = 48.0
+
+[node name="PasaButton" type="Control" parent="RootControl/ButtonsZone"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 198.0
+offset_top = 179.0
+offset_right = 296.0
+offset_bottom = 277.0
+mouse_filter = 0
+script = ExtResource("3_button")
+action_name = "attack_rope"
+button_label = "PĀŚA"
+icon_texture = ExtResource("5_pasa")
+button_radius = 44.0
+
+[node name="JumpButton" type="Control" parent="RootControl/ButtonsZone"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 315.0
+offset_top = 61.0
+offset_right = 413.0
+offset_bottom = 159.0
+mouse_filter = 0
+script = ExtResource("3_button")
+action_name = "jump"
+button_label = "JUMP"
+icon_texture = ExtResource("6_jump")
+button_radius = 44.0
+
+[node name="InteractButton" type="Control" parent="RootControl/ButtonsZone"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 205.0
+offset_top = 71.0
+offset_right = 297.0
+offset_bottom = 163.0
+mouse_filter = 0
+script = ExtResource("3_button")
+action_name = "interact"
+button_label = "INTERACT"
+icon_texture = ExtResource("7_interact")
+button_radius = 41.0
+
+[node name="TransformButton" type="Control" parent="RootControl/ButtonsZone"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 95.0
+offset_top = 175.0
+offset_right = 183.0
+offset_bottom = 263.0
+mouse_filter = 0
+script = ExtResource("3_button")
+action_name = "transform_1"
+button_label = "MUSHIKA"
+icon_texture = ExtResource("8_mushika")
+button_radius = 39.0

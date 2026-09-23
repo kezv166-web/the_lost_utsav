@@ -33,6 +33,8 @@ var player_near_altar: bool = false
 var player_near_exit: bool = false
 var nearby_rock: Node3D = null
 var held_rock: Node3D = null
+var is_lifting_rock: bool = false
+var rock_lift_tween: Tween = null
 var is_restarting_level: bool = false
 
 var blessing_claimed: bool = false
@@ -42,6 +44,7 @@ var torch_lights: Array[OmniLight3D] = []
 var torch_base_energies: Array[float] = []
 
 var time_passed: float = 0.0
+var _interact_debounce_timer: float = 0.0
 
 # GLB collision helper
 var _glb_collision: Node = null
@@ -469,7 +472,13 @@ func _physics_process(delta: float) -> void:
 
 	# 3. Update held rock position overhead
 	if is_instance_valid(held_rock) and is_instance_valid(player):
-		held_rock.global_position = player.global_position + Vector3(0, 1.65, 0)
+		if not is_lifting_rock:
+			var bob_offset_x: float = 0.0
+			var bob_offset_y: float = 1.70
+			if "anim_sprite" in player and is_instance_valid(player.anim_sprite):
+				bob_offset_x = player.anim_sprite.position.x
+				bob_offset_y = 1.70 + (player.anim_sprite.position.y - 0.72) * 1.2
+			held_rock.global_position = player.global_position + Vector3(bob_offset_x, bob_offset_y, 0)
 		if "is_carrying" in player and not player.is_carrying:
 			player.is_carrying = true
 
@@ -500,37 +509,72 @@ func _physics_process(delta: float) -> void:
 					new_prompt.visible = true
 					new_prompt.text = "[E] Grab Rock"
 
+	# Decrement interact debounce
+	if _interact_debounce_timer > 0.0:
+		_interact_debounce_timer -= delta
+
+	# 5. Direct polling for mobile/gamepad interact trigger
+	if _interact_debounce_timer <= 0.0:
+		if Input.is_action_just_pressed("interact"):
+			_handle_interact()
+		elif is_instance_valid(held_rock) and (Input.is_action_just_pressed("attack_axe") or Input.is_action_just_pressed("attack_rope")):
+			_throw_held_rock()
+
 # -------------------------------------------------------------------------
-# Input Handling
+# Input Handling & Public API
 # -------------------------------------------------------------------------
+func grab_rock(rock: Node3D) -> void:
+	_grab_rock(rock)
+
+func throw_held_rock() -> void:
+	_throw_held_rock()
+
+func _handle_interact() -> void:
+	if _interact_debounce_timer > 0.0:
+		return
+
+	# If carrying rock, throw it with interact!
+	if is_instance_valid(held_rock):
+		_interact_debounce_timer = 0.25
+		_throw_held_rock()
+		return
+	# If holding minion, throw it with interact!
+	if is_instance_valid(player) and "held_chota_asur" in player and is_instance_valid(player.held_chota_asur):
+		if player.has_method("throw_held_chota_asur"):
+			_interact_debounce_timer = 0.25
+			player.throw_held_chota_asur()
+		return
+	# If near rock, grab it with interact!
+	elif is_instance_valid(nearby_rock):
+		_interact_debounce_timer = 0.25
+		_grab_rock(nearby_rock)
+		return
+	# Pray at Altar
+	elif player_near_altar and not blessing_in_progress:
+		_interact_debounce_timer = 0.50
+		_reclaim_blessing()
+		return
+	# South Exit
+	elif player_near_exit:
+		_interact_debounce_timer = 0.50
+		_trigger_exit()
+		return
+
 func _unhandled_input(event: InputEvent) -> void:
 	# Check if interact (E or C fallback) is pressed
 	var is_interact = event.is_action_pressed("interact") or (event is InputEventKey and event.pressed and not event.is_echo() and (event.physical_keycode in [KEY_E, KEY_C] or event.keycode in [KEY_E, KEY_C]))
 	
 	if is_interact:
-		# If carrying rock, throw it with E!
-		if is_instance_valid(held_rock):
-			_throw_held_rock()
-			return
-		# If near rock, grab it with E!
-		elif is_instance_valid(nearby_rock):
-			if is_instance_valid(player) and "held_chota_asur" in player and is_instance_valid(player.held_chota_asur):
-				return
-			_grab_rock(nearby_rock)
-			return
-		# Pray at Altar
-		elif player_near_altar and not blessing_in_progress:
-			_reclaim_blessing()
-			return
-		# South Exit
-		elif player_near_exit:
-			_trigger_exit()
-			return
+		_handle_interact()
+		get_viewport().set_input_as_handled()
+		return
 
 	# Throw with attack key while carrying rock (F, G, K, L, Space)
 	if is_instance_valid(held_rock):
 		if event.is_action_pressed("attack_axe") or event.is_action_pressed("attack_rope") or (event is InputEventKey and event.pressed and not event.is_echo() and (event.physical_keycode in [KEY_F, KEY_G, KEY_K, KEY_L, KEY_SPACE] or event.keycode in [KEY_F, KEY_G, KEY_K, KEY_L, KEY_SPACE])):
+			_interact_debounce_timer = 0.25
 			_throw_held_rock()
+			get_viewport().set_input_as_handled()
 
 # -------------------------------------------------------------------------
 # Rock Grab & Throw Mechanics (DODGE • GRAB • THROW • STRIKE)
@@ -538,29 +582,79 @@ func _unhandled_input(event: InputEvent) -> void:
 func _set_rock_collision_disabled(rock: Node3D, disabled: bool) -> void:
 	if not is_instance_valid(rock):
 		return
-	for child in rock.get_children():
+	if rock is CollisionObject3D:
+		if disabled:
+			rock.collision_layer = 0
+			rock.collision_mask = 0
+			if is_instance_valid(player) and player is CollisionObject3D:
+				player.add_collision_exception_with(rock)
+		else:
+			rock.collision_layer = 1
+			rock.collision_mask = 1
+			if is_instance_valid(player) and player is CollisionObject3D:
+				player.remove_collision_exception_with(rock)
+	_disable_collision_shapes_recursive(rock, disabled)
+
+func _disable_collision_shapes_recursive(node: Node, disabled: bool) -> void:
+	if not is_instance_valid(node):
+		return
+	for child in node.get_children():
 		if child is CollisionShape3D:
-			child.disabled = disabled
+			child.set_deferred("disabled", disabled)
+		_disable_collision_shapes_recursive(child, disabled)
 
 func _grab_rock(rock: Node3D) -> void:
+	if not is_instance_valid(rock) or not is_instance_valid(player):
+		return
+	_interact_debounce_timer = 0.25
 	held_rock = rock
 	nearby_rock = null
 	var prompt = rock.get_node_or_null("Prompt")
 	if prompt:
 		prompt.visible = false
 	
-	# Disable rock collision while holding (both CollisionShape3D and GLBCollision)
+	# Disable rock collision completely while holding
 	_set_rock_collision_disabled(rock, true)
+	
+	# 1. Trigger dust puff at rock's initial base position
+	var dust = rock.get_node_or_null("ImpactDust")
+	if dust and dust is CPUParticles3D:
+		dust.restart()
+		dust.emitting = true
+	
+	# 2. Trigger player reach/lift crouch animation
+	if player.has_method("play_grab_animation"):
+		player.play_grab_animation(0.22)
 	
 	if "is_carrying" in player:
 		player.is_carrying = true
 	
+	# 3. Smooth ballistic lift tween from ground to overhead hands
+	if rock_lift_tween and rock_lift_tween.is_valid():
+		rock_lift_tween.kill()
+	
+	is_lifting_rock = true
+	var lift_start = rock.global_position
+	var target_overhead = player.global_position + Vector3(0, 1.70, 0)
+	
+	rock_lift_tween = create_tween()
+	rock_lift_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	rock_lift_tween.tween_property(rock, "global_position", target_overhead, 0.22).from(lift_start)
+	rock_lift_tween.finished.connect(func():
+		is_lifting_rock = false
+	)
+	
 	if hud_action:
-		hud_action.text = "[E / F / G] Throw Rock!"
+		hud_action.text = "[E / Attack / Click] Throw Rock!"
 
 func _throw_held_rock() -> void:
 	if not is_instance_valid(held_rock) or not is_instance_valid(player):
 		return
+	_interact_debounce_timer = 0.25
+	
+	if rock_lift_tween and rock_lift_tween.is_valid():
+		rock_lift_tween.kill()
+	is_lifting_rock = false
 	
 	var rock = held_rock
 	held_rock = null
@@ -569,6 +663,9 @@ func _throw_held_rock() -> void:
 	
 	if "is_carrying" in player:
 		player.is_carrying = false
+		if "anim_sprite" in player and is_instance_valid(player.anim_sprite):
+			player.anim_sprite.position.y = 0.72
+			player.anim_sprite.position.x = 0.0
 	
 	if hud_action:
 		hud_action.text = ""
@@ -834,16 +931,23 @@ func _on_exit_exited(body: Node3D) -> void:
 			exit_prompt.visible = false
 
 func _on_rock_area_entered(body: Node3D, rock: Node3D) -> void:
-	if body == player and not is_instance_valid(held_rock):
-		nearby_rock = rock
-		var prompt = rock.get_node_or_null("Prompt")
-		if prompt:
-			prompt.visible = true
+	if not is_instance_valid(player) or body != player:
+		return
+	if is_instance_valid(held_rock):
+		return
+	if "held_chota_asur" in player and is_instance_valid(player.held_chota_asur):
+		return
+	nearby_rock = rock
+	var prompt = rock.get_node_or_null("Prompt")
+	if prompt:
+		prompt.visible = true
+		prompt.text = "[E] Grab Rock"
 
 func _on_rock_area_exited(body: Node3D, rock: Node3D) -> void:
-	if body == player:
-		if nearby_rock == rock:
-			nearby_rock = null
+	if not is_instance_valid(player) or body != player:
+		return
+	if nearby_rock == rock:
+		nearby_rock = null
 		var prompt = rock.get_node_or_null("Prompt")
 		if prompt:
 			prompt.visible = false

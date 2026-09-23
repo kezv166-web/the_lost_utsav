@@ -66,6 +66,7 @@ var _current_tab: String = "all_time"
 var _current_level: String = "all"
 var _is_transitioning: bool = false
 var _anim_time: float = 0.0
+var _sync_status_label: Label = null  # Created dynamically — shows cloud sync state
 
 func _ready() -> void:
 	_sound_synth = UISoundSynth.get_instance(self)
@@ -133,9 +134,9 @@ func _ready() -> void:
 		if not fullscreen_chk.toggled.is_connected(_on_fullscreen_toggled):
 			fullscreen_chk.toggled.connect(_on_fullscreen_toggled)
 
-	# 5. Connect Profile Modal & Card
+	# 5. Hide Edit Name Button (User can choose custom name only once when signing with Google)
 	if btn_edit_name:
-		_setup_button(btn_edit_name, _on_edit_name_pressed)
+		btn_edit_name.visible = false
 	if btn_save_name:
 		_setup_button(btn_save_name, _on_save_name_pressed)
 	if btn_cancel_name:
@@ -160,7 +161,18 @@ func _ready() -> void:
 			tw.tween_property(fade_overlay, "modulate:a", 0.0, 0.40).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 			tw.tween_callback(func(): fade_overlay.visible = false)
 
-	# 8. Sync live global scores from SilentWolf
+	# 8. Create cloud sync status label (top-right, above table)
+	_sync_status_label = Label.new()
+	_sync_status_label.text = "Syncing Online Scores..."
+	_sync_status_label.add_theme_font_size_override("font_size", 11)
+	_sync_status_label.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3))
+	_sync_status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_sync_status_label.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	_sync_status_label.position = Vector2(-210, 8)
+	_sync_status_label.size = Vector2(200, 20)
+	add_child(_sync_status_label)
+
+	# 9. Sync live global scores from Talo
 	_fetch_cloud_scores()
 
 func _process(delta: float) -> void:
@@ -266,10 +278,33 @@ func _fetch_cloud_scores() -> void:
 		return
 	if _data_manager == null:
 		_data_manager = LeaderboardManager.get_instance()
-	_data_manager.fetch_global_leaderboard(func(_success: bool, _entries: Array):
-		if is_inside_tree():
-			_refresh_table_view()
-			_update_profile_card()
+	# Show syncing indicator
+	if is_instance_valid(_sync_status_label):
+		_sync_status_label.text = "Syncing Online Scores..."
+		_sync_status_label.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3))
+		_sync_status_label.visible = true
+	_data_manager.fetch_global_leaderboard(func(success: bool, _entries: Array):
+		if not is_inside_tree():
+			return
+		_refresh_table_view()
+		_update_profile_card()
+		if is_instance_valid(_sync_status_label):
+			if success:
+				_sync_status_label.text = "Online - Global Leaderboard"
+				_sync_status_label.add_theme_color_override("font_color", Color(0.35, 1.0, 0.5))
+				# Fade out after 4 seconds
+				var tw = create_tween()
+				if tw:
+					tw.tween_interval(4.0)
+					tw.tween_property(_sync_status_label, "modulate:a", 0.0, 0.5)
+					tw.tween_callback(func():
+						if is_instance_valid(_sync_status_label):
+							_sync_status_label.visible = false
+							_sync_status_label.modulate.a = 1.0
+					)
+			else:
+				_sync_status_label.text = "Offline - Local Storage"
+				_sync_status_label.add_theme_color_override("font_color", Color(1.0, 0.65, 0.2))
 	)
 
 func _on_settings_pressed() -> void:
@@ -476,20 +511,17 @@ func _create_row_panel(entry: Dictionary) -> PanelContainer:
 		avatar_rect.texture = a_tex
 	hbox.add_child(avatar_rect)
 
-	# 4. Player Name + Unique ID
+	# 4. Player Name
 	var lbl_player = Label.new()
 	lbl_player.custom_minimum_size = Vector2(170, 24)
 	lbl_player.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	var player_name = entry.get("player", "Warrior")
-	var player_id = entry.get("id", "")
 	if is_self:
-		lbl_player.text = "%s [YOU]" % [player_name]
+		var active_name = _data_manager.get_player_profile().get("name", player_name)
+		lbl_player.text = "%s [YOU]" % [active_name]
 		lbl_player.add_theme_color_override("font_color", Color(0.4, 1.0, 0.5))
 	else:
-		if player_id.is_empty():
-			lbl_player.text = player_name
-		else:
-			lbl_player.text = "%s [%s]" % [player_name, player_id]
+		lbl_player.text = player_name
 		if rank == 1:
 			lbl_player.add_theme_color_override("font_color", Color(1.0, 0.90, 0.50))
 		else:
@@ -546,9 +578,13 @@ func _update_profile_card() -> void:
 	var profile = _data_manager.get_player_profile()
 
 	if profile_name_lbl:
-		profile_name_lbl.text = profile.get("name", "BraveWarrior")
+		profile_name_lbl.text = profile.get("name", "Warrior")
 	if profile_id_lbl:
-		profile_id_lbl.text = "[%s]" % profile.get("id", "USR-8492")
+		if profile.get("is_google_linked", false):
+			profile_id_lbl.text = "[GOOGLE]"
+		else:
+			var p_id = profile.get("id", "USR-8492")
+			profile_id_lbl.text = "[%s]" % (p_id.substr(0, 12) if p_id.length() > 12 else p_id)
 	if profile_best_lbl:
 		profile_best_lbl.text = profile.get("best_time", "00:33:45")
 	if profile_avatar:
@@ -558,17 +594,24 @@ func _update_profile_card() -> void:
 
 	# Calculate current rank in leaderboard
 	if profile_rank_lbl:
-		var user_id = profile.get("id", "")
+		var user_guest_id = profile.get("id", "")
+		var user_google_id = str(profile.get("google_id", ""))
+		var is_google_linked = profile.get("is_google_linked", false)
 		var entries = _data_manager.get_entries(999)
 		var user_rank = -1
 		for entry in entries:
-			if entry.get("id") == user_id or entry.get("is_self", false):
+			var e_id = str(entry.get("id", ""))
+			var is_user = (entry.get("is_self", false) or (not user_guest_id.is_empty() and e_id == user_guest_id) or (is_google_linked and not user_google_id.is_empty() and e_id == user_google_id))
+			if is_user:
 				user_rank = entry.get("rank", 1)
 				break
 		if user_rank > 0:
 			profile_rank_lbl.text = "#%d" % user_rank
 		else:
 			profile_rank_lbl.text = "--"
+
+	if btn_edit_name:
+		btn_edit_name.visible = false
 
 # ---------------------------------------------------------------------------
 # PROFILE MODAL (WARRIOR NAME CUSTOMIZATION)
@@ -577,14 +620,53 @@ func _update_profile_card() -> void:
 func _on_edit_name_pressed() -> void:
 	if profile_modal and name_edit:
 		var profile = _data_manager.get_player_profile()
-		name_edit.text = profile.get("name", "BraveWarrior")
+		name_edit.text = profile.get("name", "Warrior")
+
+		# Add Google Sign-In button inside profile_modal if not present
+		var vbox = name_edit.get_parent() as VBoxContainer
+		if vbox and not vbox.has_node("BtnGoogleAuth"):
+			var btn_google = Button.new()
+			btn_google.name = "BtnGoogleAuth"
+			btn_google.custom_minimum_size = Vector2(250, 36)
+			btn_google.add_theme_font_size_override("font_size", 12)
+			var g_sb = StyleBoxFlat.new()
+			g_sb.bg_color = Color(0.12, 0.14, 0.20, 0.95)
+			g_sb.border_width_left = 1
+			g_sb.border_width_top = 1
+			g_sb.border_width_right = 1
+			g_sb.border_width_bottom = 1
+			g_sb.border_color = Color(0.4, 0.6, 1.0, 0.8)
+			g_sb.set_corner_radius_all(6)
+			btn_google.add_theme_stylebox_override("normal", g_sb)
+			
+			if GoogleAuthManager.get_instance().is_signed_in():
+				btn_google.text = "✅ Google: %s" % GoogleAuthManager.get_instance().get_google_name()
+				btn_google.disabled = true
+			else:
+				btn_google.text = "🔗 Sign in with Google"
+				btn_google.pressed.connect(func():
+					btn_google.text = "Connecting..."
+					GoogleAuthManager.get_instance().sign_in(func(ok: bool, info: String):
+						if ok:
+							btn_google.text = "✅ Google: %s" % info
+							btn_google.disabled = true
+							if name_edit:
+								name_edit.text = info
+							_update_profile_card()
+							_refresh_table_view()
+						else:
+							btn_google.text = "🔗 Sign in with Google"
+					)
+				)
+			vbox.add_child(btn_google)
+			vbox.move_child(btn_google, name_edit.get_index() + 1)
+
 		_show_modal(profile_modal)
 
 func _on_save_name_pressed() -> void:
 	if name_edit:
-		var new_name = name_edit.text.strip_edges()
-		if not new_name.is_empty():
-			_data_manager.update_player_name(new_name)
+		var updated_name = _data_manager.update_player_name(name_edit.text)
+		if not updated_name.is_empty():
 			_update_profile_card()
 			_refresh_table_view()
 	_close_modals()

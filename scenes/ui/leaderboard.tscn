@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" path="res://scripts/ui/leaderboard.gd" id="1_lb_script"]
 [ext_resource type="Texture2D" uid="uid://cy3q1nkcx1vr" path="res://assets/start-pages/leaderboard_elements.png" id="2_elements_tex"]
+[ext_resource type="Texture2D" path="res://assets/lost-utsav-text.png" id="3_logo_tex"]
+[ext_resource type="Texture2D" path="res://assets/scroll.png" id="4_scroll_tex"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_CleanBg"]
 atlas = ExtResource("2_elements_tex")
@@ -224,7 +226,7 @@ offset_left = 22.0
 offset_top = 18.0
 offset_right = 278.0
 offset_bottom = 158.0
-texture = SubResource("AtlasTexture_TitleLogo")
+texture = ExtResource("3_logo_tex")
 expand_mode = 1
 stretch_mode = 5
 
@@ -506,7 +508,7 @@ offset_top = 0.0
 offset_right = 175.0
 offset_bottom = 145.0
 mouse_filter = 0
-texture = SubResource("AtlasTexture_ScrollNote")
+texture = ExtResource("4_scroll_tex")
 expand_mode = 1
 stretch_mode = 5
 

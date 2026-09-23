@@ -33,9 +33,20 @@ var current_attack_type: String = ""
 var is_walking: bool = false
 var is_jumping: bool = false
 var is_carrying: bool = false
+var is_grabbing: bool = false
+var grab_anim_timer: float = 0.0
+var carry_bob_phase: float = 0.0
 var has_hit_in_current_attack: bool = false
 var attack_cooldown_timer: float = 0.0
 var attack_duration_timer: float = 0.0
+var axe_cooldown_timer: float = 0.0
+var rope_cooldown_timer: float = 0.0
+var throw_cooldown_timer: float = 0.0
+const COOLDOWN_AXE: float = 0.38
+const COOLDOWN_ROPE: float = 0.85
+const COOLDOWN_THROW: float = 1.00
+var last_attack_type: String = ""
+var total_attack_cycle_time: float = 0.80
 
 var human_frames: SpriteFrames = preload("res://scenes/player/player_sprite_frames.tres")
 var mouse_frames: SpriteFrames = preload("res://scenes/player/mushika_sprite_frames.tres")
@@ -63,6 +74,11 @@ var target_reticle: Node3D = null
 @export var chota_asur_throw_damage: int = 38
 var target_reticle_scene: PackedScene = preload("res://scenes/ui/target_reticle.tscn")
 
+# Responsive Input Buffer
+var buffered_action: String = ""
+var buffer_timer: float = 0.0
+const BUFFER_WINDOW: float = 0.22
+
 func _ready() -> void:
 	_setup_inputs()
 	if anim_sprite:
@@ -86,14 +102,22 @@ func _setup_inputs() -> void:
 	_add_key_binding("move_up", KEY_W, KEY_UP)
 	_add_key_binding("move_down", KEY_S, KEY_DOWN)
 	_add_key_binding("jump", KEY_SPACE)
-	# Attacks on F (axe) and G (rope) + K/L fallbacks + Mouse Left/Right Click
+	# Attacks on F (axe) and G (rope) + K/L fallbacks
 	_add_key_binding("attack_axe", KEY_F, KEY_K)
 	_add_key_binding("attack_rope", KEY_G, KEY_L)
-	_add_mouse_binding("attack_axe", MOUSE_BUTTON_LEFT)
-	_add_mouse_binding("attack_rope", MOUSE_BUTTON_RIGHT)
+	_remove_mouse_bindings("attack_axe")
+	_remove_mouse_bindings("attack_rope")
 	_add_key_binding("interact", KEY_E, KEY_C)
 	_add_key_binding("transform_1", KEY_1)
 	_add_key_binding("pause", KEY_ESCAPE)
+
+func _remove_mouse_bindings(action_name: String) -> void:
+	if not InputMap.has_action(action_name):
+		return
+	var events = InputMap.action_get_events(action_name)
+	for ev in events:
+		if ev is InputEventMouseButton:
+			InputMap.action_erase_event(action_name, ev)
 
 func _on_animation_finished() -> void:
 	if current_state == State.ATTACKING:
@@ -104,11 +128,12 @@ func _on_animation_finished() -> void:
 		current_attack_type = ""
 		attack_duration_timer = 0.0
 		if finished_attack == "pasa_throw":
-			attack_cooldown_timer = 1.0
+			throw_cooldown_timer = COOLDOWN_THROW
+			attack_cooldown_timer = COOLDOWN_THROW
 		elif finished_attack == "rope":
-			attack_cooldown_timer = 0.85
+			rope_cooldown_timer = COOLDOWN_ROPE
 		else:
-			attack_cooldown_timer = 0.38
+			axe_cooldown_timer = COOLDOWN_AXE
 		_update_animation()
 
 func _add_key_binding(action_name: String, primary_key: Key, secondary_key: Key = KEY_NONE) -> void:
@@ -134,18 +159,32 @@ func _add_key_binding(action_name: String, primary_key: Key, secondary_key: Key 
 		ev2.physical_keycode = secondary_key
 		InputMap.action_add_event(action_name, ev2)
 
-func _add_mouse_binding(action_name: String, button_index: MouseButton) -> void:
-	if not InputMap.has_action(action_name):
-		InputMap.add_action(action_name)
-	var events = InputMap.action_get_events(action_name)
-	for ev in events:
-		if ev is InputEventMouseButton and ev.button_index == button_index:
-			return
-	var ev = InputEventMouseButton.new()
-	ev.button_index = button_index
-	InputMap.action_add_event(action_name, ev)
-
 func _unhandled_input(event: InputEvent) -> void:
+	# Mouse click attack in PC mode (only clicks in game world space, never when clicking UI buttons)
+	if event is InputEventMouseButton and event.pressed and not event.is_echo():
+		if is_carrying:
+			_try_throw_rock()
+			if get_viewport():
+				get_viewport().set_input_as_handled()
+			return
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			var can_axe = (axe_cooldown_timer <= 0.0) if not is_instance_valid(held_chota_asur) else (throw_cooldown_timer <= 0.0 and attack_cooldown_timer <= 0.0)
+			if current_state != State.ATTACKING and can_axe and current_form == PlayerForm.HUMAN:
+				if is_instance_valid(held_chota_asur):
+					throw_held_chota_asur()
+				else:
+					attack("axe")
+				get_viewport().set_input_as_handled()
+				return
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			var can_rope = (rope_cooldown_timer <= 0.0) if not is_instance_valid(held_chota_asur) else (throw_cooldown_timer <= 0.0 and attack_cooldown_timer <= 0.0)
+			if current_state != State.ATTACKING and can_rope and current_form == PlayerForm.HUMAN:
+				if is_instance_valid(held_chota_asur):
+					throw_held_chota_asur()
+				else:
+					attack("rope")
+				get_viewport().set_input_as_handled()
+				return
 	if is_instance_valid(held_chota_asur):
 		if event is InputEventKey and event.pressed and not event.is_echo():
 			var kc = event.physical_keycode if event.physical_keycode != KEY_NONE else event.keycode
@@ -191,12 +230,35 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 
+	# Update input buffer
+	if buffer_timer > 0.0:
+		buffer_timer -= delta
+		if buffer_timer <= 0.0:
+			buffered_action = ""
+
+	# Check for incoming inputs to buffer
+	if Input.is_action_just_pressed("jump"):
+		buffered_action = "jump"
+		buffer_timer = BUFFER_WINDOW
+	elif Input.is_action_just_pressed("attack_axe"):
+		buffered_action = "attack_axe"
+		buffer_timer = BUFFER_WINDOW
+	elif Input.is_action_just_pressed("attack_rope"):
+		buffered_action = "attack_rope"
+		buffer_timer = BUFFER_WINDOW
+	elif Input.is_action_just_pressed("interact"):
+		buffered_action = "interact"
+		buffer_timer = BUFFER_WINDOW
+
 	# Jump & Gravity
 	if is_on_floor():
-		if current_state != State.ATTACKING and Input.is_action_just_pressed("jump"):
+		var wants_jump = Input.is_action_just_pressed("jump") or buffered_action == "jump"
+		if current_state != State.ATTACKING and wants_jump:
 			velocity.y = jump_velocity
 			is_jumping = true
 			current_state = State.JUMPING
+			buffered_action = ""
+			buffer_timer = 0.0
 		else:
 			is_jumping = false
 			velocity.y = 0.0
@@ -207,6 +269,12 @@ func _physics_process(delta: float) -> void:
 
 	if attack_cooldown_timer > 0.0:
 		attack_cooldown_timer -= delta
+	if axe_cooldown_timer > 0.0:
+		axe_cooldown_timer -= delta
+	if rope_cooldown_timer > 0.0:
+		rope_cooldown_timer -= delta
+	if throw_cooldown_timer > 0.0:
+		throw_cooldown_timer -= delta
 		
 	if attack_duration_timer > 0.0:
 		attack_duration_timer -= delta
@@ -215,11 +283,12 @@ func _physics_process(delta: float) -> void:
 			current_state = State.IDLE_WALK if is_on_floor() else State.JUMPING
 			current_attack_type = ""
 			if finished_attack == "pasa_throw":
-				attack_cooldown_timer = 1.0
+				throw_cooldown_timer = COOLDOWN_THROW
+				attack_cooldown_timer = COOLDOWN_THROW
 			elif finished_attack == "rope":
-				attack_cooldown_timer = 0.85
+				rope_cooldown_timer = COOLDOWN_ROPE
 			else:
-				attack_cooldown_timer = 0.38
+				axe_cooldown_timer = COOLDOWN_AXE
 			_update_animation()
 
 	if combo_hits > 0 and not is_instance_valid(held_chota_asur):
@@ -230,15 +299,28 @@ func _physics_process(delta: float) -> void:
 			_set_hud_prompt("")
 
 	# Combat attack triggers (allowed on ground or airborne when in human form and not already attacking)
-	if current_state != State.ATTACKING and attack_cooldown_timer <= 0.0 and current_form == PlayerForm.HUMAN:
-		if is_instance_valid(held_chota_asur):
-			if Input.is_action_just_pressed("attack_axe") or Input.is_action_just_pressed("attack_rope") or Input.is_action_just_pressed("interact"):
-				throw_held_chota_asur()
-		else:
-			if Input.is_action_just_pressed("attack_axe"):
-				attack("axe")
-			elif Input.is_action_just_pressed("attack_rope"):
-				attack("rope")
+	if current_state != State.ATTACKING and current_form == PlayerForm.HUMAN:
+		var wants_axe = Input.is_action_just_pressed("attack_axe") or buffered_action == "attack_axe"
+		var wants_rope = Input.is_action_just_pressed("attack_rope") or buffered_action == "attack_rope"
+		var wants_interact = Input.is_action_just_pressed("interact") or buffered_action == "interact"
+		var wants_throw = is_instance_valid(held_chota_asur) and (wants_axe or wants_rope or wants_interact)
+		
+		if is_carrying and not is_grabbing and (wants_axe or wants_rope or wants_interact):
+			buffered_action = ""
+			buffer_timer = 0.0
+			_try_throw_rock()
+		elif wants_throw and (throw_cooldown_timer <= 0.0 and attack_cooldown_timer <= 0.0):
+			buffered_action = ""
+			buffer_timer = 0.0
+			throw_held_chota_asur()
+		elif wants_axe and axe_cooldown_timer <= 0.0 and not is_carrying:
+			buffered_action = ""
+			buffer_timer = 0.0
+			attack("axe")
+		elif wants_rope and rope_cooldown_timer <= 0.0 and not is_carrying:
+			buffered_action = ""
+			buffer_timer = 0.0
+			attack("rope")
 
 	if current_state == State.ATTACKING:
 		if is_on_floor():
@@ -253,14 +335,19 @@ func _physics_process(delta: float) -> void:
 		# 2.5D X/Z plane movement
 		var input_vec = Vector2.ZERO
 		if is_instance_valid(held_chota_asur):
-			# When holding minion, WASD moves while arrow keys select target
+			# When holding minion, WASD or joystick moves while arrow keys select target
 			var mx = 0.0
 			var my = 0.0
 			if Input.is_key_pressed(KEY_D): mx += 1.0
 			if Input.is_key_pressed(KEY_A): mx -= 1.0
 			if Input.is_key_pressed(KEY_S): my += 1.0
 			if Input.is_key_pressed(KEY_W): my -= 1.0
-			input_vec = Vector2(mx, my).normalized()
+			var joy_x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
+			var joy_y = Input.get_action_strength("move_down") - Input.get_action_strength("move_up")
+			if abs(joy_x) > 0.05 or abs(joy_y) > 0.05:
+				input_vec = Vector2(joy_x, joy_y).normalized()
+			else:
+				input_vec = Vector2(mx, my).normalized()
 		else:
 			input_vec = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 
@@ -291,16 +378,108 @@ func _physics_process(delta: float) -> void:
 
 		_update_animation()
 
+	# Dynamic grab and carry stride handling
+	if is_grabbing:
+		grab_anim_timer -= delta
+		if grab_anim_timer <= 0.0:
+			is_grabbing = false
+			anim_sprite.position.y = 0.72
+			_update_animation()
+	elif is_carrying:
+		if is_walking:
+			carry_bob_phase += delta * 13.0
+			anim_sprite.position.y = 0.72 + abs(sin(carry_bob_phase)) * 0.035
+			anim_sprite.position.x = sin(carry_bob_phase) * 0.015
+		else:
+			carry_bob_phase = 0.0
+			anim_sprite.position.y = 0.72
+			anim_sprite.position.x = 0.0
+	elif current_form == PlayerForm.HUMAN:
+		anim_sprite.position.y = 0.72
+		anim_sprite.position.x = 0.0
+
 	move_and_slide()
 
+func play_grab_animation(duration: float = 0.22) -> void:
+	is_grabbing = true
+	grab_anim_timer = duration
+	# Crouch / reach down motion to lift rock
+	if anim_sprite:
+		anim_sprite.position.y = 0.58
+		var dir_str = "down"
+		match current_direction:
+			Direction.UP: dir_str = "up"
+			Direction.LEFT: dir_str = "left"
+			Direction.RIGHT: dir_str = "right"
+		if anim_sprite.sprite_frames and anim_sprite.sprite_frames.has_animation("jump_" + dir_str):
+			anim_sprite.play("jump_" + dir_str)
+			anim_sprite.frame = 0
+
+func _try_throw_rock() -> void:
+	is_grabbing = false
+	if anim_sprite:
+		anim_sprite.position.y = 0.72
+		anim_sprite.position.x = 0.0
+	var current_sc: Node = null
+	if is_inside_tree() and get_tree():
+		current_sc = get_tree().current_scene
+	if not current_sc:
+		current_sc = get_parent()
+	if current_sc:
+		if current_sc.has_method("throw_held_rock"):
+			current_sc.throw_held_rock()
+		elif current_sc.has_method("_throw_held_rock"):
+			current_sc._throw_held_rock()
+
 func attack(type: String = "axe") -> bool:
-	if current_state == State.ATTACKING or attack_cooldown_timer > 0.0 or current_form != PlayerForm.HUMAN:
+	if current_state == State.ATTACKING or current_form != PlayerForm.HUMAN:
+		return false
+	if is_carrying:
+		_try_throw_rock()
+		return false
+	if type == "rope" and rope_cooldown_timer > 0.0:
+		return false
+	if type == "axe" and axe_cooldown_timer > 0.0:
 		return false
 	current_state = State.ATTACKING
 	current_attack_type = type
+	last_attack_type = type
+	var cd_duration = COOLDOWN_ROPE if type == "rope" else COOLDOWN_AXE
+	var anim_dur = 0.48 if type == "pasa_throw" else 0.42
+	attack_duration_timer = anim_dur
+	total_attack_cycle_time = anim_dur + cd_duration
 	is_walking = false
 	_play_attack_animation()
 	return true
+
+func get_attack_cooldown_remaining(attack_type: String = "axe") -> float:
+	if current_form != PlayerForm.HUMAN:
+		return 0.0
+	var remaining: float = 0.0
+	if current_state == State.ATTACKING and current_attack_type == attack_type:
+		remaining += attack_duration_timer
+	if attack_type == "rope":
+		remaining += rope_cooldown_timer
+	elif attack_type == "pasa_throw":
+		remaining += maxf(throw_cooldown_timer, attack_cooldown_timer)
+	else:
+		remaining += axe_cooldown_timer
+	return maxf(0.0, remaining)
+
+func get_attack_cooldown_ratio(attack_type: String = "axe") -> float:
+	if current_form != PlayerForm.HUMAN:
+		return 1.0 # Attacks unavailable in sacred mouse form
+	var remaining = get_attack_cooldown_remaining(attack_type)
+	if remaining <= 0.0:
+		return 0.0
+	var total: float = 0.80
+	if attack_type == "rope":
+		total = 0.42 + COOLDOWN_ROPE
+	elif attack_type == "pasa_throw":
+		total = 0.48 + COOLDOWN_THROW
+	else:
+		total = 0.42 + COOLDOWN_AXE
+	return clampf(remaining / total, 0.0, 1.0)
 
 func _play_attack_animation() -> void:
 	if not anim_sprite:
@@ -443,6 +622,8 @@ func _trigger_camera_shake(duration: float, intensity: float) -> void:
 func _update_animation() -> void:
 	if not anim_sprite or current_state == State.ATTACKING or current_form == PlayerForm.TRANSFORMING:
 		return
+	if is_grabbing:
+		return
 		
 	var dir_str: String
 	match current_direction:
@@ -457,11 +638,18 @@ func _update_animation() -> void:
 			
 	var target_anim: String
 	if is_carrying:
-		if anim_sprite.sprite_frames and anim_sprite.sprite_frames.has_animation("carry_" + dir_str):
+		var target_prefix = "carry_walk_" if is_walking else "carry_"
+		if anim_sprite.sprite_frames and anim_sprite.sprite_frames.has_animation(target_prefix + dir_str):
+			target_anim = target_prefix + dir_str
+		elif anim_sprite.sprite_frames and anim_sprite.sprite_frames.has_animation("carry_" + dir_str):
 			target_anim = "carry_" + dir_str
 		elif anim_sprite.sprite_frames and anim_sprite.sprite_frames.has_animation("carry_rock"):
 			target_anim = "carry_rock"
-		anim_sprite.speed_scale = 1.0
+		if is_walking:
+			var ground_speed = Vector2(velocity.x, velocity.z).length()
+			anim_sprite.speed_scale = clampf(ground_speed / speed, 0.7, 1.25)
+		else:
+			anim_sprite.speed_scale = 1.0
 	elif not is_on_floor() or is_jumping:
 		if anim_sprite.sprite_frames and anim_sprite.sprite_frames.has_animation("jump_" + dir_str):
 			target_anim = "jump_" + dir_str
@@ -607,10 +795,12 @@ func grab_chota_asur(minion: Node3D) -> void:
 	_trigger_camera_shake(0.18, 12.0)
 
 func throw_held_chota_asur() -> void:
-	if not is_instance_valid(held_chota_asur) or current_state == State.ATTACKING:
+	if not is_instance_valid(held_chota_asur) or current_state == State.ATTACKING or attack_cooldown_timer > 0.0:
 		return
 	current_state = State.ATTACKING
 	current_attack_type = "pasa_throw"
+	last_attack_type = "pasa_throw"
+	total_attack_cycle_time = 0.48 + COOLDOWN_THROW
 	is_walking = false
 	_play_attack_animation()
 	var tree = get_tree()
