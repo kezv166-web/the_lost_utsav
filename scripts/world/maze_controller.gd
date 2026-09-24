@@ -74,6 +74,12 @@ func _setup_speedrun_hud() -> void:
 		var speed_hud = hud_scene.instantiate()
 		hud_layer.add_child(speed_hud)
 
+	var tutorial_scene = preload("res://scenes/ui/controls_tutorial_hud.tscn")
+	if hud_layer and not hud_layer.get_node_or_null("ControlsTutorialHUD"):
+		var tut = tutorial_scene.instantiate()
+		tut.start_minimized = true
+		hud_layer.add_child(tut)
+
 func _setup_fade_in() -> void:
 	var hud = get_node_or_null("MazeHUD")
 	if hud:
@@ -344,14 +350,14 @@ func _transition_to_level_3() -> void:
 
 func _update_hud() -> void:
 	if hud_form:
-		hud_form.text = "✦ FORM: MUSHIKA"
+		hud_form.text = "FORM: MUSHIKA"
 	if hud_objective:
 		if exit_unlocked:
-			hud_objective.text = "✦ Objective: Proceed through the Exit Gate ✦"
+			hud_objective.text = "[ ! ] Objective: Proceed through the Exit Gate"
 		elif has_key:
-			hud_objective.text = "✦ Objective: Unlock the Exit Gate [1/1] ✦"
+			hud_objective.text = "[ ! ] Objective: Unlock the Exit Gate [1/1]"
 		else:
-			hud_objective.text = "✦ Objective: Find the Golden Key [0/1] ✦"
+			hud_objective.text = "[ ! ] Objective: Find the Golden Key [0/1]"
 	if hud_keys:
 		hud_keys.visible = false
 

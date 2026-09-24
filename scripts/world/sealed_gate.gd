@@ -31,6 +31,21 @@ func _ready() -> void:
 	add_child(cl)
 	cl.add_child(hud_scene.instantiate())
 
+	var obj_label = Label.new()
+	obj_label.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	obj_label.offset_left = -240.0
+	obj_label.offset_top = 54.0
+	obj_label.offset_right = 240.0
+	obj_label.offset_bottom = 86.0
+	obj_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	obj_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	obj_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	obj_label.text = "[ ! ] Objective: Cross the fortress bridge and dispel the sealed gate"
+	obj_label.add_theme_font_size_override("font_size", 12)
+	obj_label.add_theme_color_override("font_color", Color(0.95, 0.9, 0.8, 1.0))
+	obj_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.9))
+	cl.add_child(obj_label)
+
 	var tutorial_scene = preload("res://scenes/ui/controls_tutorial_hud.tscn")
 	add_child(tutorial_scene.instantiate())
 

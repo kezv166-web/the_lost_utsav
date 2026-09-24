@@ -3,35 +3,71 @@
 [ext_resource type="Script" path="res://scripts/ui/controls_tutorial_hud.gd" id="1_script"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_Card"]
-bg_color = Color(0.06, 0.045, 0.035, 0.88)
+bg_color = Color(0.06, 0.045, 0.035, 0.94)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.78, 0.6, 0.28, 0.95)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-shadow_color = Color(0, 0, 0, 0.6)
-shadow_size = 4
-shadow_offset = Vector2(0, 2)
+border_color = Color(0.82, 0.65, 0.3, 0.95)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.7)
+shadow_size = 8
+shadow_offset = Vector2(0, 4)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_KeyBadge"]
-bg_color = Color(0.16, 0.12, 0.08, 0.9)
+bg_color = Color(0.18, 0.13, 0.08, 0.9)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
 border_color = Color(0.85, 0.7, 0.35, 0.8)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_Tab"]
+bg_color = Color(0.12, 0.09, 0.06, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7, 0.55, 0.25, 0.8)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_BtnBegin"]
+bg_color = Color(0.3, 0.2, 0.08, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.9, 0.75, 0.35, 0.95)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_Toggle"]
+bg_color = Color(0.08, 0.06, 0.04, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7, 0.55, 0.25, 0.8)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [node name="ControlsTutorialHUD" type="CanvasLayer"]
 process_mode = 3
-layer = 85
+layer = 95
 script = ExtResource("1_script")
 
 [node name="RootControl" type="Control" parent="."]
@@ -43,53 +79,79 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="TutorialPanel" type="PanelContainer" parent="RootControl"]
+[node name="CenterBox" type="CenterContainer" parent="RootControl"]
 layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
+anchors_preset = 15
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 22.0
-offset_top = -228.0
-offset_right = 262.0
-offset_bottom = -22.0
-grow_vertical = 0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
+
+[node name="TutorialPanel" type="PanelContainer" parent="RootControl/CenterBox"]
+custom_minimum_size = Vector2(340, 270)
+layout_mode = 2
+mouse_filter = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_Card")
 
-[node name="Margin" type="MarginContainer" parent="RootControl/TutorialPanel"]
+[node name="Margin" type="MarginContainer" parent="RootControl/CenterBox/TutorialPanel"]
 layout_mode = 2
-mouse_filter = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
 
-[node name="VBox" type="VBoxContainer" parent="RootControl/TutorialPanel/Margin"]
+[node name="VBox" type="VBoxContainer" parent="RootControl/CenterBox/TutorialPanel/Margin"]
 layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 5
+theme_override_constants/separation = 6
 
-[node name="Header" type="Label" parent="RootControl/TutorialPanel/Margin/VBox"]
+[node name="Header" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.4, 1)
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
-theme_override_font_sizes/font_size = 12
-text = "❖ CONTROLS GUIDE ❖"
+theme_override_font_sizes/font_size = 14
+text = "[ CONTROLS & COMBAT GUIDE ]"
 horizontal_alignment = 1
 
-[node name="HSeparator" type="HSeparator" parent="RootControl/TutorialPanel/Margin/VBox"]
+[node name="TabBar" type="HBoxContainer" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox"]
 layout_mode = 2
-mouse_filter = 2
-
-[node name="RowMove" type="HBoxContainer" parent="RootControl/TutorialPanel/Margin/VBox"]
-layout_mode = 2
-mouse_filter = 2
 theme_override_constants/separation = 8
+alignment = 1
 
-[node name="KeyBadge" type="Label" parent="RootControl/TutorialPanel/Margin/VBox/RowMove"]
-custom_minimum_size = Vector2(68, 18)
+[node name="BtnPC" type="Button" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/TabBar"]
+custom_minimum_size = Vector2(130, 24)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.92, 0.75, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("StyleBoxFlat_Tab")
+text = "KEYBOARD / PC"
+
+[node name="BtnMobile" type="Button" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/TabBar"]
+custom_minimum_size = Vector2(130, 24)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.92, 0.75, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("StyleBoxFlat_Tab")
+text = "TOUCH / MOBILE"
+
+[node name="HSeparator" type="HSeparator" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="ContentPC" type="VBoxContainer" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="RowMove" type="HBoxContainer" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentPC"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Badge" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentPC/RowMove"]
+custom_minimum_size = Vector2(85, 18)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
 theme_override_font_sizes/font_size = 10
@@ -98,19 +160,18 @@ text = "W A S D"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ActionLabel" type="Label" parent="RootControl/TutorialPanel/Margin/VBox/RowMove"]
+[node name="Label" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentPC/RowMove"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.85, 0.8, 1)
+theme_override_colors/font_color = Color(0.9, 0.86, 0.8, 1)
 theme_override_font_sizes/font_size = 11
-text = "Move"
+text = "Move / Walk"
 
-[node name="RowJump" type="HBoxContainer" parent="RootControl/TutorialPanel/Margin/VBox"]
+[node name="RowJump" type="HBoxContainer" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentPC"]
 layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 
-[node name="KeyBadge" type="Label" parent="RootControl/TutorialPanel/Margin/VBox/RowJump"]
-custom_minimum_size = Vector2(68, 18)
+[node name="Badge" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentPC/RowJump"]
+custom_minimum_size = Vector2(85, 18)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
 theme_override_font_sizes/font_size = 10
@@ -119,19 +180,18 @@ text = "SPACE"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ActionLabel" type="Label" parent="RootControl/TutorialPanel/Margin/VBox/RowJump"]
+[node name="Label" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentPC/RowJump"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.85, 0.8, 1)
+theme_override_colors/font_color = Color(0.9, 0.86, 0.8, 1)
 theme_override_font_sizes/font_size = 11
-text = "Jump"
+text = "Jump & Leap"
 
-[node name="RowAxe" type="HBoxContainer" parent="RootControl/TutorialPanel/Margin/VBox"]
+[node name="RowAxe" type="HBoxContainer" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentPC"]
 layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 
-[node name="KeyBadge" type="Label" parent="RootControl/TutorialPanel/Margin/VBox/RowAxe"]
-custom_minimum_size = Vector2(68, 18)
+[node name="Badge" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentPC/RowAxe"]
+custom_minimum_size = Vector2(85, 18)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
 theme_override_font_sizes/font_size = 10
@@ -140,19 +200,18 @@ text = "F / L-CLICK"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ActionLabel" type="Label" parent="RootControl/TutorialPanel/Margin/VBox/RowAxe"]
+[node name="Label" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentPC/RowAxe"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.85, 0.8, 1)
+theme_override_colors/font_color = Color(0.9, 0.86, 0.8, 1)
 theme_override_font_sizes/font_size = 11
-text = "Axe Strike"
+text = "Axe / Gada Strike"
 
-[node name="RowRope" type="HBoxContainer" parent="RootControl/TutorialPanel/Margin/VBox"]
+[node name="RowRope" type="HBoxContainer" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentPC"]
 layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 
-[node name="KeyBadge" type="Label" parent="RootControl/TutorialPanel/Margin/VBox/RowRope"]
-custom_minimum_size = Vector2(68, 18)
+[node name="Badge" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentPC/RowRope"]
+custom_minimum_size = Vector2(85, 18)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
 theme_override_font_sizes/font_size = 10
@@ -161,19 +220,18 @@ text = "G / R-CLICK"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ActionLabel" type="Label" parent="RootControl/TutorialPanel/Margin/VBox/RowRope"]
+[node name="Label" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentPC/RowRope"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.85, 0.8, 1)
+theme_override_colors/font_color = Color(0.9, 0.86, 0.8, 1)
 theme_override_font_sizes/font_size = 11
-text = "Pāśa Rope"
+text = "Pasa Rope Grapple"
 
-[node name="RowInteract" type="HBoxContainer" parent="RootControl/TutorialPanel/Margin/VBox"]
+[node name="RowInteract" type="HBoxContainer" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentPC"]
 layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 
-[node name="KeyBadge" type="Label" parent="RootControl/TutorialPanel/Margin/VBox/RowInteract"]
-custom_minimum_size = Vector2(68, 18)
+[node name="Badge" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentPC/RowInteract"]
+custom_minimum_size = Vector2(85, 18)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
 theme_override_font_sizes/font_size = 10
@@ -182,19 +240,18 @@ text = "E / C"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ActionLabel" type="Label" parent="RootControl/TutorialPanel/Margin/VBox/RowInteract"]
+[node name="Label" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentPC/RowInteract"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.85, 0.8, 1)
+theme_override_colors/font_color = Color(0.9, 0.86, 0.8, 1)
 theme_override_font_sizes/font_size = 11
-text = "Interact / Throw"
+text = "Interact / Pick Up / Throw"
 
-[node name="RowMantra" type="HBoxContainer" parent="RootControl/TutorialPanel/Margin/VBox"]
+[node name="RowTransform" type="HBoxContainer" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentPC"]
 layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 
-[node name="KeyBadge" type="Label" parent="RootControl/TutorialPanel/Margin/VBox/RowMantra"]
-custom_minimum_size = Vector2(68, 18)
+[node name="Badge" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentPC/RowTransform"]
+custom_minimum_size = Vector2(85, 18)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
 theme_override_font_sizes/font_size = 10
@@ -203,32 +260,166 @@ text = "1"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ActionLabel" type="Label" parent="RootControl/TutorialPanel/Margin/VBox/RowMantra"]
+[node name="Label" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentPC/RowTransform"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.85, 0.8, 1)
+theme_override_colors/font_color = Color(0.9, 0.86, 0.8, 1)
 theme_override_font_sizes/font_size = 11
-text = "Mantra (Transform)"
+text = "Mantra Shape-Shift"
 
-[node name="FooterHint" type="Label" parent="RootControl/TutorialPanel/Margin/VBox"]
+[node name="ContentMobile" type="VBoxContainer" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox"]
+visible = false
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.65, 0.55, 0.8)
+theme_override_constants/separation = 4
+
+[node name="RowJoy" type="HBoxContainer" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentMobile"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Badge" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentMobile/RowJoy"]
+custom_minimum_size = Vector2(85, 18)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_KeyBadge")
+text = "JOYSTICK"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentMobile/RowJoy"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.86, 0.8, 1)
+theme_override_font_sizes/font_size = 11
+text = "360-Degree Movement (Left)"
+
+[node name="RowJumpM" type="HBoxContainer" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentMobile"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Badge" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentMobile/RowJumpM"]
+custom_minimum_size = Vector2(85, 18)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_KeyBadge")
+text = "JUMP (^)"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentMobile/RowJumpM"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.86, 0.8, 1)
+theme_override_font_sizes/font_size = 11
+text = "Jump & Leap (Right)"
+
+[node name="RowAxeM" type="HBoxContainer" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentMobile"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Badge" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentMobile/RowAxeM"]
+custom_minimum_size = Vector2(85, 18)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_KeyBadge")
+text = "AXE ICON"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentMobile/RowAxeM"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.86, 0.8, 1)
+theme_override_font_sizes/font_size = 11
+text = "Axe Attack (Right)"
+
+[node name="RowRopeM" type="HBoxContainer" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentMobile"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Badge" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentMobile/RowRopeM"]
+custom_minimum_size = Vector2(85, 18)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_KeyBadge")
+text = "PASA ICON"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentMobile/RowRopeM"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.86, 0.8, 1)
+theme_override_font_sizes/font_size = 11
+text = "Rope Grapple (Right)"
+
+[node name="RowInteractM" type="HBoxContainer" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentMobile"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Badge" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentMobile/RowInteractM"]
+custom_minimum_size = Vector2(85, 18)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_KeyBadge")
+text = "HAND ICON"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentMobile/RowInteractM"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.86, 0.8, 1)
+theme_override_font_sizes/font_size = 11
+text = "Interact / Pick / Throw (Right)"
+
+[node name="RowTransformM" type="HBoxContainer" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentMobile"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Badge" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentMobile/RowTransformM"]
+custom_minimum_size = Vector2(85, 18)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_KeyBadge")
+text = "MANTRA"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox/ContentMobile/RowTransformM"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.86, 0.8, 1)
+theme_override_font_sizes/font_size = 11
+text = "Transform Mushika (Left)"
+
+[node name="BtnBegin" type="Button" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.92, 0.5, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("StyleBoxFlat_BtnBegin")
+text = "[ ENTER UTSAV / BEGIN ]"
+
+[node name="Hint" type="Label" parent="RootControl/CenterBox/TutorialPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.65, 0.55, 0.75)
 theme_override_font_sizes/font_size = 9
-text = "[H] Hide / Show Guide"
+text = "Press any key, click anywhere, or [H] to toggle guide"
 horizontal_alignment = 1
 
-[node name="ToggleHint" type="Label" parent="RootControl"]
+[node name="ToggleBtn" type="Button" parent="RootControl"]
 visible = false
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 22.0
-offset_top = -32.0
-offset_right = 160.0
+offset_left = 18.0
+offset_top = -36.0
+offset_right = 140.0
 offset_bottom = -12.0
 grow_vertical = 0
-theme_override_colors/font_color = Color(0.85, 0.75, 0.55, 0.75)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
-theme_override_font_sizes/font_size = 11
-text = "[H] Controls Guide"
-vertical_alignment = 1
+focus_mode = 0
+theme_override_colors/font_color = Color(0.95, 0.85, 0.55, 0.9)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_Toggle")
+text = "[ ? ] CONTROLS GUIDE"

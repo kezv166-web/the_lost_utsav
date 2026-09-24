@@ -384,7 +384,7 @@ func _on_asur_defeated() -> void:
 		rear_barrier_col.set_deferred("disabled", true)
 		
 	if hud_objective:
-		hud_objective.text = "★ ASUR GENERAL DEFEATED! Proceed to the Sacred Murti to claim the blessing! ★"
+		hud_objective.text = "[ ! ] ASUR GENERAL DEFEATED! Proceed to the Sacred Murti to claim the blessing!"
 		hud_objective.modulate = Color(1.0, 0.85, 0.3)
 
 func _setup_ui() -> void:
@@ -392,6 +392,20 @@ func _setup_ui() -> void:
 		dialogue_box.visible = false
 	if hud_action:
 		hud_action.text = ""
+	
+	if hud_title:
+		hud_title.modulate.a = 1.0
+		var title_tw = create_tween()
+		title_tw.tween_interval(3.2)
+		title_tw.tween_property(hud_title, "modulate:a", 0.0, 0.8)
+		title_tw.tween_callback(func():
+			if is_instance_valid(hud_title):
+				hud_title.visible = false
+		)
+
+	if hud_objective:
+		hud_objective.text = "[ ! ] Objective: Defeat the Asur General! Throw boulders [E] to stun him!"
+		hud_objective.modulate = Color(1.0, 0.85, 0.4)
 	
 	var hud = get_node_or_null("UI/HUD")
 	if hud:
@@ -410,6 +424,12 @@ func _setup_ui() -> void:
 	if ui and not ui.get_node_or_null("SpeedrunHUD"):
 		var speed_hud = hud_scene.instantiate()
 		ui.add_child(speed_hud)
+
+	var tutorial_scene = preload("res://scenes/ui/controls_tutorial_hud.tscn")
+	if ui and not ui.get_node_or_null("ControlsTutorialHUD"):
+		var tut = tutorial_scene.instantiate()
+		tut.start_minimized = true
+		ui.add_child(tut)
 
 func _on_player_damaged(hp: int) -> void:
 	if camera_rig:
@@ -434,7 +454,7 @@ func _on_player_died() -> void:
 	if hud_action:
 		hud_action.text = "The Asur struck you down!"
 	if hud_objective:
-		hud_objective.text = "★ DEFEATED - Restarting Level 3... ★"
+		hud_objective.text = "[ ! ] DEFEATED - Restarting Level 3..."
 		hud_objective.modulate = Color(1.0, 0.25, 0.25)
 
 	# Disable player physics and fade sprite on defeat
@@ -957,7 +977,7 @@ func _reclaim_blessing() -> void:
 		dialogue_label.text = "ॐ गं गणपतये नमः ...\nLord Ganesha's sacred blessing is reclaimed! The darkness retreats, and the divine Utsav is forever restored!"
 
 	if hud_objective:
-		hud_objective.text = "★ SACRED BLESSING RESTORED - UTSAV TRIUMPHANT! ★"
+		hud_objective.text = "[ ! ] SACRED BLESSING RESTORED - UTSAV TRIUMPHANT!"
 		hud_objective.modulate = Color(1.0, 0.85, 0.3)
 
 	# Transition to End Storyline cutscene after divine celebration

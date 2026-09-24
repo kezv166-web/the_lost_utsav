@@ -35,11 +35,11 @@ func _update_display() -> void:
 
 	# Format Time: MM:SS:CS
 	if time_label:
-		time_label.text = "⏱ %s" % grm.format_time(grm.total_time)
+		time_label.text = "TIME %s" % grm.format_time(grm.total_time)
 
 	# Format Score
 	if score_label:
-		score_label.text = "★ %s PTS" % _format_number(grm.total_points)
+		score_label.text = "%s PTS" % _format_number(grm.total_points)
 
 	# Level-specific badge
 	if context_badge:
@@ -48,11 +48,11 @@ func _update_display() -> void:
 				context_badge.text = "[STAGE 1: GATE]"
 				context_badge.modulate = Color(1.0, 0.85, 0.4)
 			2:
-				context_badge.text = "🍬 MODAKS: %d/5 (+%d)" % [grm.level2_modaks, grm.level2_modaks * 50]
+				context_badge.text = "MODAKS: %d/5 (+%d)" % [grm.level2_modaks, grm.level2_modaks * 50]
 				context_badge.modulate = Color(0.4, 0.95, 0.6)
 			3:
 				var attempt_bonus = 500 if grm.level3_attempts == 1 else (300 if grm.level3_attempts == 2 else (150 if grm.level3_attempts == 3 else 50))
-				context_badge.text = "⚔ ATTEMPT: %d (+%d)" % [grm.level3_attempts, attempt_bonus]
+				context_badge.text = "ATTEMPT: %d (+%d)" % [grm.level3_attempts, attempt_bonus]
 				context_badge.modulate = Color(1.0, 0.45, 0.35)
 
 func _format_number(val: int) -> String:

@@ -21,6 +21,7 @@ var shrine_prompt: Label3D = null
 @onready var crystal_light: OmniLight3D = $Lights/CrystalLight
 @onready var crystal_particles: CPUParticles3D = $VFX/CrystalEmbers
 @onready var hud_message: Label = $UI/HUD/MessageBanner
+@onready var hud_objective: Label = get_node_or_null("UI/HUD/ObjectiveContainer/Margin/ObjectiveLabel")
 @onready var dialogue_box: PanelContainer = $UI/HUD/DialogueBox
 @onready var dialogue_label: Label = $UI/HUD/DialogueBox/Margin/DialogueLabel
 
@@ -110,7 +111,7 @@ func _ready() -> void:
 		lever_prompt.font_size = 28
 		lever_prompt.outline_size = 8
 		lever_prompt.outline_modulate = Color(0.04, 0.02, 0.02, 1.0)
-		lever_prompt.text = "[ E ] Pull Ancient Lever"
+		lever_prompt.text = "[ E ] Pull Lever to activate mechanism"
 	if crystal_prompt:
 		crystal_prompt.visible = false
 		crystal_prompt.no_depth_test = true
@@ -134,7 +135,7 @@ func _ready() -> void:
 		mouse_passage_prompt.font_size = 28
 		mouse_passage_prompt.outline_size = 8
 		mouse_passage_prompt.outline_modulate = Color(0.04, 0.02, 0.02, 1.0)
-		mouse_passage_prompt.text = "[ E ] Enter Mouse Passage"
+		mouse_passage_prompt.text = "[ E ] Enter Secret Passage (Mushika Form)"
 	var lever_area = get_node_or_null("Interactables/PuzzleLever")
 	if lever_area:
 		lever_area.body_entered.connect(_on_lever_area_entered)
@@ -155,9 +156,11 @@ func _ready() -> void:
 		mouse_area.body_entered.connect(_on_mouse_passage_entered)
 		mouse_area.body_exited.connect(_on_mouse_passage_exited)
 
+	if hud_objective:
+		hud_objective.text = "[ ! ] Objective: Find the hidden mechanism to open the secret passage"
 	if hud_message:
-		hud_message.text = "Level 1: The Asur's Fortress - Inner Sanctum\nExplore the hall. Press [1] to chant mantra and transform into Mushika."
-		_fade_hud_message(5.0)
+		hud_message.text = "Level 1: Inner Sanctum\nFind the hidden mechanism to open the secret passage!"
+		_fade_hud_message(6.0)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("transform_1") or (event is InputEventKey and event.pressed and not event.is_echo() and (event.physical_keycode == KEY_1 or event.keycode == KEY_1)):
@@ -240,7 +243,9 @@ func reveal_mouse_passage() -> void:
 		stw.tween_property(rig, "target_offset", Vector3(0.06, 0, -0.04), 0.06)
 		stw.tween_property(rig, "target_offset", Vector3.ZERO, 0.1)
 
-	_show_hud_message("CLANK-RUMBLE! An underground mechanism shifts.\nA hollow section of the western floor collapses, revealing a narrow mouse passage!", 5.5)
+	if hud_objective:
+		hud_objective.text = "[ ! ] Objective: Press [1] to transform into Mushika and enter the passage"
+	_show_hud_message("Mechanism activated! A hollow floor collapsed into a narrow mouse passage!\nChant mantra [1] to transform into Mushika and enter!", 6.0)
 	print("PASSED: Level 1 Lever pulled, animated down, and mouse passage revealed on left side!")
 
 func _on_transform_key_pressed() -> void:
