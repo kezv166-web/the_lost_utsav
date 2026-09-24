@@ -21,6 +21,30 @@ ambient_light_color = Color(0.55, 0.5, 0.58, 1)
 ambient_light_energy = 1.1
 tonemap_mode = 2
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_FormBadge"]
+bg_color = Color(0.08, 0.05, 0.04, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.85, 0.7, 0.35, 0.85)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_Objective"]
+bg_color = Color(0.07, 0.05, 0.04, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.75, 0.58, 0.26, 0.85)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
 [sub_resource type="BoxShape3D" id="Shape_Floor"]
 size = Vector3(78, 1, 46)
 
@@ -911,9 +935,12 @@ texture = ExtResource("8_gate_tex")
 [node name="Prompt" type="Label3D" parent="Interactables/MazeExit" unique_id=1294701570]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0.5)
 billboard = 1
-text = "[E] Unlock Exit Gate"
-font_size = 26
-outline_size = 5
+no_depth_test = true
+render_priority = 10
+text = "[ E ] Unlock Exit Gate"
+font_size = 28
+outline_size = 8
+outline_color = Color(0.04, 0.02, 0.02, 1)
 
 [node name="MouseTunnels" type="Node3D" parent="." unique_id=1749221546]
 
@@ -938,55 +965,80 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34, 0.1, 18)
 
 [node name="MazeHUD" type="CanvasLayer" parent="." unique_id=1172201153]
 
-[node name="Margin" type="MarginContainer" parent="MazeHUD" unique_id=618373152]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="FormContainer" type="PanelContainer" parent="MazeHUD"]
+offset_left = 22.0
+offset_top = 12.0
+offset_right = 185.0
+offset_bottom = 48.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_FormBadge")
+
+[node name="Margin" type="MarginContainer" parent="MazeHUD/FormContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 4
+
+[node name="FormBadge" type="Label" parent="MazeHUD/FormContainer/Margin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.4, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 13
+text = "✦ FORM: MUSHIKA"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ObjectiveContainer" type="PanelContainer" parent="MazeHUD"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -230.0
+offset_top = 12.0
+offset_right = 230.0
+offset_bottom = 48.0
 grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 18
-theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 18
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_Objective")
 
-[node name="VBox" type="VBoxContainer" parent="MazeHUD/Margin" unique_id=888813471]
+[node name="Margin" type="MarginContainer" parent="MazeHUD/ObjectiveContainer"]
 layout_mode = 2
-size_flags_vertical = 0
+mouse_filter = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 4
 
-[node name="TopBar" type="HBoxContainer" parent="MazeHUD/Margin/VBox" unique_id=1051291307]
+[node name="ObjectiveLabel" type="Label" parent="MazeHUD/ObjectiveContainer/Margin"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 0.8, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 12
+text = "✦ Objective: Find the Golden Key [0/1] ✦"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="FormBadge" type="Label" parent="MazeHUD/Margin/VBox/TopBar" unique_id=64655453]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
-theme_override_font_sizes/font_size = 18
-text = "FORM: MUSHIKA"
-
-[node name="Spacer1" type="Control" parent="MazeHUD/Margin/VBox/TopBar" unique_id=2124551025]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="ObjectiveLabel" type="Label" parent="MazeHUD/Margin/VBox/TopBar" unique_id=1506371030]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.85, 0.95, 1)
-theme_override_font_sizes/font_size = 16
-text = "Objective: Search the fortress labyrinth for the Golden Key"
-
-[node name="Spacer2" type="Control" parent="MazeHUD/Margin/VBox/TopBar" unique_id=874844785]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="KeyTracker" type="Label" parent="MazeHUD/Margin/VBox/TopBar" unique_id=772084382]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
-theme_override_font_sizes/font_size = 18
-text = "Keys: 0 / 1"
-
-[node name="MessageBanner" type="Label" parent="MazeHUD/Margin" unique_id=510852947]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 8
+[node name="MessageBanner" type="Label" parent="MazeHUD"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -80.0
+offset_right = 300.0
+offset_bottom = -25.0
+grow_horizontal = 2
+grow_vertical = 0
 theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 vertical_alignment = 1

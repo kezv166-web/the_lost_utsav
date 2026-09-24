@@ -51,6 +51,10 @@ func _ready() -> void:
 	if ui and not ui.get_node_or_null("SpeedrunHUD"):
 		var speed_hud = hud_scene.instantiate()
 		ui.add_child(speed_hud)
+		
+	var tutorial_scene = preload("res://scenes/ui/controls_tutorial_hud.tscn")
+	if ui and not ui.get_node_or_null("ControlsTutorialHUD"):
+		ui.add_child(tutorial_scene.instantiate())
 
 	if not InputMap.has_action("transform_1"):
 		InputMap.add_action("transform_1")
@@ -101,16 +105,36 @@ func _ready() -> void:
 
 	if lever_prompt:
 		lever_prompt.visible = false
-		lever_prompt.text = "[E] Pull Ancient Lever"
+		lever_prompt.no_depth_test = true
+		lever_prompt.render_priority = 10
+		lever_prompt.font_size = 28
+		lever_prompt.outline_size = 8
+		lever_prompt.outline_modulate = Color(0.04, 0.02, 0.02, 1.0)
+		lever_prompt.text = "[ E ] Pull Ancient Lever"
 	if crystal_prompt:
 		crystal_prompt.visible = false
-		crystal_prompt.text = "[E] Inspect Asur Crystal"
+		crystal_prompt.no_depth_test = true
+		crystal_prompt.render_priority = 10
+		crystal_prompt.font_size = 28
+		crystal_prompt.outline_size = 8
+		crystal_prompt.outline_modulate = Color(0.04, 0.02, 0.02, 1.0)
+		crystal_prompt.text = "[ E ] Inspect Asur Crystal"
 	if exit_prompt:
 		exit_prompt.visible = false
-		exit_prompt.text = "[E] Return to Castle Exterior"
+		exit_prompt.no_depth_test = true
+		exit_prompt.render_priority = 10
+		exit_prompt.font_size = 28
+		exit_prompt.outline_size = 8
+		exit_prompt.outline_modulate = Color(0.04, 0.02, 0.02, 1.0)
+		exit_prompt.text = "[ E ] Return to Castle Exterior"
 	if mouse_passage_prompt:
 		mouse_passage_prompt.visible = false
-		mouse_passage_prompt.text = "[E] Inspect Mouse Passage"
+		mouse_passage_prompt.no_depth_test = true
+		mouse_passage_prompt.render_priority = 10
+		mouse_passage_prompt.font_size = 28
+		mouse_passage_prompt.outline_size = 8
+		mouse_passage_prompt.outline_modulate = Color(0.04, 0.02, 0.02, 1.0)
+		mouse_passage_prompt.text = "[ E ] Enter Mouse Passage"
 	var lever_area = get_node_or_null("Interactables/PuzzleLever")
 	if lever_area:
 		lever_area.body_entered.connect(_on_lever_area_entered)

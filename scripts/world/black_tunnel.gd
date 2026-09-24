@@ -20,7 +20,12 @@ func _ready() -> void:
 	add_to_group("mouse_tunnels")
 	if prompt_label:
 		prompt_label.visible = false
-		prompt_label.text = "Press E to Enter Tunnel"
+		prompt_label.no_depth_test = true
+		prompt_label.render_priority = 10
+		prompt_label.font_size = 28
+		prompt_label.outline_size = 8
+		prompt_label.outline_modulate = Color(0.04, 0.02, 0.02, 1.0)
+		prompt_label.text = "[ E ] Enter Secret Tunnel"
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
 
@@ -32,7 +37,7 @@ func _on_body_entered(body: Node3D) -> void:
 		player_inside = true
 		current_player = body as CharacterBody3D
 		if prompt_label and not is_transitioning:
-			prompt_label.text = "Press E to Enter Tunnel"
+			prompt_label.text = "[ E ] Enter Secret Tunnel"
 			prompt_label.visible = true
 
 func _on_body_exited(body: Node3D) -> void:

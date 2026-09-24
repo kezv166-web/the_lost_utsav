@@ -31,6 +31,9 @@ func _ready() -> void:
 	add_child(cl)
 	cl.add_child(hud_scene.instantiate())
 
+	var tutorial_scene = preload("res://scenes/ui/controls_tutorial_hud.tscn")
+	add_child(tutorial_scene.instantiate())
+
 	AssetExtractor.extract_assets_now()
 	_update_prompt_text()
 	prompt_label.visible = false
@@ -56,10 +59,15 @@ func _process(delta: float) -> void:
 func _update_prompt_text() -> void:
 	if not prompt_label:
 		return
+	prompt_label.no_depth_test = true
+	prompt_label.render_priority = 10
+	prompt_label.font_size = 28
+	prompt_label.outline_size = 8
+	prompt_label.outline_modulate = Color(0.04, 0.02, 0.02, 1.0)
 	if not is_spell_broken:
-		prompt_label.text = "The Great Gate is sealed by an ancient lock spell!\n[E] Inspect the Puzzle Mechanism"
+		prompt_label.text = "The Great Gate is sealed by an ancient lock spell!\n[ E ] Inspect the Puzzle Mechanism"
 	else:
-		prompt_label.text = "Spell Broken! The Great Gate is Open\n[E] Enter Level 1 (The Asur's Fortress)"
+		prompt_label.text = "Spell Broken! The Great Gate is Open\n[ E ] Enter Level 1 (The Asur's Fortress)"
 
 func _on_body_entered(body: Node3D) -> void:
 	if body.is_in_group("player"):

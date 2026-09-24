@@ -221,10 +221,20 @@ func _setup_torches() -> void:
 func _setup_interactables() -> void:
 	if altar_prompt:
 		altar_prompt.visible = false
-		altar_prompt.text = "[E] Pray at Sacred Murti - Reclaim Blessing"
+		altar_prompt.no_depth_test = true
+		altar_prompt.render_priority = 10
+		altar_prompt.font_size = 28
+		altar_prompt.outline_size = 8
+		altar_prompt.outline_modulate = Color(0.04, 0.02, 0.02, 1.0)
+		altar_prompt.text = "[ E ] Pray at Sacred Murti - Reclaim Blessing"
 	if exit_prompt:
 		exit_prompt.visible = false
-		exit_prompt.text = "[E] Return to Castle Exterior"
+		exit_prompt.no_depth_test = true
+		exit_prompt.render_priority = 10
+		exit_prompt.font_size = 28
+		exit_prompt.outline_size = 8
+		exit_prompt.outline_modulate = Color(0.04, 0.02, 0.02, 1.0)
+		exit_prompt.text = "[ E ] Return to Castle Exterior"
 
 	if altar_area:
 		altar_area.body_entered.connect(_on_altar_entered)
@@ -244,6 +254,14 @@ func _setup_rocks() -> void:
 			var first_rock = rocks_parent.get_child(0)
 			_rock_template = first_rock.duplicate()
 		for rock in rocks_parent.get_children():
+			var p = rock.get_node_or_null("Prompt")
+			if p is Label3D:
+				p.no_depth_test = true
+				p.render_priority = 10
+				p.font_size = 28
+				p.outline_size = 8
+				p.outline_modulate = Color(0.04, 0.02, 0.02, 1.0)
+				p.text = "[ E ] Grab Rock"
 			var area = rock.get_node_or_null("InteractArea")
 			if area:
 				area.body_entered.connect(_on_rock_area_entered.bind(rock))
@@ -515,7 +533,7 @@ func _physics_process(delta: float) -> void:
 				var new_prompt = nearby_rock.get_node_or_null("Prompt")
 				if new_prompt:
 					new_prompt.visible = true
-					new_prompt.text = "[E] Grab Rock"
+					new_prompt.text = "[ E ] Grab Rock"
 
 	# Decrement interact debounce
 	if _interact_debounce_timer > 0.0:
@@ -875,6 +893,13 @@ func _spawn_falling_rock(spawn_pos: Vector3) -> void:
 	var prompt = new_rock.get_node_or_null("Prompt")
 	if prompt:
 		prompt.visible = false
+		if prompt is Label3D:
+			prompt.no_depth_test = true
+			prompt.render_priority = 10
+			prompt.font_size = 28
+			prompt.outline_size = 8
+			prompt.outline_modulate = Color(0.04, 0.02, 0.02, 1.0)
+			prompt.text = "[ E ] Grab Rock"
 		
 	# Ballistic ceiling fall animation
 	var tw = create_tween()
@@ -984,7 +1009,7 @@ func _on_rock_area_entered(body: Node3D, rock: Node3D) -> void:
 	var prompt = rock.get_node_or_null("Prompt")
 	if prompt:
 		prompt.visible = true
-		prompt.text = "[E] Grab Rock"
+		prompt.text = "[ E ] Grab Rock"
 
 func _on_rock_area_exited(body: Node3D, rock: Node3D) -> void:
 	if not is_instance_valid(player) or body != player:

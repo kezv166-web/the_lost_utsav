@@ -8,10 +8,10 @@ extends Node3D
 @onready var exit_gate_visual = $Interactables/MazeExit/GateVisual
 @onready var key_visual = $Interactables/GoldenKey/KeyVisual
 
-@onready var hud_form = $MazeHUD/Margin/VBox/TopBar/FormBadge
-@onready var hud_objective = $MazeHUD/Margin/VBox/TopBar/ObjectiveLabel
-@onready var hud_keys = $MazeHUD/Margin/VBox/TopBar/KeyTracker
-@onready var hud_message = $MazeHUD/Margin/MessageBanner
+@onready var hud_form: Label = ($MazeHUD/FormContainer/FormBadge if has_node("MazeHUD/FormContainer/FormBadge") else get_node_or_null("MazeHUD/Margin/VBox/TopBar/FormBadge"))
+@onready var hud_objective: Label = ($MazeHUD/ObjectiveContainer/ObjectiveLabel if has_node("MazeHUD/ObjectiveContainer/ObjectiveLabel") else get_node_or_null("MazeHUD/Margin/VBox/TopBar/ObjectiveLabel"))
+@onready var hud_keys: Label = get_node_or_null("MazeHUD/Margin/VBox/TopBar/KeyTracker")
+@onready var hud_message: Label = ($MazeHUD/MessageBanner if has_node("MazeHUD/MessageBanner") else get_node_or_null("MazeHUD/Margin/MessageBanner"))
 
 var has_key: bool = false
 var exit_unlocked: bool = false
@@ -344,16 +344,16 @@ func _transition_to_level_3() -> void:
 
 func _update_hud() -> void:
 	if hud_form:
-		hud_form.text = "FORM: MUSHIKA"
+		hud_form.text = "✦ FORM: MUSHIKA"
 	if hud_objective:
 		if exit_unlocked:
-			hud_objective.text = "Objective: Proceed through the exit gate"
+			hud_objective.text = "✦ Objective: Proceed through the Exit Gate ✦"
 		elif has_key:
-			hud_objective.text = "Objective: Reach the Exit Gate at the top-right"
+			hud_objective.text = "✦ Objective: Unlock the Exit Gate [1/1] ✦"
 		else:
-			hud_objective.text = "Objective: Find the Golden Key hidden in the maze"
+			hud_objective.text = "✦ Objective: Find the Golden Key [0/1] ✦"
 	if hud_keys:
-		hud_keys.text = "Keys: %s / 1" % ("1" if has_key else "0")
+		hud_keys.visible = false
 
 func _show_hud_message(msg: String, duration: float) -> void:
 	if hud_message:
