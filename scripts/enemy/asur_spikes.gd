@@ -2,7 +2,7 @@ extends Area3D
 
 @export var speed: float = 7.0
 @export var max_distance: float = 6.5
-@export var damage: int = 32
+@export var damage: int = 35
 
 var travel_direction: Vector3 = Vector3(0, 0, 1)
 var distance_traveled: float = 0.0

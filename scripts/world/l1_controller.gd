@@ -127,7 +127,7 @@ func _ready() -> void:
 		exit_prompt.font_size = 28
 		exit_prompt.outline_size = 8
 		exit_prompt.outline_modulate = Color(0.04, 0.02, 0.02, 1.0)
-		exit_prompt.text = "[ E ] Return to Castle Exterior"
+		exit_prompt.text = "Entrance Gate (Locked Shut)"
 	if mouse_passage_prompt:
 		mouse_passage_prompt.visible = false
 		mouse_passage_prompt.no_depth_test = true
@@ -452,7 +452,7 @@ func _on_mouse_passage_interacted() -> void:
 		print("PASSED: Player inspected the narrow mouse passage!")
 
 func _on_exit_interacted() -> void:
-	get_tree().change_scene_to_file("res://scenes/levels/outdoor/outdoor_map.tscn")
+	_show_hud_message("The great fortress gate slammed shut behind you.\nThere is no turning back!", 3.5)
 
 func _show_hud_message(msg: String, duration: float) -> void:
 	if hud_message:

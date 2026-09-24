@@ -51,9 +51,20 @@ func _update_display() -> void:
 				context_badge.text = "MODAKS: %d/5 (+%d)" % [grm.level2_modaks, grm.level2_modaks * 50]
 				context_badge.modulate = Color(0.4, 0.95, 0.6)
 			3:
-				var attempt_bonus = 500 if grm.level3_attempts == 1 else (300 if grm.level3_attempts == 2 else (150 if grm.level3_attempts == 3 else 50))
-				context_badge.text = "ATTEMPT: %d (+%d)" % [grm.level3_attempts, attempt_bonus]
-				context_badge.modulate = Color(1.0, 0.45, 0.35)
+				var max_att = grm.MAX_LEVEL3_ATTEMPTS if "MAX_LEVEL3_ATTEMPTS" in grm else 3
+				match grm.level3_attempts:
+					1:
+						context_badge.text = "TRIES: 1/%d (+500)" % max_att
+						context_badge.modulate = Color(1.0, 0.85, 0.4)
+					2:
+						context_badge.text = "TRIES: 2/%d (+300)" % max_att
+						context_badge.modulate = Color(1.0, 0.6, 0.3)
+					3:
+						context_badge.text = "FINAL TRY: 3/%d (+150)" % max_att
+						context_badge.modulate = Color(1.0, 0.25, 0.25)
+					_:
+						context_badge.text = "TRIES: %d/%d (0)" % [grm.level3_attempts, max_att]
+						context_badge.modulate = Color(0.8, 0.2, 0.2)
 
 func _format_number(val: int) -> String:
 	var s = str(val)

@@ -64,11 +64,10 @@ var player_ref: Node3D = null
 var pulse_time: float = 0.0
 var current_phase: int = 1
 
-# Spam-counter reactive stomp: if player lands 4 hits in a short window, Asur force-stomps
-var spam_hit_count: int = 0
-var spam_hit_window: float = 0.0
-const SPAM_HIT_THRESHOLD: int = 4
-const SPAM_HIT_WINDOW_SEC: float = 4.0
+# Strict Asur Attack Counter: After 3 hits taken, Asur enters unstoppable hyper-armor attack
+var consecutive_hits_taken: int = 0
+const STRICT_ATTACK_THRESHOLD: int = 3
+var is_strict_attacking: bool = false
 
 func _ready() -> void:
 	health = max_health
@@ -116,25 +115,29 @@ func _update_aggression_phase() -> void:
 			roar()
 			_trigger_camera_shake(0.35, 18.0)
 			
-	# Dynamically tune attack aggression & speeds based on current phase
+	# Dynamically tune attack aggression & speeds based on current phase and DDA
+	var ddm = get_node_or_null("/root/DynamicDifficultyManager")
+	var cd_mult: float = ddm.boss_attack_cooldown_mult if ddm else 1.0
+	var tele_mult: float = ddm.boss_windup_telegraph_mult if ddm else 1.0
+
 	match current_phase:
 		1:
-			attack_cooldown_duration = 2.8
-			telegraph_duration = 0.95
+			attack_cooldown_duration = 2.8 * cd_mult
+			telegraph_duration = 0.95 * tele_mult
 			recovery_duration = 1.8
-			stomp_cooldown_duration = 7.0
+			stomp_cooldown_duration = 7.0 * cd_mult
 		2:
 			# Phase 2 (35%..70% HP): 35% faster cooldowns, snappier telegraph
-			attack_cooldown_duration = 1.8
-			telegraph_duration = 0.75
+			attack_cooldown_duration = 1.8 * cd_mult
+			telegraph_duration = 0.75 * tele_mult
 			recovery_duration = 1.25
-			stomp_cooldown_duration = 4.8
+			stomp_cooldown_duration = 4.8 * cd_mult
 		3:
 			# Phase 3 (<35% HP): Frenzy! Relentless strikes, ultra-fast recovery
-			attack_cooldown_duration = 1.15
-			telegraph_duration = 0.55
+			attack_cooldown_duration = 1.15 * cd_mult
+			telegraph_duration = 0.55 * tele_mult
 			recovery_duration = 0.85
-			stomp_cooldown_duration = 3.2
+			stomp_cooldown_duration = 3.2 * cd_mult
 
 func set_player(p: Node3D) -> void:
 	player_ref = p
@@ -168,12 +171,6 @@ func _physics_process(delta: float) -> void:
 	if stomp_cooldown > 0.0:
 		stomp_cooldown -= delta
 
-	# Tick spam-hit window – reset counter if player paused their barrage
-	if spam_hit_window > 0.0:
-		spam_hit_window -= delta
-		if spam_hit_window <= 0.0:
-			spam_hit_count = 0
-	
 	if health <= 0 or not visible:
 		return
 		
@@ -392,6 +389,7 @@ func _on_anim_frame_changed() -> void:
 				_start_recovery()
 
 func _start_recovery() -> void:
+	is_strict_attacking = false
 	current_state = State.RECOVERY
 	recovery_timer = recovery_duration
 	if anim_sprite:
@@ -467,80 +465,133 @@ func _check_strike_hit() -> void:
 	if in_strike_arc and dist <= (attack_range + 0.3):
 		has_hit_in_current_attack = true
 		if player_ref.has_method("take_damage"):
-			player_ref.take_damage(45, global_position)
+			player_ref.take_damage(50, global_position)
 
 func take_damage(amount: int = 40) -> void:
 	if health <= 0:
 		return
 	if hurt_grace_timer > 0.0:
 		return
-	_cleanup_telegraph()
-	recovery_timer = 0.0
-	stun_timer = 0.0
+
 	health = max(0, health - amount)
 	_update_aggression_phase()
-	has_hit_in_current_attack = false
-	attack_cooldown = attack_cooldown_duration + 0.5
 	emit_signal("boss_damaged", health)
 
-	# --- Spam-counter reactive stomp ---
-	# Track consecutive melee hits within a rolling time window
-	spam_hit_count += 1
-	spam_hit_window = SPAM_HIT_WINDOW_SEC  # refresh/extend window on every hit
-	if spam_hit_count >= SPAM_HIT_THRESHOLD and health > 0:
-		# Player is spamming – Asur retaliates with a force stomp regardless of cooldown
-		spam_hit_count = 0
-		spam_hit_window = 0.0
-		stomp_cooldown = 0.0           # bypass stomp cooldown
-		attack_cooldown = 0.0          # bypass attack cooldown
-		current_state = State.IDLE     # exit HURT so stomp can fire next physics frame
-		hurt_timer = 0.0
-		hurt_grace_timer = 0.0
-		_play_anim("idle_down")
-		attack_stomp()
-		return
-	
 	# Flash red on hit
 	if anim_sprite:
 		var tw = create_tween()
 		tw.tween_property(anim_sprite, "modulate", Color(2.5, 0.4, 0.4, 1.0), 0.1)
 		tw.tween_property(anim_sprite, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.25)
-	
+
 	if health <= 0:
+		_cleanup_telegraph()
+		recovery_timer = 0.0
+		stun_timer = 0.0
+		is_strict_attacking = false
 		_on_defeated()
-	else:
-		current_state = State.HURT
-		hurt_timer = 0.55
-		hurt_grace_timer = 0.35
-		_play_anim("hurt")
+		return
+
+	# If Asur is currently in STRICT ATTACK mode (Hyper-Armor), DO NOT interrupt him!
+	# He takes damage and flashes red, but strictly finishes his attack!
+	if is_strict_attacking:
+		print("[Asur Boss] Hit taken during STRICT ATTACK! Hyper-armor active - attack not interrupted!")
+		return
+
+	# Track consecutive attacks landed on Asur
+	consecutive_hits_taken += 1
+	print("[Asur Boss] Hit taken (%d/%d)" % [consecutive_hits_taken, STRICT_ATTACK_THRESHOLD])
+
+	if consecutive_hits_taken >= STRICT_ATTACK_THRESHOLD:
+		# After 3 attacks: Asur STRICTLY attacks even if he gets hit!
+		consecutive_hits_taken = 0
+		_trigger_strict_attack()
+		return
+
+	# Normal flinch reaction for hits 1 and 2
+	_cleanup_telegraph()
+	recovery_timer = 0.0
+	stun_timer = 0.0
+	has_hit_in_current_attack = false
+	attack_cooldown = 0.6
+	current_state = State.HURT
+	hurt_timer = 0.35
+	hurt_grace_timer = 0.22
+	_play_anim("hurt")
 
 func take_rock_hit(amount: int = 85) -> void:
 	if health <= 0:
 		return
-	_cleanup_telegraph()
-	recovery_timer = 0.0
+
+	var ddm = get_node_or_null("/root/DynamicDifficultyManager")
+	if ddm and ddm.has_method("record_player_success"):
+		ddm.record_player_success(1.0)
+
 	health = max(0, health - amount)
 	_update_aggression_phase()
-	has_hit_in_current_attack = false
-	attack_cooldown = attack_cooldown_duration + 1.0
 	emit_signal("boss_damaged", health)
-	
+
 	# Flash golden-amber on rock impact
 	if anim_sprite:
 		var tw = create_tween()
 		tw.tween_property(anim_sprite, "modulate", Color(3.0, 1.2, 0.4, 1.0), 0.12)
 		tw.tween_property(anim_sprite, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.28)
-		
+
 	if health <= 0:
+		_cleanup_telegraph()
+		recovery_timer = 0.0
+		stun_timer = 0.0
+		is_strict_attacking = false
 		_on_defeated()
+		return
+
+	if is_strict_attacking:
+		print("[Asur Boss] Boulder hit during STRICT ATTACK! Hyper-armor active - continuing attack!")
+		return
+
+	consecutive_hits_taken += 1
+	if consecutive_hits_taken >= STRICT_ATTACK_THRESHOLD:
+		consecutive_hits_taken = 0
+		_trigger_strict_attack()
+		return
+
+	_cleanup_telegraph()
+	recovery_timer = 0.0
+	has_hit_in_current_attack = false
+	current_state = State.STUN
+	stun_timer = stun_duration
+	hurt_grace_timer = 0.5
+	_play_anim("stunned")
+
+func _trigger_strict_attack() -> void:
+	print("[Asur Boss] STRICT ATTACK TRIGGERED! Unstoppable hyper-armor activated!")
+	is_strict_attacking = true
+	hurt_timer = 0.0
+	recovery_timer = 0.0
+	stun_timer = 0.0
+	hurt_grace_timer = 0.0
+	attack_cooldown = 0.0
+
+	# Intense fiery flare signaling hyper armor
+	if aura_light:
+		var tw = create_tween()
+		tw.tween_property(aura_light, "light_color", Color(2.5, 0.3, 0.1, 1.0), 0.08)
+		tw.tween_property(aura_light, "light_energy", 6.5, 0.08)
+		tw.tween_property(aura_light, "light_energy", 3.0, 0.4)
+
+	# If Asur was already in the middle of ATTACK, let it continue with hyper armor
+	if current_state == State.ATTACK:
+		return
+
+	current_state = State.IDLE
+	# Choose attack: Stomp if ready or in range, otherwise Gadha Slam
+	if stomp_cooldown <= 0.0:
+		attack_stomp()
 	else:
-		current_state = State.STUN
-		stun_timer = stun_duration
-		hurt_grace_timer = 0.5
-		_play_anim("stunned")
+		attack()
 
 func _on_defeated() -> void:
 	_cleanup_telegraph()
+	is_strict_attacking = false
 	recovery_timer = 0.0
 	stun_timer = 0.0
 	emit_signal("boss_defeated")
@@ -577,6 +628,7 @@ func _get_dir_str() -> String:
 
 func _on_animation_finished() -> void:
 	_cleanup_telegraph()
+	is_strict_attacking = false
 	if current_state in [State.ROAR, State.STAGGER, State.HURT]:
 		current_state = State.IDLE
 		hurt_timer = 0.0

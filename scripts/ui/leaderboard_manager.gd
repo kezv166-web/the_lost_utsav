@@ -974,18 +974,26 @@ func get_filtered_entries(level_filter: String, tab_filter: String) -> Array:
 				filtered.append(entry)
 
 			"level_3":
-				# Any run that reached Level 3
-				if lvl < 3 and not orig.has("level3_time"):
+				# Any run that reached Level 3 (cleared or attempted)
+				if lvl < 3 and not orig.has("level3_time") and not orig.has("level3_attempts"):
 					continue
 				var l3_t = float(orig.get("level3_time", 0.0))
 				var att = int(orig.get("level3_attempts", 1))
-				entry["display_level"] = "Att %d" % att
-				entry["display_time"] = format_time(l3_t) if l3_t > 0.0 else "--:--:--"
-				entry["display_raw_time"] = l3_t if l3_t > 0.0 else 999999.0
-				var l3_pts = int(orig.get("level3_points", 0))
-				if l3_pts <= 0 and l3_t > 0.0:
-					l3_pts = calculate_level_3_points(l3_t, att)
-				entry["display_score"] = l3_pts
+				var is_cleared = bool(orig.get("level3_cleared", lvl >= 3 and l3_t > 0.0))
+
+				if not is_cleared:
+					entry["display_level"] = "FAILED (3/3)" if att >= 3 else "TRY %d/3" % att
+					entry["display_time"] = "--:--:--"
+					entry["display_raw_time"] = 999999.0
+					entry["display_score"] = "--"
+				else:
+					entry["display_level"] = "Att %d" % att
+					entry["display_time"] = format_time(l3_t) if l3_t > 0.0 else "--:--:--"
+					entry["display_raw_time"] = l3_t if l3_t > 0.0 else 999999.0
+					var l3_pts = int(orig.get("level3_points", 0))
+					if l3_pts <= 0 and l3_t > 0.0:
+						l3_pts = calculate_level_3_points(l3_t, att)
+					entry["display_score"] = l3_pts
 				filtered.append(entry)
 
 			_: # "all" full playthrough
@@ -1008,8 +1016,20 @@ func get_filtered_entries(level_filter: String, tab_filter: String) -> Array:
 	else:
 		# Primary: Highest score descending, Secondary: Fastest time ascending
 		filtered.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
-			var sa = int(a.get("display_score", 0))
-			var sb = int(b.get("display_score", 0))
+			var sa_val = a.get("display_score", 0)
+			var sb_val = b.get("display_score", 0)
+			var sa: int = -1
+			if sa_val is int or sa_val is float:
+				sa = int(sa_val)
+			elif sa_val is String and sa_val.is_valid_int():
+				sa = int(sa_val)
+
+			var sb: int = -1
+			if sb_val is int or sb_val is float:
+				sb = int(sb_val)
+			elif sb_val is String and sb_val.is_valid_int():
+				sb = int(sb_val)
+
 			if sa != sb:
 				return sa > sb
 			var ta = float(a.get("display_raw_time", 99999.0))
@@ -1096,13 +1116,17 @@ static func time_str_to_seconds(time_str: String) -> float:
 	return 999999.0
 
 static func format_score(val: Variant) -> String:
+	if val is String:
+		var clean_str = val.strip_edges()
+		if clean_str == "--" or clean_str == "-" or not clean_str.replace(",", "").replace(".", "").is_valid_int():
+			return clean_str
+		val = int(clean_str.replace(",", "").replace(".", ""))
+
 	var int_val: int = 0
 	if val is int:
 		int_val = val
 	elif val is float:
 		int_val = int(val)
-	elif val is String:
-		int_val = int(val.replace(",", "").replace(".", ""))
 
 	var s = str(int_val)
 	var res = ""

@@ -37,8 +37,10 @@ var key_collected: bool = false
 # Level 3 (Asur Final Boss Arena)
 var level3_time: float = 0.0
 var level3_attempts: int = 1 # Starts on attempt 1
+const MAX_LEVEL3_ATTEMPTS: int = 3
 var level3_points: int = 0
 var level3_cleared: bool = false
+var is_game_over: bool = false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -85,9 +87,12 @@ func start_new_run() -> void:
 	level3_attempts = 1
 	level3_points = 0
 	level3_cleared = false
+	is_game_over = false
 
 	is_run_active = true
 	is_timer_paused = false
+	if Engine.has_singleton("DynamicDifficultyManager") or has_node("/root/DynamicDifficultyManager"):
+		get_node("/root/DynamicDifficultyManager").reset_run()
 	run_started.emit()
 	run_updated.emit(total_time, total_points)
 	print("[GameRunManager] New game run started! Points: 0, Timer running.")
@@ -160,7 +165,53 @@ func record_boss_hit() -> void:
 
 func record_level_3_death() -> void:
 	level3_attempts += 1
-	print("[GameRunManager] Level 3 player defeated. Attempt count increased to %d." % level3_attempts)
+	print("[GameRunManager] Level 3 player defeated. Attempt count now %d/%d." % [level3_attempts, MAX_LEVEL3_ATTEMPTS])
+
+func end_run_as_defeated() -> Dictionary:
+	is_run_active = false
+	is_timer_paused = true
+	is_game_over = true
+	level3_cleared = false
+	level3_points = 0
+	level3_time = 0.0
+
+	print("[GameRunManager] Expedition Failed! All %d attempts exhausted against Asur. Max level completed: 2." % MAX_LEVEL3_ATTEMPTS)
+
+	var lm = LeaderboardManager.get_instance()
+	var profile = lm.get_player_profile()
+	var p_id = profile.get("id", "USR-1001")
+	var p_name = profile.get("name", "BraveWarrior")
+	var p_avatar = profile.get("avatar", "avatar_4")
+
+	var formatted_time = format_time(total_time)
+
+	# Level 3 was failed, so max completed level is strictly Level 2
+	var run_entry = {
+		"id": p_id,
+		"player": p_name,
+		"avatar": p_avatar,
+		"level": 2,
+		"level_reached_str": "2.0",
+		"time": formatted_time,
+		"raw_time": total_time,
+		"score": total_points,
+		"level1_time": level1_time,
+		"level1_points": level1_points,
+		"level2_time": level2_time,
+		"level2_points": level2_points,
+		"level2_modaks": level2_modaks,
+		"level3_time": 0.0,
+		"level3_points": 0,
+		"level3_attempts": MAX_LEVEL3_ATTEMPTS,
+		"level3_cleared": false,
+		"is_game_over": true,
+		"date": Time.get_date_string_from_system(),
+		"is_self": true
+	}
+
+	lm.add_run_entry(run_entry)
+	run_completed.emit(run_entry)
+	return run_entry
 
 func complete_level_3() -> void:
 	if level3_cleared:
@@ -222,9 +273,11 @@ func save_run_to_leaderboard() -> Dictionary:
 		"level2_time": level2_time,
 		"level2_points": level2_points,
 		"level2_modaks": level2_modaks,
-		"level3_time": level3_time,
-		"level3_points": level3_points,
+		"level3_time": level3_time if level3_cleared else 0.0,
+		"level3_points": level3_points if level3_cleared else 0,
 		"level3_attempts": level3_attempts,
+		"level3_cleared": level3_cleared,
+		"is_game_over": is_game_over,
 		"date": Time.get_date_string_from_system(),
 		"is_self": true
 	}

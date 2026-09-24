@@ -1093,7 +1093,7 @@ shape = SubResource("Shape_CoverBlock")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 visible = false
 billboard = 1
-text = "[E] Return to Castle Exterior"
+text = ""
 font_size = 26
 outline_size = 5
 

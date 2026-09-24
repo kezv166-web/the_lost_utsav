@@ -229,12 +229,7 @@ func _setup_interactables() -> void:
 		altar_prompt.text = "[ E ] Pray at Sacred Murti - Reclaim Blessing"
 	if exit_prompt:
 		exit_prompt.visible = false
-		exit_prompt.no_depth_test = true
-		exit_prompt.render_priority = 10
-		exit_prompt.font_size = 28
-		exit_prompt.outline_size = 8
-		exit_prompt.outline_modulate = Color(0.04, 0.02, 0.02, 1.0)
-		exit_prompt.text = "[ E ] Return to Castle Exterior"
+		exit_prompt.text = ""
 
 	if altar_area:
 		altar_area.body_entered.connect(_on_altar_entered)
@@ -403,9 +398,21 @@ func _setup_ui() -> void:
 				hud_title.visible = false
 		)
 
+	var grm = get_node_or_null("/root/GameRunManager")
+	var cur_try: int = 1
+	var max_tries: int = 3
+	if grm:
+		cur_try = grm.level3_attempts
+		if "MAX_LEVEL3_ATTEMPTS" in grm:
+			max_tries = grm.MAX_LEVEL3_ATTEMPTS
+
 	if hud_objective:
-		hud_objective.text = "[ ! ] Objective: Defeat the Asur General! Throw boulders [E] to stun him!"
-		hud_objective.modulate = Color(1.0, 0.85, 0.4)
+		if cur_try >= max_tries:
+			hud_objective.text = "[ ! ] FINAL TRY (%d/%d): Defeat the Asur General! Throw boulders [E] to stun him!" % [cur_try, max_tries]
+			hud_objective.modulate = Color(1.0, 0.35, 0.35)
+		else:
+			hud_objective.text = "[ ! ] Objective (Try %d/%d): Defeat the Asur General! Throw boulders [E] to stun him!" % [cur_try, max_tries]
+			hud_objective.modulate = Color(1.0, 0.85, 0.4)
 	
 	var hud = get_node_or_null("UI/HUD")
 	if hud:
@@ -445,17 +452,24 @@ func _on_player_died() -> void:
 	is_restarting_level = true
 
 	var grm = get_node_or_null("/root/GameRunManager")
-	if grm and grm.has_method("record_level_3_death"):
-		grm.record_level_3_death()
+	var max_attempts: int = 3
+	var attempts_after_death: int = 1
+	if grm:
+		if "MAX_LEVEL3_ATTEMPTS" in grm:
+			max_attempts = grm.MAX_LEVEL3_ATTEMPTS
+		if grm.has_method("record_level_3_death"):
+			grm.record_level_3_death()
+		attempts_after_death = grm.level3_attempts
+
+	var ddm = get_node_or_null("/root/DynamicDifficultyManager")
+	if ddm and ddm.has_method("record_attempt_failed"):
+		ddm.record_attempt_failed()
 
 	Engine.time_scale = 1.0
 	_update_hp_display(0)
 
 	if hud_action:
 		hud_action.text = "The Asur struck you down!"
-	if hud_objective:
-		hud_objective.text = "[ ! ] DEFEATED - Restarting Level 3..."
-		hud_objective.modulate = Color(1.0, 0.25, 0.25)
 
 	# Disable player physics and fade sprite on defeat
 	if is_instance_valid(player):
@@ -466,9 +480,21 @@ func _on_player_died() -> void:
 			var tw = create_tween()
 			tw.tween_property(spr, "modulate", Color(1.0, 0.2, 0.2, 0.0), 1.0)
 
-	# Restart Level 3 after defeat pause
 	var tree = get_tree()
-	if tree:
+	if not tree:
+		return
+
+	if attempts_after_death <= max_attempts:
+		# Player still has remaining attempts (e.g. starting Try 2/3 or Try 3/3)
+		if hud_objective:
+			if attempts_after_death == max_attempts:
+				hud_objective.text = "[ ! ] DEFEATED! Starting Try %d/%d (FINAL TRY)..." % [attempts_after_death, max_attempts]
+				hud_objective.modulate = Color(1.0, 0.35, 0.35)
+			else:
+				hud_objective.text = "[ ! ] DEFEATED! Starting Try %d/%d..." % [attempts_after_death, max_attempts]
+				hud_objective.modulate = Color(1.0, 0.65, 0.35)
+
+		# Restart Level 3 after defeat pause
 		tree.create_timer(1.2).timeout.connect(func():
 			Engine.time_scale = 1.0
 			var active_tree = get_tree()
@@ -476,6 +502,24 @@ func _on_player_died() -> void:
 				var err = active_tree.reload_current_scene()
 				if err != OK:
 					active_tree.change_scene_to_file("res://scenes/levels/l3/l3_map.tscn")
+		)
+	else:
+		# ALL 3 TRIES EXHAUSTED: Game Over!
+		if hud_action:
+			hud_action.text = "EXPEDITION FAILED"
+		if hud_objective:
+			hud_objective.text = "[ ! ] ALL 3 TRIES EXHAUSTED - Darkness overwhelms the Sanctum..."
+			hud_objective.modulate = Color(1.0, 0.2, 0.2)
+
+		if grm and grm.has_method("end_run_as_defeated"):
+			grm.end_run_as_defeated()
+
+		# Fade out and transition to game over screen
+		tree.create_timer(1.6).timeout.connect(func():
+			Engine.time_scale = 1.0
+			var active_tree = get_tree()
+			if active_tree:
+				active_tree.change_scene_to_file("res://scenes/ui/game_over.tscn")
 		)
 
 func _update_hp_display(hp: int) -> void:
@@ -600,10 +644,11 @@ func _handle_interact() -> void:
 		_interact_debounce_timer = 0.50
 		_reclaim_blessing()
 		return
-	# South Exit
+	# South Exit (Entrance Gate - Sealed Shut)
 	elif player_near_exit:
 		_interact_debounce_timer = 0.50
-		_trigger_exit()
+		if hud_action:
+			hud_action.text = "The Sanctum gates are sealed shut. There is no escape!"
 		return
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -1010,7 +1055,7 @@ func _on_exit_entered(body: Node3D) -> void:
 	if body == player:
 		player_near_exit = true
 		if exit_prompt:
-			exit_prompt.visible = true
+			exit_prompt.visible = false
 
 func _on_exit_exited(body: Node3D) -> void:
 	if body == player:

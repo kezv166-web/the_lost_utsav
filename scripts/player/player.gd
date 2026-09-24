@@ -739,6 +739,12 @@ func transform_to_human() -> void:
 func take_damage(amount: int = 1, knockback_source: Vector3 = Vector3.ZERO) -> void:
 	if is_invulnerable or health <= 0:
 		return
+
+	var ddm = get_node_or_null("/root/DynamicDifficultyManager")
+	if ddm:
+		amount = ddm.get_modified_incoming_damage(amount)
+		ddm.record_player_damage(float(amount), float(max_health))
+
 	health = max(0, health - amount)
 	is_invulnerable = true
 	invulnerable_timer = 1.0

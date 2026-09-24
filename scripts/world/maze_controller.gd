@@ -8,8 +8,8 @@ extends Node3D
 @onready var exit_gate_visual = $Interactables/MazeExit/GateVisual
 @onready var key_visual = $Interactables/GoldenKey/KeyVisual
 
-@onready var hud_form: Label = ($MazeHUD/FormContainer/FormBadge if has_node("MazeHUD/FormContainer/FormBadge") else get_node_or_null("MazeHUD/Margin/VBox/TopBar/FormBadge"))
-@onready var hud_objective: Label = ($MazeHUD/ObjectiveContainer/ObjectiveLabel if has_node("MazeHUD/ObjectiveContainer/ObjectiveLabel") else get_node_or_null("MazeHUD/Margin/VBox/TopBar/ObjectiveLabel"))
+@onready var hud_form: Label = ($MazeHUD/FormContainer/Margin/FormBadge if has_node("MazeHUD/FormContainer/Margin/FormBadge") else get_node_or_null("MazeHUD/Margin/VBox/TopBar/FormBadge"))
+@onready var hud_objective: Label = ($MazeHUD/ObjectiveContainer/Margin/ObjectiveLabel if has_node("MazeHUD/ObjectiveContainer/Margin/ObjectiveLabel") else get_node_or_null("MazeHUD/Margin/VBox/TopBar/ObjectiveLabel"))
 @onready var hud_keys: Label = get_node_or_null("MazeHUD/Margin/VBox/TopBar/KeyTracker")
 @onready var hud_message: Label = ($MazeHUD/MessageBanner if has_node("MazeHUD/MessageBanner") else get_node_or_null("MazeHUD/Margin/MessageBanner"))
 
@@ -307,6 +307,7 @@ func _on_exit_interacted() -> void:
 			var tw = create_tween()
 			tw.tween_property(exit_gate_visual, "position:y", 3.2, 0.8).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		_show_hud_message("CLICK-CLANK! The heavy iron portcullis rises!\nPress [E] to enter the Inner Castle Sanctum!", 5.0)
+		_update_hud()
 		print("PASSED: Exit gate unlocked with key and opened successfully!")
 	else:
 		_show_hud_message("The iron portcullis is locked solid.\nSearch the labyrinth corridors to find the Golden Key.", 3.5)
@@ -354,10 +355,13 @@ func _update_hud() -> void:
 	if hud_objective:
 		if exit_unlocked:
 			hud_objective.text = "[ ! ] Objective: Proceed through the Exit Gate"
+			hud_objective.modulate = Color(0.4, 1.0, 0.5)
 		elif has_key:
-			hud_objective.text = "[ ! ] Objective: Unlock the Exit Gate [1/1]"
+			hud_objective.text = "[ ! ] Objective: Key Acquired [1/1]! Head to the Exit Gate"
+			hud_objective.modulate = Color(1.0, 0.85, 0.3)
 		else:
 			hud_objective.text = "[ ! ] Objective: Find the Golden Key [0/1]"
+			hud_objective.modulate = Color(1.0, 0.85, 0.4)
 	if hud_keys:
 		hud_keys.visible = false
 

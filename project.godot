@@ -20,6 +20,7 @@ MusicManager="*res://scripts/music_manager.gd"
 GameRunManager="*res://scripts/game_run_manager.gd"
 SceneLoader="*res://scripts/ui/scene_loader.gd"
 MobileControls="*res://scenes/ui/mobile_controls.tscn"
+DynamicDifficultyManager="*res://scripts/dynamic_difficulty_manager.gd"
 
 [display]
 
