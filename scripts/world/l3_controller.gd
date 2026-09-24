@@ -48,6 +48,7 @@ var _interact_debounce_timer: float = 0.0
 
 # GLB collision helper
 var _glb_collision: Node = null
+var _rock_template: Node3D = null
 
 # Chota Asur Minions System
 var chota_asur_scene: PackedScene = preload("res://scenes/enemy/chota_asur.tscn")
@@ -239,6 +240,9 @@ func _setup_interactables() -> void:
 func _setup_rocks() -> void:
 	var rocks_parent = get_node_or_null("ArenaProps/MovableRocks")
 	if rocks_parent:
+		if rocks_parent.get_child_count() > 0:
+			var first_rock = rocks_parent.get_child(0)
+			_rock_template = first_rock.duplicate()
 		for rock in rocks_parent.get_children():
 			var area = rock.get_node_or_null("InteractArea")
 			if area:
@@ -491,7 +495,11 @@ func _physics_process(delta: float) -> void:
 			var rocks_parent = get_node_or_null("ArenaProps/MovableRocks")
 			if rocks_parent:
 				for rock in rocks_parent.get_children():
-					if rock is Node3D and rock != held_rock:
+					if rock is Node3D and rock != held_rock and not rock.is_queued_for_deletion():
+						# Boss Danger Zone check: do not allow grabbing rocks inside Asur's inner melee radius
+						if asur and is_instance_valid(asur) and asur.visible and ("health" in asur and asur.health > 0):
+							if rock.global_position.distance_to(asur.global_position) < 1.8:
+								continue
 						var dist = player.global_position.distance_to(rock.global_position)
 						if dist < min_dist:
 							min_dist = dist
@@ -715,8 +723,6 @@ func _throw_held_rock() -> void:
 func _on_rock_impact(rock: Node3D) -> void:
 	if not is_instance_valid(rock):
 		return
-	# Re-enable collision
-	_set_rock_collision_disabled(rock, false)
 	
 	# Check impact on Asur boss
 	if asur and is_instance_valid(asur) and asur.visible:
@@ -736,6 +742,24 @@ func _on_rock_impact(rock: Node3D) -> void:
 						hud_action.text = ""
 				)
 
+			# Visceral stone impact feedback (Top game studio feel)
+			_spawn_rubble_burst(rock.global_position)
+			if camera_rig and camera_rig.has_method("shake"):
+				camera_rig.shake(0.35, 18.0)
+
+			# Clear interaction references
+			if nearby_rock == rock:
+				nearby_rock = null
+			if held_rock == rock:
+				held_rock = null
+
+			# BOULDER SHATTERS ON IMPACT - consumed heavy ammunition!
+			rock.queue_free()
+			return
+
+	# If the rock missed the boss and hit the ground intact
+	_set_rock_collision_disabled(rock, false)
+	
 	# Spawn dust particles
 	var dust = rock.get_node_or_null("ImpactDust")
 	if dust is CPUParticles3D:
@@ -782,11 +806,27 @@ func smash_nearby_pillars(epicenter: Vector3, radius: float = 7.5) -> void:
 			smash_pillar_direct(child)
 			smashed_any = true
 
-	# Robustness fallback: if no pillars remain to smash and player has fewer than 2 active rocks, drop ceiling tremor rock
-	if not smashed_any:
-		var rocks_parent = get_node_or_null("ArenaProps/MovableRocks")
-		if rocks_parent and rocks_parent.get_child_count() < 2:
-			_spawn_falling_rock(Vector3(randf_range(-2.5, 2.5), 4.5, randf_range(1.0, 5.0)))
+	# Boss Shockwave sweeps loose debris: crush any loose unheld rocks within slam radius
+	var rocks_parent = get_node_or_null("ArenaProps/MovableRocks")
+	var active_field_rock_count: int = 0
+	if rocks_parent:
+		for r in rocks_parent.get_children():
+			if not (r is Node3D) or r.is_queued_for_deletion():
+				continue
+			if r == held_rock:
+				continue
+			var r_dist = r.global_position.distance_to(epicenter)
+			if r_dist <= (radius * 0.7):
+				_spawn_rubble_burst(r.global_position)
+				if nearby_rock == r:
+					nearby_rock = null
+				r.queue_free()
+			else:
+				active_field_rock_count += 1
+
+	# Robustness fallback: if fewer than 2 active rocks remain on the field and Asur is alive, drop ceiling tremor rock
+	if active_field_rock_count < 2 and asur and is_instance_valid(asur) and asur.visible and ("health" in asur and asur.health > 0):
+		_spawn_falling_rock(Vector3(randf_range(-2.5, 2.5), 4.5, randf_range(1.0, 5.0)))
 
 func _spawn_rubble_burst(pos: Vector3) -> void:
 	var particles := CPUParticles3D.new()
@@ -806,12 +846,15 @@ func _spawn_rubble_burst(pos: Vector3) -> void:
 
 func _spawn_falling_rock(spawn_pos: Vector3) -> void:
 	var rocks_parent = get_node_or_null("ArenaProps/MovableRocks")
-	if not rocks_parent or rocks_parent.get_child_count() == 0:
+	if not rocks_parent:
+		return
+	if not _rock_template and rocks_parent.get_child_count() > 0:
+		_rock_template = rocks_parent.get_child(0).duplicate()
+	if not _rock_template:
 		return
 		
 	_dropped_rock_count += 1
-	var template_rock = rocks_parent.get_child(0)
-	var new_rock = template_rock.duplicate()
+	var new_rock = _rock_template.duplicate()
 	new_rock.name = "DroppedRock_%d" % _dropped_rock_count
 	rocks_parent.add_child(new_rock)
 	
