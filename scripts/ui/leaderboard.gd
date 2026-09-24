@@ -512,16 +512,27 @@ func _create_row_panel(entry: Dictionary) -> PanelContainer:
 	hbox.add_child(avatar_rect)
 
 	# 4. Player Name
+	# 4. Player Name & Title
 	var lbl_player = Label.new()
 	lbl_player.custom_minimum_size = Vector2(170, 24)
 	lbl_player.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	var player_name = entry.get("player", "Warrior")
+	var entry_title = str(entry.get("title", ""))
+
 	if is_self:
-		var active_name = _data_manager.get_player_profile().get("name", player_name)
-		lbl_player.text = "%s [YOU]" % [active_name]
+		var profile = _data_manager.get_player_profile()
+		var active_name = profile.get("name", player_name)
+		var active_title = str(profile.get("selected_title", entry_title))
+		if not active_title.is_empty():
+			lbl_player.text = "%s %s [YOU]" % [active_title, active_name]
+		else:
+			lbl_player.text = "%s [YOU]" % [active_name]
 		lbl_player.add_theme_color_override("font_color", Color(0.4, 1.0, 0.5))
 	else:
-		lbl_player.text = player_name
+		if not entry_title.is_empty():
+			lbl_player.text = "%s %s" % [entry_title, player_name]
+		else:
+			lbl_player.text = player_name
 		if rank == 1:
 			lbl_player.add_theme_color_override("font_color", Color(1.0, 0.90, 0.50))
 		else:
@@ -610,8 +621,97 @@ func _update_profile_card() -> void:
 		else:
 			profile_rank_lbl.text = "--"
 
+	# Title Selector Button in Profile Card
+	var vbox = get_node_or_null("RightSideArea/ProfileCard/VBox")
+	if vbox:
+		var btn_title = vbox.get_node_or_null("BtnCycleTitle") as Button
+		if not btn_title:
+			btn_title = Button.new()
+			btn_title.name = "BtnCycleTitle"
+			btn_title.custom_minimum_size = Vector2(150, 24)
+			btn_title.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+			btn_title.add_theme_font_size_override("font_size", 10)
+			var sb = StyleBoxFlat.new()
+			sb.bg_color = Color(0.14, 0.12, 0.08, 0.9)
+			sb.border_width_left = 1
+			sb.border_width_top = 1
+			sb.border_width_right = 1
+			sb.border_width_bottom = 1
+			sb.border_color = Color(0.85, 0.70, 0.25, 0.8)
+			sb.set_corner_radius_all(4)
+			btn_title.add_theme_stylebox_override("normal", sb)
+			btn_title.add_theme_stylebox_override("hover", sb)
+			btn_title.add_theme_stylebox_override("pressed", sb)
+			btn_title.pressed.connect(_on_cycle_title_pressed)
+			var name_idx = profile_name_lbl.get_index() if profile_name_lbl else 2
+			vbox.add_child(btn_title)
+			vbox.move_child(btn_title, name_idx + 1)
+
+		var cur_title = _data_manager.get_selected_title()
+		if cur_title.is_empty():
+			btn_title.text = "TITLE: [NONE] ▾"
+			btn_title.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+		else:
+			btn_title.text = "TITLE: %s ▾" % cur_title
+			btn_title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.35))
+
+		# Achievements status box in Profile Card
+		var ach_box = vbox.get_node_or_null("AchievementsBox")
+		if not ach_box:
+			ach_box = VBoxContainer.new()
+			ach_box.name = "AchievementsBox"
+			ach_box.add_theme_constant_override("separation", 2)
+			vbox.add_child(ach_box)
+
+			var ach_lbl = Label.new()
+			ach_lbl.name = "AchHeader"
+			ach_lbl.text = "ACHIEVEMENTS"
+			ach_lbl.add_theme_font_size_override("font_size", 9)
+			ach_lbl.add_theme_color_override("font_color", Color(0.85, 0.75, 0.5))
+			ach_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			ach_box.add_child(ach_lbl)
+
+			var list_lbl = Label.new()
+			list_lbl.name = "AchList"
+			list_lbl.add_theme_font_size_override("font_size", 9)
+			list_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			ach_box.add_child(list_lbl)
+
+		var ach_list = ach_box.get_node_or_null("AchList") as Label
+		if ach_list:
+			var m_thief = _data_manager.has_achievement("master_thief")
+			var d_runner = _data_manager.has_achievement("divine_runner")
+			var a_slayer = _data_manager.has_achievement("asur_slayer")
+
+			var txt = ""
+			txt += "%s Master Thief (<20s)\n" % ("[✔]" if m_thief else "[ ]")
+			txt += "%s Divine Runner (<45s)\n" % ("[✔]" if d_runner else "[ ]")
+			txt += "%s Asur Slayer (Try 1)" % ("[✔]" if a_slayer else "[ ]")
+			ach_list.text = txt
+			ach_list.add_theme_color_override("font_color", Color(0.85, 0.85, 0.85))
+
 	if btn_edit_name:
 		btn_edit_name.visible = false
+
+func _on_cycle_title_pressed() -> void:
+	if _sound_synth:
+		_sound_synth.play_click()
+	var unlocked: Array = _data_manager.get_unlocked_titles()
+	var options: Array = [""]
+	for t in unlocked:
+		if not options.has(t):
+			options.append(t)
+
+	if options.size() <= 1:
+		return
+
+	var cur = _data_manager.get_selected_title()
+	var cur_idx = options.find(cur)
+	var next_idx = (cur_idx + 1) % options.size()
+	var next_title = options[next_idx]
+	_data_manager.set_selected_title(next_title)
+	_update_profile_card()
+	_refresh_table_view()
 
 # ---------------------------------------------------------------------------
 # PROFILE MODAL (WARRIOR NAME CUSTOMIZATION)

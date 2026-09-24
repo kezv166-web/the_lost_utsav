@@ -1,5 +1,7 @@
 extends Node3D
 
+const ExtrasTrialManager = preload("res://scripts/extras_trial_manager.gd")
+
 # --- Node References ---
 @onready var player: CharacterBody3D = $Player
 @onready var camera_rig: Node3D = $CameraRig
@@ -71,11 +73,17 @@ func _ready() -> void:
 	if music_mgr and music_mgr.has_method("play"):
 		music_mgr.play("l3_boss")
 		
-	var grm = get_node_or_null("/root/GameRunManager")
-	if grm:
-		if not grm.is_run_active:
-			grm.start_new_run()
-		grm.set_current_level(3)
+	var extras = ExtrasTrialManager.get_instance()
+	if extras.is_active:
+		var grm = get_node_or_null("/root/GameRunManager")
+		if grm:
+			grm.is_run_active = false
+	else:
+		var grm = get_node_or_null("/root/GameRunManager")
+		if grm:
+			if not grm.is_run_active:
+				grm.start_new_run()
+			grm.set_current_level(3)
 		
 	_ensure_l3_textures_cleaned()
 	_setup_player()
@@ -86,6 +94,9 @@ func _ready() -> void:
 	_setup_glb_collisions()
 	_setup_asur()
 	_setup_ui()
+	
+	if extras.is_active:
+		_setup_extras_mode(extras.active_tier)
 
 # -------------------------------------------------------------------------
 # Dynamic Texture Cleaning (Removes baked-in checkerboard residues)
@@ -330,6 +341,11 @@ func spawn_chota_asur(pos: Vector3 = Vector3.ZERO) -> Node3D:
 		minion.set_player(player)
 	minion.minion_died.connect(_on_minion_died)
 	
+	var extras = ExtrasTrialManager.get_instance()
+	if extras.is_active and extras.active_tier == 3:
+		if minion.has_method("set_tier_tuning"):
+			minion.set_tier_tuning(1.25, 1.3, true)
+	
 	active_chota_asurs.append(minion)
 	print("[L3] Spawned Chota Asur #%d at %s (Slot %d)" % [active_chota_asurs.size(), pos, minion.assigned_slot])
 	return minion
@@ -404,6 +420,12 @@ func _on_asur_defeated() -> void:
 	active_chota_asurs.clear()
 	current_attacker = null
 
+	var extras = ExtrasTrialManager.get_instance()
+	if extras.is_active:
+		var unlocked_next = extras.record_tier_victory(extras.active_tier)
+		_show_extras_victory_modal(extras.active_tier, unlocked_next)
+		return
+
 	# Unlock path to the Sacred Murti by disabling rear barrier
 	var rear_barrier_col = get_node_or_null("Boundaries/AsurRearBarrier/CollisionShape3D")
 	if rear_barrier_col and rear_barrier_col is CollisionShape3D:
@@ -412,6 +434,13 @@ func _on_asur_defeated() -> void:
 	if hud_objective:
 		hud_objective.text = "[ ! ] ASUR GENERAL DEFEATED! Proceed to the Sacred Murti to claim the blessing!"
 		hud_objective.modulate = Color(1.0, 0.85, 0.3)
+
+	var grm = get_node_or_null("/root/GameRunManager")
+	var cur_attempt: int = grm.level3_attempts if grm else 1
+	if cur_attempt == 1:
+		var lm = LeaderboardManager.get_instance()
+		if lm:
+			lm.unlock_achievement("asur_slayer", "[Asur Slayer]")
 
 func _setup_ui() -> void:
 	if dialogue_box:
@@ -461,6 +490,8 @@ func _setup_ui() -> void:
 	var ui = get_node_or_null("UI")
 	if ui and not ui.get_node_or_null("SpeedrunHUD"):
 		var speed_hud = hud_scene.instantiate()
+		if ExtrasTrialManager.get_instance().is_active:
+			speed_hud.visible = false
 		ui.add_child(speed_hud)
 
 	var tutorial_scene = preload("res://scenes/ui/controls_tutorial_hud.tscn")
@@ -481,6 +512,20 @@ func _on_player_died() -> void:
 	if is_restarting_level:
 		return
 	is_restarting_level = true
+
+	var extras = ExtrasTrialManager.get_instance()
+	if extras.is_active:
+		Engine.time_scale = 1.0
+		_update_hp_display(0)
+		if is_instance_valid(player):
+			player.set_physics_process(false)
+			player.velocity = Vector3.ZERO
+			var spr = player.get_node_or_null("AnimatedSprite3D")
+			if spr:
+				var tw = create_tween()
+				tw.tween_property(spr, "modulate", Color(1.0, 0.2, 0.2, 0.0), 0.8)
+		_show_extras_defeat_modal(extras.active_tier)
+		return
 
 	var grm = get_node_or_null("/root/GameRunManager")
 	var max_attempts: int = 3
@@ -572,8 +617,16 @@ func _physics_process(delta: float) -> void:
 		minion_spawn_timer -= delta
 		if minion_spawn_timer <= 0.0:
 			minion_spawn_timer = minion_spawn_interval
-			if active_chota_asurs.size() < max_chota_asurs:
-				spawn_chota_asur()
+			var extras = ExtrasTrialManager.get_instance()
+			if extras.is_active and extras.active_tier == 3:
+				# Tier 3: Coordinated pincer spawn (two minions simultaneously from opposing sides)
+				if active_chota_asurs.size() < max_chota_asurs:
+					spawn_chota_asur()
+				if active_chota_asurs.size() < max_chota_asurs:
+					spawn_chota_asur()
+			else:
+				if active_chota_asurs.size() < max_chota_asurs:
+					spawn_chota_asur()
 
 	# 1. Subtle warm torch flicker
 	for i in range(torch_lights.size()):
@@ -1071,6 +1124,8 @@ func _reclaim_blessing() -> void:
 # Area Signal Callbacks
 # -------------------------------------------------------------------------
 func _on_altar_entered(body: Node3D) -> void:
+	if ExtrasTrialManager.get_instance().is_active:
+		return
 	if body == player:
 		player_near_altar = true
 		if altar_prompt and not blessing_claimed:
@@ -1132,3 +1187,280 @@ func _trigger_exit() -> void:
 				if active_tree:
 					active_tree.change_scene_to_file(end_storyline_path)
 			)
+
+# -------------------------------------------------------------------------
+# Extras Mode: Asur Trials (100% Isolated Boss Arena Mode)
+# -------------------------------------------------------------------------
+func _setup_extras_mode(tier: int) -> void:
+	# Enforce strict unlock gating
+	var mgr = ExtrasTrialManager.get_instance()
+	mgr.load_progression()
+	if not mgr.is_tier_unlocked(tier):
+		print("[L3Controller] Access Denied: Tier %d is locked! Falling back to highest unlocked Tier %d." % [tier, mgr.highest_unlocked_tier])
+		tier = mgr.highest_unlocked_tier
+		mgr.active_tier = tier
+
+	print("[L3Controller] Initializing EXTRAS TRIAL Tier %d (Strict Leaderboard Isolation)" % tier)
+	
+	# 1. Teleport player directly into the combat arena (Zero Storyline delay)
+	if is_instance_valid(player):
+		player.global_position = Vector3(0.0, 0.4, 5.0)
+
+	# 2. Player Health Tuning per Tier:
+	# Tier 1: 250 HP
+	# Tier 2: 300 HP
+	# Tier 3: 500 HP
+	var player_target_hp: int = 250
+	match tier:
+		1:
+			player_target_hp = 250
+		2:
+			player_target_hp = 300
+		3:
+			player_target_hp = 500
+
+	if is_instance_valid(player):
+		player.max_health = player_target_hp
+		player.health = player_target_hp
+		_update_hp_display(player.health)
+		print("[L3Controller] Player Health configured for Tier %d: %d HP" % [tier, player.max_health])
+	
+	# 3. Configure Asur parameters based on active tier
+	# Tier 1: 50 ATK, 2.8s CD, 0.95s Telegraph
+	# Tier 2: 58 ATK, 1.8s CD (-35%), 0.70s Telegraph
+	# Tier 3: 65 ATK, 1.8s CD, 0.70s Telegraph + tactical minion ambush
+	if is_instance_valid(asur) and asur.has_method("set_combat_parameters"):
+		match tier:
+			1:
+				asur.set_combat_parameters(50, 50, 35, 2.8, 0.95)
+			2:
+				asur.set_combat_parameters(58, 58, 40, 1.8, 0.70)
+			3:
+				asur.set_combat_parameters(65, 65, 45, 1.8, 0.70)
+				
+	# 4. Configure HUD banner & objective
+	if hud_title:
+		hud_title.visible = true
+		hud_title.modulate.a = 1.0
+		match tier:
+			1:
+				hud_title.text = "◆ ASUR TRIAL: TIER 1 - GENERAL'S DUEL ◆"
+			2:
+				hud_title.text = "◆ ASUR TRIAL: TIER 2 - ENRAGED ASUR ◆"
+			3:
+				hud_title.text = "◆ ASUR TRIAL: TIER 3 - OVERLORD & FLANKERS ◆"
+				
+	if hud_objective:
+		match tier:
+			1:
+				hud_objective.text = "[ TRIAL 1 ] 250 HP Player vs 50 ATK Asur | 2.8s CD | 0.95s Telegraph"
+				hud_objective.modulate = Color(1.0, 0.88, 0.4)
+			2:
+				hud_objective.text = "[ TRIAL 2 ] 300 HP Player vs 58 ATK Asur | 1.8s CD (-35%) | 0.70s Telegraph"
+				hud_objective.modulate = Color(1.0, 0.65, 0.3)
+			3:
+				hud_objective.text = "[ TRIAL 3 ] 500 HP Player vs 65 ATK Overlord | Tactical Flankers & Boulder Ambush"
+				hud_objective.modulate = Color(1.0, 0.35, 0.35)
+				
+	# 5. Hide Speedrun HUD if present to avoid any leaderboard / time clash
+	var ui = get_node_or_null("UI")
+	if ui:
+		var speed_hud = ui.get_node_or_null("SpeedrunHUD")
+		if speed_hud:
+			speed_hud.visible = false
+			
+	# 5. Instant Combat Start (Zero Storyline, instant roar)
+	boss_encounter_started = true
+	if is_instance_valid(asur) and asur.has_method("roar"):
+		asur.roar()
+		
+	# 6. Tier 3 Tactical Minion Initial Pincer Spawn
+	if tier == 3:
+		# Coordinated West & East colonnade flanker spawn
+		spawn_chota_asur(Vector3(-5.8, 0.1, 2.5))
+		spawn_chota_asur(Vector3(5.8, 0.1, 2.5))
+
+func _show_extras_victory_modal(tier: int, unlocked_next: bool) -> void:
+	var ui = get_node_or_null("UI")
+	if not ui:
+		return
+		
+	var modal = PanelContainer.new()
+	modal.name = "ExtrasVictoryModal"
+	modal.custom_minimum_size = Vector2(460, 270)
+	modal.set_anchors_preset(Control.PRESET_CENTER)
+	modal.offset_left = -230.0
+	modal.offset_top = -135.0
+	modal.offset_right = 230.0
+	modal.offset_bottom = 135.0
+	
+	var sb = StyleBoxFlat.new()
+	sb.bg_color = Color(0.06, 0.07, 0.1, 0.97)
+	sb.border_width_left = 3
+	sb.border_width_top = 3
+	sb.border_width_right = 3
+	sb.border_width_bottom = 3
+	sb.border_color = Color(0.9, 0.75, 0.28, 1.0)
+	sb.set_corner_radius_all(10)
+	sb.shadow_color = Color(0, 0, 0, 0.85)
+	sb.shadow_size = 18
+	modal.add_theme_stylebox_override("panel", sb)
+	
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 14)
+	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vbox.offset_left = 24.0
+	vbox.offset_top = 22.0
+	vbox.offset_right = -24.0
+	vbox.offset_bottom = -22.0
+	modal.add_child(vbox)
+	
+	var title = Label.new()
+	title.text = "★ TRIAL %d COMPLETE! ★" % tier
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 22)
+	title.add_theme_color_override("font_color", Color(1.0, 0.88, 0.35))
+	vbox.add_child(title)
+	
+	var desc = Label.new()
+	var tier_names = ["General's Duel", "Enraged Asur", "Overlord & Tactical Minions"]
+	var tier_name = tier_names[tier - 1] if tier >= 1 and tier <= 3 else "Trial"
+	if unlocked_next and tier < 3:
+		desc.text = "You conquered %s!\n★ TIER %d HAS BEEN UNLOCKED! ★" % [tier_name, tier + 1]
+	elif tier == 3:
+		desc.text = "MASTER OF COMBAT!\nYou have conquered all 3 Asur Trials!"
+	else:
+		desc.text = "You conquered %s cleanly!" % tier_name
+	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	desc.add_theme_font_size_override("font_size", 13)
+	desc.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9))
+	vbox.add_child(desc)
+	
+	var hbox = HBoxContainer.new()
+	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox.add_theme_constant_override("separation", 12)
+	vbox.add_child(hbox)
+	
+	if tier < 3:
+		var btn_next = _create_modal_button("NEXT TIER", Color(0.18, 0.45, 0.22, 1.0), Color(0.9, 1.0, 0.6))
+		btn_next.pressed.connect(func():
+			ExtrasTrialManager.get_instance().start_trial(tier + 1)
+			get_tree().reload_current_scene()
+		)
+		hbox.add_child(btn_next)
+		btn_next.grab_focus()
+		
+	var btn_retry = _create_modal_button("RETRY TIER", Color(0.14, 0.16, 0.24, 1.0), Color(0.9, 0.85, 0.7))
+	btn_retry.pressed.connect(func():
+		ExtrasTrialManager.get_instance().start_trial(tier)
+		get_tree().reload_current_scene()
+	)
+	hbox.add_child(btn_retry)
+	if tier == 3:
+		btn_retry.grab_focus()
+		
+	var btn_menu = _create_modal_button("RETURN TO MENU", Color(0.35, 0.1, 0.1, 1.0), Color(1.0, 0.85, 0.85))
+	btn_menu.pressed.connect(func():
+		ExtrasTrialManager.get_instance().stop_trial()
+		get_tree().change_scene_to_file("res://scenes/ui/start_page.tscn")
+	)
+	hbox.add_child(btn_menu)
+	
+	ui.add_child(modal)
+
+func _show_extras_defeat_modal(tier: int) -> void:
+	var ui = get_node_or_null("UI")
+	if not ui:
+		return
+		
+	var modal = PanelContainer.new()
+	modal.name = "ExtrasDefeatModal"
+	modal.custom_minimum_size = Vector2(440, 230)
+	modal.set_anchors_preset(Control.PRESET_CENTER)
+	modal.offset_left = -220.0
+	modal.offset_top = -115.0
+	modal.offset_right = 220.0
+	modal.offset_bottom = 115.0
+	
+	var sb = StyleBoxFlat.new()
+	sb.bg_color = Color(0.08, 0.04, 0.05, 0.97)
+	sb.border_width_left = 3
+	sb.border_width_top = 3
+	sb.border_width_right = 3
+	sb.border_width_bottom = 3
+	sb.border_color = Color(0.9, 0.25, 0.2, 1.0)
+	sb.set_corner_radius_all(10)
+	sb.shadow_color = Color(0, 0, 0, 0.85)
+	sb.shadow_size = 18
+	modal.add_theme_stylebox_override("panel", sb)
+	
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 14)
+	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vbox.offset_left = 24.0
+	vbox.offset_top = 22.0
+	vbox.offset_right = -24.0
+	vbox.offset_bottom = -22.0
+	modal.add_child(vbox)
+	
+	var title = Label.new()
+	title.text = "TRIAL FAILED"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 22)
+	title.add_theme_color_override("font_color", Color(1.0, 0.35, 0.35))
+	vbox.add_child(title)
+	
+	var desc = Label.new()
+	desc.text = "The Asur's fury overwhelmed you.\nStudy his telegraphs and strike during recovery!"
+	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	desc.add_theme_font_size_override("font_size", 13)
+	desc.add_theme_color_override("font_color", Color(0.85, 0.8, 0.8))
+	vbox.add_child(desc)
+	
+	var hbox = HBoxContainer.new()
+	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox.add_theme_constant_override("separation", 14)
+	vbox.add_child(hbox)
+	
+	var btn_retry = _create_modal_button("RETRY TIER %d" % tier, Color(0.18, 0.22, 0.32, 1.0), Color(0.9, 0.9, 1.0))
+	btn_retry.pressed.connect(func():
+		ExtrasTrialManager.get_instance().start_trial(tier)
+		get_tree().reload_current_scene()
+	)
+	hbox.add_child(btn_retry)
+	btn_retry.grab_focus()
+	
+	var btn_menu = _create_modal_button("RETURN TO MENU", Color(0.35, 0.1, 0.1, 1.0), Color(1.0, 0.85, 0.85))
+	btn_menu.pressed.connect(func():
+		ExtrasTrialManager.get_instance().stop_trial()
+		get_tree().change_scene_to_file("res://scenes/ui/start_page.tscn")
+	)
+	hbox.add_child(btn_menu)
+	
+	ui.add_child(modal)
+
+func _create_modal_button(txt: String, bg_col: Color, font_col: Color) -> Button:
+	var btn = Button.new()
+	btn.text = txt
+	btn.custom_minimum_size = Vector2(130, 36)
+	btn.focus_mode = Control.FOCUS_ALL
+	btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	btn.add_theme_font_size_override("font_size", 13)
+	btn.add_theme_color_override("font_color", font_col)
+	
+	var sb = StyleBoxFlat.new()
+	sb.bg_color = bg_col
+	sb.border_width_left = 1
+	sb.border_width_top = 1
+	sb.border_width_right = 1
+	sb.border_width_bottom = 1
+	sb.border_color = Color(0.85, 0.7, 0.25, 0.9)
+	sb.set_corner_radius_all(6)
+	btn.add_theme_stylebox_override("normal", sb)
+	
+	var sb_h = sb.duplicate()
+	sb_h.bg_color = bg_col.lightened(0.2)
+	btn.add_theme_stylebox_override("hover", sb_h)
+	btn.add_theme_stylebox_override("focus", sb_h)
+	return btn
+

@@ -29,6 +29,9 @@ enum Direction {
 }
 
 @export var max_health: int = 1000
+@export var strike_damage: int = 50
+@export var quake_damage: int = 50
+@export var spikes_damage: int = 35
 @export var attack_range: float = 3.2
 @export var stomp_range: float = 5.5
 @export var attack_cooldown_duration: float = 3.0
@@ -501,6 +504,8 @@ func _trigger_quake_slam() -> void:
 	# 3. Spawn Expanding Earthquake Area
 	if quake_scene:
 		var quake = quake_scene.instantiate()
+		if "damage" in quake:
+			quake.damage = quake_damage
 		if parent_node:
 			parent_node.add_child(quake)
 		quake.setup(spawn_pos)
@@ -513,6 +518,8 @@ func _spawn_ground_spikes() -> void:
 	if not spikes_scene:
 		return
 	var spikes = spikes_scene.instantiate()
+	if "damage" in spikes:
+		spikes.damage = spikes_damage
 	var spawn_pos = global_position
 	var travel_dir = Vector3(0, 0, 1)
 	var anim_name = "spikes_down"
@@ -554,7 +561,15 @@ func _check_strike_hit() -> void:
 	if in_strike_arc and dist <= (attack_range + 0.3):
 		has_hit_in_current_attack = true
 		if player_ref.has_method("take_damage"):
-			player_ref.take_damage(50, global_position)
+			player_ref.take_damage(strike_damage, global_position)
+
+func set_combat_parameters(s_dmg: int, q_dmg: int, spk_dmg: int, cd: float, tel: float) -> void:
+	strike_damage = s_dmg
+	quake_damage = q_dmg
+	spikes_damage = spk_dmg
+	attack_cooldown_duration = cd
+	telegraph_duration = tel
+	print("[Asur Boss] Configured parameters: Strike=%d, Quake=%d, Spikes=%d, CD=%.2fs, Telegraph=%.2fs" % [strike_damage, quake_damage, spikes_damage, attack_cooldown_duration, telegraph_duration])
 
 func take_damage(amount: int = 40) -> void:
 	if health <= 0:

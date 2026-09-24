@@ -8,12 +8,14 @@ extends Control
 const SCENE_STORYLINE: String = "res://scenes/ui/storyline.tscn"
 const SCENE_LEADERBOARD: String = "res://scenes/ui/leaderboard.tscn"
 const SCENE_LEVEL_OUTDOOR: String = "res://scenes/levels/outdoor/outdoor_map.tscn"
+const ExtrasTrialManager = preload("res://scripts/extras_trial_manager.gd")
 
 @onready var background: TextureRect = $Background
 @onready var title_logo: TextureRect = $TitleLogo
 
 @onready var btn_play: Button = $MenuContainer/VBoxButtons/PlayButton
 @onready var btn_story: Button = $MenuContainer/VBoxButtons/StoryButton
+@onready var btn_extras: Button = $MenuContainer/VBoxButtons/ExtrasButton
 @onready var btn_leaderboard: Button = $MenuContainer/VBoxButtons/LeaderboardButton
 @onready var btn_settings: Button = $MenuContainer/VBoxButtons/SettingsButton
 @onready var btn_exit: Button = $MenuContainer/VBoxButtons/ExitButton
@@ -27,6 +29,12 @@ const SCENE_LEVEL_OUTDOOR: String = "res://scenes/levels/outdoor/outdoor_map.tsc
 @onready var credits_modal: Control = $ModalLayer/CreditsModal
 @onready var help_modal: Control = $ModalLayer/HelpModal
 @onready var settings_modal: Control = $ModalLayer/SettingsModal
+@onready var extras_modal: Control = $ModalLayer/ExtrasTrialsModal
+@onready var story_lock_notice: Label = $ModalLayer/ExtrasTrialsModal/Panel/VBox/StoryLockNotice
+@onready var btn_tier1: Button = $ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier1Card/Margin/HBox/Tier1Button
+@onready var btn_tier2: Button = $ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier2Card/Margin/HBox/Tier2Button
+@onready var btn_tier3: Button = $ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier3Card/Margin/HBox/Tier3Button
+@onready var extras_close: Button = $ModalLayer/ExtrasTrialsModal/Panel/VBox/CloseButton
 @onready var master_slider: HSlider = $ModalLayer/SettingsModal/Panel/VBox/Grid/MasterSlider
 @onready var music_slider: HSlider = $ModalLayer/SettingsModal/Panel/VBox/Grid/MusicSlider
 @onready var sfx_slider: HSlider = $ModalLayer/SettingsModal/Panel/VBox/Grid/SFXSlider
@@ -67,9 +75,17 @@ func _ready() -> void:
 	# 2. Connect Menu Button Signals
 	_setup_button(btn_play, _on_play_pressed)
 	_setup_button(btn_story, _on_story_pressed)
+	_setup_button(btn_extras, _on_extras_pressed)
 	_setup_button(btn_leaderboard, _on_leaderboard_pressed)
 	_setup_button(btn_settings, _on_settings_pressed)
 	_setup_button(btn_exit, _on_exit_pressed)
+
+	# Extras Trial Buttons
+	_setup_button(btn_tier1, func(): _start_trial(1))
+	_setup_button(btn_tier2, func(): _start_trial(2))
+	_setup_button(btn_tier3, func(): _start_trial(3))
+	if extras_close:
+		_setup_button(extras_close, _close_modals)
 	
 	# 3. Connect Bottom-Right Action Buttons
 	_setup_button(btn_controls, _on_controls_pressed)
@@ -127,6 +143,9 @@ func _ready() -> void:
 	# 5. Setup Warrior Profile Badge & Name Modal
 	_setup_profile_badge()
 	_setup_name_modal()
+	
+	# Initial refresh of Extras button/modal state
+	_refresh_extras_ui()
 	
 	# Close all modals initially
 	_close_modals()
@@ -347,6 +366,7 @@ func _show_modal(modal_node: Control) -> void:
 	if help_modal: help_modal.visible = false
 	if settings_modal: settings_modal.visible = false
 	if exit_modal: exit_modal.visible = false
+	if extras_modal: extras_modal.visible = false
 	if _name_modal: _name_modal.visible = (modal_node == _name_modal)
 	
 	if modal_node:
@@ -366,10 +386,119 @@ func _close_modals() -> void:
 	if help_modal: help_modal.visible = false
 	if settings_modal: settings_modal.visible = false
 	if exit_modal: exit_modal.visible = false
+	if extras_modal: extras_modal.visible = false
 	if _name_modal: _name_modal.visible = false
 	if modal_layer:
 		var exit_screen = modal_layer.get_node_or_null("WebExitScreen")
 		if exit_screen: exit_screen.visible = false
+
+func _on_extras_pressed() -> void:
+	_refresh_extras_ui()
+	_show_modal(extras_modal)
+
+func _refresh_extras_ui() -> void:
+	var lm = LeaderboardManager.get_instance()
+	var story_cleared = lm.is_story_completed()
+	
+	var mgr = ExtrasTrialManager.get_instance()
+	mgr.load_progression()
+	var highest = mgr.highest_unlocked_tier
+
+	var t1_desc = $ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier1Card/Margin/HBox/InfoVBox/TierDesc
+	var t2_desc = $ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier2Card/Margin/HBox/InfoVBox/TierDesc
+	var t3_desc = $ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier3Card/Margin/HBox/InfoVBox/TierDesc
+
+	if story_lock_notice:
+		story_lock_notice.visible = not story_cleared
+
+	if not story_cleared:
+		# Whole Extras mode is locked until story is completed once!
+		if btn_extras:
+			btn_extras.text = "EXTRAS 🔒"
+		if btn_tier1:
+			btn_tier1.disabled = true
+			btn_tier1.text = "LOCKED"
+			btn_tier1.modulate = Color(0.6, 0.6, 0.6, 0.7)
+			if t1_desc:
+				t1_desc.text = "[ LOCKED: Complete Story Mode to Unlock ] • Player: 250 HP • 50 ATK Asur"
+				t1_desc.modulate = Color(1.0, 0.5, 0.4, 0.8)
+		if btn_tier2:
+			btn_tier2.disabled = true
+			btn_tier2.text = "LOCKED"
+			btn_tier2.modulate = Color(0.6, 0.6, 0.6, 0.7)
+			if t2_desc:
+				t2_desc.text = "[ LOCKED: Complete Story Mode to Unlock ] • Player: 300 HP • 58 ATK Asur"
+				t2_desc.modulate = Color(1.0, 0.5, 0.4, 0.8)
+		if btn_tier3:
+			btn_tier3.disabled = true
+			btn_tier3.text = "LOCKED"
+			btn_tier3.modulate = Color(0.6, 0.6, 0.6, 0.7)
+			if t3_desc:
+				t3_desc.text = "[ LOCKED: Complete Story Mode to Unlock ] • Player: 500 HP • 65 ATK Overlord"
+				t3_desc.modulate = Color(1.0, 0.5, 0.4, 0.8)
+		return
+
+	# Story is cleared -> Extras Mode is accessible!
+	if btn_extras:
+		btn_extras.text = "EXTRAS"
+
+	# Tier 1 is always unlocked once Story is cleared
+	if btn_tier1:
+		btn_tier1.disabled = false
+		btn_tier1.text = "FIGHT"
+		btn_tier1.modulate = Color(1.0, 1.0, 1.0, 1.0)
+		if t1_desc:
+			t1_desc.text = "Player: 250 HP  •  50 ATK Asur  •  2.8s Cooldown  •  0.95s Telegraph"
+			t1_desc.modulate = Color(0.85, 0.85, 0.85, 1.0)
+
+	# Tier 2 is unlocked only if Tier 1 has been cleared
+	if btn_tier2:
+		if highest >= 2:
+			btn_tier2.disabled = false
+			btn_tier2.text = "FIGHT"
+			btn_tier2.modulate = Color(1.0, 1.0, 1.0, 1.0)
+			if t2_desc:
+				t2_desc.text = "Player: 300 HP  •  58 ATK Asur  •  1.8s Cooldown (-35%)  •  0.70s Telegraph"
+				t2_desc.modulate = Color(0.85, 0.85, 0.85, 1.0)
+		else:
+			btn_tier2.disabled = true
+			btn_tier2.text = "LOCKED"
+			btn_tier2.modulate = Color(0.6, 0.6, 0.6, 0.7)
+			if t2_desc:
+				t2_desc.text = "[ LOCKED: Clear Tier 1 to Unlock ]  •  Player: 300 HP  •  58 ATK Asur"
+				t2_desc.modulate = Color(1.0, 0.5, 0.4, 0.8)
+
+	# Tier 3 is unlocked only if Tier 2 has been cleared
+	if btn_tier3:
+		if highest >= 3:
+			btn_tier3.disabled = false
+			btn_tier3.text = "FIGHT"
+			btn_tier3.modulate = Color(1.0, 1.0, 1.0, 1.0)
+			if t3_desc:
+				t3_desc.text = "Player: 500 HP  •  65 ATK Overlord  •  Tactical Minion Pincer Flanks"
+				t3_desc.modulate = Color(0.85, 0.85, 0.85, 1.0)
+		else:
+			btn_tier3.disabled = true
+			btn_tier3.text = "LOCKED"
+			btn_tier3.modulate = Color(0.6, 0.6, 0.6, 0.7)
+			if t3_desc:
+				t3_desc.text = "[ LOCKED: Clear Tier 2 to Unlock ]  •  Player: 500 HP  •  65 ATK Overlord"
+				t3_desc.modulate = Color(1.0, 0.5, 0.4, 0.8)
+
+func _start_trial(tier: int) -> void:
+	var lm = LeaderboardManager.get_instance()
+	if not lm.is_story_completed():
+		print("[StartPage] Access Denied: Main Story not completed yet!")
+		_refresh_extras_ui()
+		return
+	var mgr = ExtrasTrialManager.get_instance()
+	mgr.load_progression()
+	if not mgr.is_tier_unlocked(tier):
+		print("[StartPage] Access Denied: Tier %d is locked! Player must complete preceding tiers." % tier)
+		_refresh_extras_ui()
+		return
+	mgr.start_trial(tier)
+	_transition_to_scene("res://scenes/levels/l3/l3_map.tscn")
 
 # ---------------------------------------------------------------------------
 # WARRIOR PROFILE BADGE & NAME CUSTOMIZATION MODAL

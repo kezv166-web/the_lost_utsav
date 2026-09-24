@@ -1,6 +1,9 @@
 class_name LeaderboardManager
 extends RefCounted
 
+signal achievement_unlocked(achievement_id: String, title_name: String)
+signal title_changed(new_title: String)
+
 ## LeaderboardManager – Authentic Persistent Data Store & Player Profile Manager
 ## 100% Real Data Store: Zero fake bots.
 ## Dual-Layer Persistence: Saves to 'user://' on Desktop and mirrors to 'window.localStorage' via JavaScriptBridge on Web (Itch.io & Vercel).
@@ -41,6 +44,7 @@ func initialize() -> void:
 	load_leaderboard_data()
 	_deduplicate_self_entries()
 	_recalc_profile_stats()
+	_retroactively_evaluate_achievements()
 
 # ---------------------------------------------------------------------------
 # WEB LOCALSTORAGE PERSISTENCE HELPERS (ITCH.IO & VERCEL SAFEGUARDS)
@@ -83,6 +87,7 @@ func load_player_profile() -> void:
 		var parsed = JSON.parse_string(loaded_data)
 		if parsed is Dictionary and parsed.has("id"):
 			player_profile = parsed
+			_ensure_profile_schema()
 			# Graceful upgrade for legacy accounts still using generic "BraveWarrior"
 			if not player_profile.get("is_custom_name", false) and player_profile.get("name", "") == "BraveWarrior":
 				player_profile["name"] = generate_unique_display_name()
@@ -158,6 +163,18 @@ static func sanitize_player_name(raw_name: String) -> String:
 		clean = clean.substr(0, 16).strip_edges()
 	return clean
 
+func _ensure_profile_schema() -> void:
+	if not player_profile.has("achievements") or not (player_profile["achievements"] is Dictionary):
+		player_profile["achievements"] = {
+			"master_thief": false,
+			"divine_runner": false,
+			"asur_slayer": false
+		}
+	if not player_profile.has("unlocked_titles") or not (player_profile["unlocked_titles"] is Array):
+		player_profile["unlocked_titles"] = []
+	if not player_profile.has("selected_title"):
+		player_profile["selected_title"] = ""
+
 func _generate_new_profile() -> Dictionary:
 	var profile = {
 		"id": generate_unique_id(),
@@ -169,14 +186,160 @@ func _generate_new_profile() -> Dictionary:
 		"best_level": 0,
 		"best_score": 0,
 		"total_runs": 0,
+		"achievements": {
+			"master_thief": false,
+			"divine_runner": false,
+			"asur_slayer": false
+		},
+		"unlocked_titles": [],
+		"selected_title": "",
 		"created_at": Time.get_datetime_string_from_system()
 	}
 	return profile
+
+func unlock_achievement(achievement_id: String, title_name: String) -> bool:
+	if player_profile.is_empty():
+		load_player_profile()
+	_ensure_profile_schema()
+
+	var achs = player_profile["achievements"]
+	var was_unlocked = bool(achs.get(achievement_id, false))
+	achs[achievement_id] = true
+
+	var titles: Array = player_profile["unlocked_titles"]
+	if not titles.has(title_name):
+		titles.append(title_name)
+
+	# Check bonus combo titles:
+	var core_count = 0
+	for core_id in ["master_thief", "divine_runner", "asur_slayer"]:
+		if bool(achs.get(core_id, false)):
+			core_count += 1
+
+	if core_count >= 2 and not titles.has("[Veteran Yodha]"):
+		titles.append("[Veteran Yodha]")
+		achievement_unlocked.emit("veteran_yodha", "[Veteran Yodha]")
+
+	if core_count >= 3 and not titles.has("[Bappa's Champion]"):
+		titles.append("[Bappa's Champion]")
+		achievement_unlocked.emit("bappas_champion", "[Bappa's Champion]")
+
+	# Auto-equip title if currently blank
+	if str(player_profile.get("selected_title", "")).is_empty():
+		player_profile["selected_title"] = title_name
+
+	save_player_profile()
+	_update_self_entries_title(str(player_profile.get("selected_title", "")))
+
+	if not was_unlocked:
+		print("[LeaderboardManager] ★ ACHIEVEMENT UNLOCKED: %s -> Title: %s ★" % [achievement_id, title_name])
+		achievement_unlocked.emit(achievement_id, title_name)
+		return true
+
+	return false
+
+func set_selected_title(title_name: String) -> void:
+	if player_profile.is_empty():
+		load_player_profile()
+	_ensure_profile_schema()
+
+	var titles: Array = player_profile.get("unlocked_titles", [])
+	if title_name.is_empty() or titles.has(title_name):
+		player_profile["selected_title"] = title_name
+		save_player_profile()
+		_update_self_entries_title(title_name)
+		title_changed.emit(title_name)
+		print("[LeaderboardManager] Equipped title updated to: '%s'" % title_name)
+
+func get_unlocked_titles() -> Array:
+	if player_profile.is_empty():
+		load_player_profile()
+	_ensure_profile_schema()
+	return player_profile.get("unlocked_titles", [])
+
+func get_selected_title() -> String:
+	if player_profile.is_empty():
+		load_player_profile()
+	_ensure_profile_schema()
+	return player_profile.get("selected_title", "")
+
+func has_achievement(achievement_id: String) -> bool:
+	if player_profile.is_empty():
+		load_player_profile()
+	_ensure_profile_schema()
+	var achs = player_profile.get("achievements", {})
+	if achs is Dictionary:
+		return bool(achs.get(achievement_id, false))
+	return false
+
+func _update_self_entries_title(title_name: String) -> void:
+	var user_guest_id = player_profile.get("id", "")
+	var user_google_id = str(player_profile.get("google_id", ""))
+	var is_google_linked = player_profile.get("is_google_linked", false)
+
+	for entry in leaderboard_entries:
+		if not (entry is Dictionary):
+			continue
+		var e_id = str(entry.get("id", ""))
+		var is_user = (entry.get("is_self", false) or (not user_guest_id.is_empty() and e_id == user_guest_id) or (is_google_linked and not user_google_id.is_empty() and e_id == user_google_id))
+		if is_user:
+			entry["title"] = title_name
+
+	save_leaderboard_data()
+
+func _retroactively_evaluate_achievements() -> void:
+	var newly_unlocked = false
+	for entry in leaderboard_entries:
+		if not (entry is Dictionary) or not entry.get("is_self", false):
+			continue
+
+		var l1_t = float(entry.get("level1_time", 999.0))
+		if l1_t > 0.0 and l1_t <= 20.0:
+			if unlock_achievement("master_thief", "[Master Thief]"):
+				newly_unlocked = true
+
+		var l2_t = float(entry.get("level2_time", 999.0))
+		var l2_m = int(entry.get("level2_modaks", 0))
+		if l2_m >= 5 and l2_t > 0.0 and l2_t <= 45.0:
+			if unlock_achievement("divine_runner", "[Divine Runner]"):
+				newly_unlocked = true
+
+		var l3_a = int(entry.get("level3_attempts", 99))
+		var lvl = int(entry.get("level", 0))
+		if lvl >= 3 and l3_a == 1:
+			if unlock_achievement("asur_slayer", "[Asur Slayer]"):
+				newly_unlocked = true
+
+	if newly_unlocked:
+		print("[LeaderboardManager] Retroactive achievement evaluation completed with new unlocks!")
 
 func get_player_profile() -> Dictionary:
 	if player_profile.is_empty():
 		load_player_profile()
 	return player_profile
+
+func is_story_completed() -> bool:
+	if player_profile.is_empty():
+		load_player_profile()
+	if bool(player_profile.get("story_completed", false)):
+		return true
+	if int(player_profile.get("best_level", 0)) >= 3:
+		return true
+	var achs = player_profile.get("achievements", {})
+	if achs is Dictionary and bool(achs.get("asur_slayer", false)):
+		return true
+	for entry in leaderboard_entries:
+		if entry is Dictionary and entry.get("is_self", false):
+			if bool(entry.get("level3_cleared", false)) or float(entry.get("level3_time", 0.0)) > 0.0:
+				return true
+	return false
+
+func mark_story_completed() -> void:
+	if player_profile.is_empty():
+		load_player_profile()
+	player_profile["story_completed"] = true
+	save_player_profile()
+	print("[LeaderboardManager] Story mode marked as completed! Extras Trials permanently unlocked.")
 
 func lock_custom_name() -> void:
 	player_profile["is_custom_name_chosen"] = true
@@ -412,9 +575,12 @@ func add_run_entry(run_data: Dictionary) -> void:
 	var l3_t = float(run_data.get("level3_time", 0.0))
 	var l3_a = int(run_data.get("level3_attempts", 1))
 
+	var active_title = str(player_profile.get("selected_title", ""))
+
 	var entry = {
 		"id": p_id,
 		"player": p_name,
+		"title": active_title,
 		"avatar": player_profile.get("avatar", "avatar_4"),
 		"level": lvl,
 		"level_reached_str": run_data.get("level_reached_str", "%.1f" % lvl),

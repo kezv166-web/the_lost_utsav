@@ -41,6 +41,18 @@ var recovery_timer: float = 0.0
 var hurt_timer: float = 0.0
 var desired_target_pos: Vector3 = Vector3.ZERO
 var separation_force: Vector3 = Vector3.ZERO
+var is_tactical_learner: bool = false
+var base_move_speed: float = 2.8
+
+func set_tier_tuning(speed_mult: float, dmg_mult: float, aggressive: bool) -> void:
+	base_move_speed = 2.8 * speed_mult
+	move_speed = base_move_speed
+	attack_damage = int(round(14.0 * dmg_mult))
+	is_tactical_learner = aggressive
+	if is_tactical_learner:
+		attack_reach = 1.9
+		recovery_duration = 0.65
+		print("[Chota Asur] Tactical Learner initialized! Speed: %.2f, Damage: %d, Reach: %.2f" % [move_speed, attack_damage, attack_reach])
 
 @onready var anim_sprite: AnimatedSprite3D = $AnimatedSprite3D
 @onready var health_bar: Sprite3D = $HealthBar
@@ -200,7 +212,15 @@ func _evaluate_tactical_ai() -> void:
 		3: slot_offset = Vector3(-1.2, 0.0, 0.0) # West / Flank
 		_: slot_offset = Vector3(0.0, 0.0, 1.2)
 		
-	desired_target_pos = player_ref.global_position + slot_offset
+	# Learned Tactical Adaptation from previous levels:
+	# 1. Ambush Boulder Carriers: When player carries heavy boulder, minions recognize they cannot swing weapons
+	#    and sprint with +25% speed to tackle and disrupt the throw!
+	if is_tactical_learner and player_ref.get("is_carrying") == true:
+		move_speed = base_move_speed * 1.25
+		desired_target_pos = player_ref.global_position + (slot_offset * 0.4)
+	else:
+		move_speed = base_move_speed
+		desired_target_pos = player_ref.global_position + slot_offset
 	
 	# Flocking separation force from other Chota Asurs
 	separation_force = Vector3.ZERO

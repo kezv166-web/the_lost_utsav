@@ -241,7 +241,7 @@ anchors_preset = 0
 offset_left = 48.0
 offset_top = 205.0
 offset_right = 240.0
-offset_bottom = 485.0
+offset_bottom = 535.0
 
 [node name="MenuPanel" type="Panel" parent="MenuContainer"]
 layout_mode = 1
@@ -275,7 +275,7 @@ theme_override_font_sizes/font_size = 15
 theme_override_styles/normal = SubResource("StyleBox_BtnPlay_Normal")
 theme_override_styles/hover = SubResource("StyleBox_BtnPlay_Hover")
 theme_override_styles/pressed = SubResource("StyleBox_BtnPlay_Pressed")
-text = "  ▶   PLAY"
+text = "PLAY"
 alignment = 1
 
 [node name="StoryButton" type="Button" parent="MenuContainer/VBoxButtons"]
@@ -288,7 +288,20 @@ theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
 theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
 theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
-text = "  📖   STORY"
+text = "STORY"
+alignment = 1
+
+[node name="ExtrasButton" type="Button" parent="MenuContainer/VBoxButtons"]
+custom_minimum_size = Vector2(172, 38)
+layout_mode = 2
+focus_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.85, 0.65, 1)
+theme_override_colors/font_hover_color = Color(1, 0.96, 0.85, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "EXTRAS"
 alignment = 1
 
 [node name="LeaderboardButton" type="Button" parent="MenuContainer/VBoxButtons"]
@@ -301,7 +314,7 @@ theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
 theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
 theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
-text = "  🏆   LEADERBOARD"
+text = "LEADERBOARD"
 alignment = 1
 
 [node name="SettingsButton" type="Button" parent="MenuContainer/VBoxButtons"]
@@ -314,7 +327,7 @@ theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
 theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
 theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
-text = "  ⚙   SETTINGS"
+text = "SETTINGS"
 alignment = 1
 
 [node name="ExitButton" type="Button" parent="MenuContainer/VBoxButtons"]
@@ -327,7 +340,7 @@ theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
 theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
 theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
-text = "  🚪   EXIT"
+text = "EXIT"
 alignment = 1
 
 [node name="BottomRightHUD" type="Control" parent="."]
@@ -918,6 +931,209 @@ theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
 theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
 theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
 text = "Stay"
+
+[node name="ExtrasTrialsModal" type="Control" parent="ModalLayer"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -240.0
+offset_right = 320.0
+offset_bottom = 240.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="ModalLayer/ExtrasTrialsModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_ModalPanel")
+
+[node name="VBox" type="VBoxContainer" parent="ModalLayer/ExtrasTrialsModal/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 22.0
+offset_top = 18.0
+offset_right = -22.0
+offset_bottom = -18.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_constants/letter_spacing = 2
+theme_override_font_sizes/font_size = 20
+text = "✦ ASUR TRIALS (EXTRAS) ✦"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.75, 0.55, 0.9)
+theme_override_font_sizes/font_size = 12
+text = "Pure Boss Combat Arena • Zero Storyline • Progressive Difficulty"
+horizontal_alignment = 1
+
+[node name="StoryLockNotice" type="Label" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.45, 0.4, 1)
+theme_override_font_sizes/font_size = 12
+text = "🔒 LOCKED: Complete Main Story once (Defeat Asur in Level 3) to unlock Asur Trials!"
+horizontal_alignment = 1
+
+[node name="TiersContainer" type="VBoxContainer" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Tier1Card" type="PanelContainer" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_BtnDark_Normal")
+
+[node name="Margin" type="MarginContainer" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier1Card"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="HBox" type="HBoxContainer" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier1Card/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="InfoVBox" type="VBoxContainer" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier1Card/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TierTitle" type="Label" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier1Card/Margin/HBox/InfoVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.92, 0.5, 1)
+theme_override_font_sizes/font_size = 13
+text = "TIER 1: GENERAL'S DUEL"
+
+[node name="TierDesc" type="Label" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier1Card/Margin/HBox/InfoVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 11
+text = "Player: 250 HP • 50 ATK Asur • 2.8s Cooldown • 0.95s Telegraph"
+
+[node name="Tier1Button" type="Button" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier1Card/Margin/HBox"]
+custom_minimum_size = Vector2(95, 34)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(1, 0.96, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBox_BtnPlay_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnPlay_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnPlay_Pressed")
+text = "FIGHT"
+
+[node name="Tier2Card" type="PanelContainer" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_BtnDark_Normal")
+
+[node name="Margin" type="MarginContainer" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier2Card"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="HBox" type="HBoxContainer" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier2Card/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="InfoVBox" type="VBoxContainer" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier2Card/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TierTitle" type="Label" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier2Card/Margin/HBox/InfoVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.75, 0.35, 1)
+theme_override_font_sizes/font_size = 13
+text = "TIER 2: ENRAGED ASUR"
+
+[node name="TierDesc" type="Label" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier2Card/Margin/HBox/InfoVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 11
+text = "[ LOCKED: Clear Tier 1 to Unlock ] • Player: 300 HP • 58 ATK Asur"
+
+[node name="Tier2Button" type="Button" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier2Card/Margin/HBox"]
+custom_minimum_size = Vector2(95, 34)
+layout_mode = 2
+size_flags_vertical = 4
+disabled = true
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 0.8)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "LOCKED"
+
+[node name="Tier3Card" type="PanelContainer" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_BtnDark_Normal")
+
+[node name="Margin" type="MarginContainer" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier3Card"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="HBox" type="HBoxContainer" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier3Card/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="InfoVBox" type="VBoxContainer" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier3Card/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TierTitle" type="Label" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier3Card/Margin/HBox/InfoVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.45, 0.45, 1)
+theme_override_font_sizes/font_size = 13
+text = "TIER 3: OVERLORD & MINIONS"
+
+[node name="TierDesc" type="Label" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier3Card/Margin/HBox/InfoVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 11
+text = "[ LOCKED: Clear Tier 2 to Unlock ] • Player: 500 HP • 65 ATK Overlord"
+
+[node name="Tier3Button" type="Button" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox/TiersContainer/Tier3Card/Margin/HBox"]
+custom_minimum_size = Vector2(95, 34)
+layout_mode = 2
+size_flags_vertical = 4
+disabled = true
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 0.8)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "LOCKED"
+
+[node name="CloseButton" type="Button" parent="ModalLayer/ExtrasTrialsModal/Panel/VBox"]
+custom_minimum_size = Vector2(140, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnDark_Normal")
+theme_override_styles/hover = SubResource("StyleBox_BtnDark_Hover")
+theme_override_styles/pressed = SubResource("StyleBox_BtnDark_Pressed")
+text = "Back to Menu"
 
 [node name="FadeOverlay" type="ColorRect" parent="."]
 visible = false

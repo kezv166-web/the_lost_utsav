@@ -16,7 +16,55 @@ func _ready() -> void:
 	var grm = get_node_or_null("/root/GameRunManager")
 	if grm and grm.has_signal("points_awarded") and not grm.points_awarded.is_connected(_on_points_awarded):
 		grm.points_awarded.connect(_on_points_awarded)
+	var lm = LeaderboardManager.get_instance()
+	if lm and lm.has_signal("achievement_unlocked") and not lm.achievement_unlocked.is_connected(_show_achievement_toast):
+		lm.achievement_unlocked.connect(_show_achievement_toast)
 	_update_display()
+
+func _show_achievement_toast(_id: String, title_name: String) -> void:
+	var toast = PanelContainer.new()
+	toast.custom_minimum_size = Vector2(360, 46)
+	var sb = StyleBoxFlat.new()
+	sb.bg_color = Color(0.12, 0.08, 0.02, 0.95)
+	sb.border_width_left = 2
+	sb.border_width_top = 2
+	sb.border_width_right = 2
+	sb.border_width_bottom = 2
+	sb.border_color = Color(1.0, 0.85, 0.25, 1.0)
+	sb.set_corner_radius_all(8)
+	sb.shadow_color = Color(0, 0, 0, 0.6)
+	sb.shadow_size = 6
+	toast.add_theme_stylebox_override("panel", sb)
+
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 14)
+	margin.add_theme_constant_override("margin_right", 14)
+	margin.add_theme_constant_override("margin_top", 8)
+	margin.add_theme_constant_override("margin_bottom", 8)
+	toast.add_child(margin)
+
+	var lbl = Label.new()
+	lbl.text = "★ TITLE UNLOCKED: %s ★" % title_name
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	lbl.add_theme_color_override("font_color", Color(1.0, 0.9, 0.35, 1.0))
+	lbl.add_theme_font_size_override("font_size", 13)
+	margin.add_child(lbl)
+
+	add_child(toast)
+	toast.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	toast.position = Vector2((size.x - 360.0) * 0.5, -60.0)
+	toast.scale = Vector2(0.8, 0.8)
+	toast.pivot_offset = Vector2(180.0, 23.0)
+
+	var tw = create_tween()
+	tw.tween_property(toast, "position:y", 58.0, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.parallel().tween_property(toast, "scale", Vector2(1.05, 1.05), 0.35)
+	tw.tween_property(toast, "scale", Vector2(1.0, 1.0), 0.1)
+	tw.tween_interval(3.0)
+	tw.tween_property(toast, "position:y", -70.0, 0.35).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	tw.parallel().tween_property(toast, "modulate:a", 0.0, 0.35)
+	tw.tween_callback(toast.queue_free)
 
 func _process(_delta: float) -> void:
 	_update_display()

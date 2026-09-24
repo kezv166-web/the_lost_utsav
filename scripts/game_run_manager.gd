@@ -126,6 +126,13 @@ func complete_level_1() -> void:
 
 	level1_points = base_pts + speed_bonus
 	award_points(level1_points, "Level 1 Great Gate Puzzle Solved (Base %d + Speed %d)" % [base_pts, speed_bonus])
+
+	# Check Master Thief Achievement (Gate Puzzle in under 20 seconds)
+	if level1_time > 0.0 and level1_time <= 20.0:
+		var lm = LeaderboardManager.get_instance()
+		if lm:
+			lm.unlock_achievement("master_thief", "[Master Thief]")
+
 	save_run_to_leaderboard()
 
 func collect_modak() -> void:
@@ -158,6 +165,13 @@ func complete_level_2() -> void:
 
 	level2_points = base_pts + speed_bonus + (level2_modaks * 50) + (100 if key_collected else 0)
 	award_points(base_pts + speed_bonus, "Level 2 Underground Maze Cleared (Base %d + Speed %d)" % [base_pts, speed_bonus])
+
+	# Check Divine Runner Achievement (5 Modaks in under 45 seconds)
+	if level2_modaks >= 5 and level2_time > 0.0 and level2_time <= 45.0:
+		var lm = LeaderboardManager.get_instance()
+		if lm:
+			lm.unlock_achievement("divine_runner", "[Divine Runner]")
+
 	save_run_to_leaderboard()
 
 func record_boss_hit() -> void:
@@ -243,6 +257,12 @@ func complete_level_3() -> void:
 	award_points(level3_points, "Level 3 Boss Defeated & Sacred Blessing Reclaimed (Base %d + Attempt %d + Speed %d + Blessing %d)" % [
 		base_boss_defeat, attempt_bonus, speed_bonus, blessing_bonus
 	])
+
+	var lm = LeaderboardManager.get_instance()
+	if lm:
+		lm.mark_story_completed()
+		if level3_attempts == 1:
+			lm.unlock_achievement("asur_slayer", "[Asur Slayer]")
 
 	print("[GameRunManager] RUN COMPLETED! Total Time: %s, Total Points: %d" % [format_time(total_time), total_points])
 
