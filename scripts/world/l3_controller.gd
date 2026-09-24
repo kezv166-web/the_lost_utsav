@@ -287,6 +287,8 @@ func _setup_asur() -> void:
 			asur.boss_damaged.connect(_on_asur_damaged)
 		if asur.has_signal("boss_defeated"):
 			asur.boss_defeated.connect(_on_asur_defeated)
+		if asur.has_signal("boss_enraged"):
+			asur.boss_enraged.connect(_on_asur_enraged)
 
 func _on_boss_trigger_entered(body: Node3D) -> void:
 	if body == player and not boss_encounter_started:
@@ -353,6 +355,35 @@ func _on_asur_roared() -> void:
 	# Roar summons reinforcements if below cap
 	if active_chota_asurs.size() < max_chota_asurs:
 		spawn_chota_asur()
+
+func _on_asur_enraged(duration: float) -> void:
+	if hud_action:
+		hud_action.text = "[ ! ] ASUR ENRAGED! DODGE!"
+		hud_action.modulate = Color(1.0, 0.2, 0.2, 1.0)
+		var tw = create_tween()
+		tw.tween_property(hud_action, "modulate", Color(2.8, 0.4, 0.4, 1.0), 0.12)
+		tw.tween_property(hud_action, "modulate", Color(1.0, 0.15, 0.15, 1.0), 0.12)
+		tw.tween_property(hud_action, "modulate", Color(2.8, 0.4, 0.4, 1.0), 0.12)
+		tw.tween_property(hud_action, "modulate", Color(1.0, 0.15, 0.15, 1.0), 0.12)
+		tw.tween_interval(duration + 0.5)
+		tw.tween_callback(func():
+			if is_instance_valid(hud_action) and hud_action.text == "[ ! ] ASUR ENRAGED! DODGE!":
+				hud_action.text = ""
+				hud_action.modulate = Color(1.0, 0.95, 0.5, 1.0)
+		)
+
+	if hud_objective:
+		var prev_objective = hud_objective.text
+		var prev_color = hud_objective.modulate
+		hud_objective.text = "[ ! ] ASUR ENRAGED! DODGE BACKWARD!"
+		hud_objective.modulate = Color(1.0, 0.25, 0.25, 1.0)
+		var tw_obj = create_tween()
+		tw_obj.tween_interval(duration + 0.6)
+		tw_obj.tween_callback(func():
+			if is_instance_valid(hud_objective) and hud_objective.text == "[ ! ] ASUR ENRAGED! DODGE BACKWARD!":
+				hud_objective.text = prev_objective
+				hud_objective.modulate = prev_color
+		)
 
 func _on_asur_damaged(new_hp: int) -> void:
 	if camera_rig:

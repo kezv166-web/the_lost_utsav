@@ -3,6 +3,7 @@ extends CharacterBody3D
 signal boss_roared
 signal boss_damaged(new_hp: int)
 signal boss_defeated
+signal boss_enraged(duration: float)
 
 enum State {
 	IDLE,
@@ -11,7 +12,8 @@ enum State {
 	RECOVERY,
 	STAGGER,
 	HURT,
-	STUN
+	STUN,
+	ENRAGE_WINDUP
 }
 
 enum AttackType {
@@ -69,6 +71,15 @@ var consecutive_hits_taken: int = 0
 const STRICT_ATTACK_THRESHOLD: int = 3
 var is_strict_attacking: bool = false
 
+# Anger Flare Enrage Windup System
+const ENRAGE_WINDUP_DURATION: float = 0.6
+var enrage_windup_timer: float = 0.0
+var enrage_banner: Label3D = null
+var eye_flare_left: Sprite3D = null
+var eye_flare_right: Sprite3D = null
+var eye_light_left: OmniLight3D = null
+var eye_light_right: OmniLight3D = null
+
 func _ready() -> void:
 	health = max_health
 	add_to_group("enemy")
@@ -91,6 +102,58 @@ func _ready() -> void:
 		anim_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
 		anim_sprite.pixel_size = 0.020
 		anim_sprite.position = Vector3(0, 2.30, 0)
+
+	# Initialize Overhead Enrage Tell Banner
+	enrage_banner = Label3D.new()
+	enrage_banner.name = "EnrageBanner"
+	enrage_banner.text = "[ ! ] ASUR ENRAGED! DODGE!"
+	enrage_banner.font_size = 36
+	enrage_banner.outline_size = 12
+	enrage_banner.outline_modulate = Color(0.12, 0.01, 0.01, 1.0)
+	enrage_banner.modulate = Color(1.0, 0.18, 0.18, 1.0)
+	enrage_banner.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	enrage_banner.no_depth_test = true
+	enrage_banner.render_priority = 25
+	enrage_banner.position = Vector3(0, 4.25, 0)
+	enrage_banner.visible = false
+	add_child(enrage_banner)
+
+	# Initialize Flaming Crimson Eye Flares
+	var flash_tex = load("res://assets/vfx/divine_flash.png")
+	if flash_tex:
+		eye_flare_left = Sprite3D.new()
+		eye_flare_left.name = "EyeFlareLeft"
+		eye_flare_left.texture = flash_tex
+		eye_flare_left.pixel_size = 0.007
+		eye_flare_left.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		eye_flare_left.no_depth_test = true
+		eye_flare_left.render_priority = 24
+		eye_flare_left.modulate = Color(3.5, 0.12, 0.08, 1.0)
+		eye_flare_left.visible = false
+		add_child(eye_flare_left)
+
+		eye_light_left = OmniLight3D.new()
+		eye_light_left.light_color = Color(3.0, 0.1, 0.05, 1.0)
+		eye_light_left.light_energy = 0.0
+		eye_light_left.omni_range = 2.0
+		eye_flare_left.add_child(eye_light_left)
+
+		eye_flare_right = Sprite3D.new()
+		eye_flare_right.name = "EyeFlareRight"
+		eye_flare_right.texture = flash_tex
+		eye_flare_right.pixel_size = 0.007
+		eye_flare_right.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		eye_flare_right.no_depth_test = true
+		eye_flare_right.render_priority = 24
+		eye_flare_right.modulate = Color(3.5, 0.12, 0.08, 1.0)
+		eye_flare_right.visible = false
+		add_child(eye_flare_right)
+
+		eye_light_right = OmniLight3D.new()
+		eye_light_right.light_color = Color(3.0, 0.1, 0.05, 1.0)
+		eye_light_right.light_energy = 0.0
+		eye_light_right.omni_range = 2.0
+		eye_flare_right.add_child(eye_light_right)
 	
 	_play_anim("idle_down")
 	_update_aggression_phase()
@@ -143,6 +206,25 @@ func set_player(p: Node3D) -> void:
 	player_ref = p
 
 func _physics_process(delta: float) -> void:
+	if current_state == State.ENRAGE_WINDUP:
+		enrage_windup_timer -= delta
+		if player_ref and is_instance_valid(player_ref):
+			var offset = player_ref.global_position - global_position
+			var new_dir = current_direction
+			if offset.x < -0.8:
+				new_dir = Direction.LEFT
+			elif offset.x > 0.8:
+				new_dir = Direction.RIGHT
+			else:
+				new_dir = Direction.DOWN
+			if new_dir != current_direction:
+				current_direction = new_dir
+				_play_anim("roar_" + _get_dir_str())
+		_update_eye_flare_positions()
+		if enrage_windup_timer <= 0.0:
+			_execute_strict_retaliation()
+		return
+
 	if recovery_timer > 0.0:
 		recovery_timer -= delta
 		if recovery_timer <= 0.0 and current_state == State.RECOVERY:
@@ -195,6 +277,13 @@ func _physics_process(delta: float) -> void:
 					attack()
 
 func _process(delta: float) -> void:
+	if current_state == State.ENRAGE_WINDUP:
+		pulse_time += delta * 12.0
+		if aura_light:
+			aura_light.light_energy = 7.5 + sin(pulse_time) * 1.5
+			aura_light.light_color = Color(3.5, 0.08, 0.08, 1.0)
+		return
+
 	var pulse_speed = 3.0
 	var base_energy = 1.8
 	var energy_amp = 0.5
@@ -491,10 +580,10 @@ func take_damage(amount: int = 40) -> void:
 		_on_defeated()
 		return
 
-	# If Asur is currently in STRICT ATTACK mode (Hyper-Armor), DO NOT interrupt him!
-	# He takes damage and flashes red, but strictly finishes his attack!
-	if is_strict_attacking:
-		print("[Asur Boss] Hit taken during STRICT ATTACK! Hyper-armor active - attack not interrupted!")
+	# If Asur is currently in ENRAGE_WINDUP or STRICT ATTACK mode (Hyper-Armor), DO NOT interrupt him!
+	# He takes damage and flashes red, but strictly finishes his windup/attack!
+	if is_strict_attacking or current_state == State.ENRAGE_WINDUP:
+		print("[Asur Boss] Hit taken during ENRAGE/STRICT ATTACK! Hyper-armor active - attack not interrupted!")
 		return
 
 	# Track consecutive attacks landed on Asur
@@ -502,9 +591,9 @@ func take_damage(amount: int = 40) -> void:
 	print("[Asur Boss] Hit taken (%d/%d)" % [consecutive_hits_taken, STRICT_ATTACK_THRESHOLD])
 
 	if consecutive_hits_taken >= STRICT_ATTACK_THRESHOLD:
-		# After 3 attacks: Asur STRICTLY attacks even if he gets hit!
+		# After 3 attacks: 0.6s Enrage Windup ("The Anger Flare") with visual tell
 		consecutive_hits_taken = 0
-		_trigger_strict_attack()
+		_trigger_anger_flare_windup()
 		return
 
 	# Normal flinch reaction for hits 1 and 2
@@ -544,14 +633,14 @@ func take_rock_hit(amount: int = 85) -> void:
 		_on_defeated()
 		return
 
-	if is_strict_attacking:
-		print("[Asur Boss] Boulder hit during STRICT ATTACK! Hyper-armor active - continuing attack!")
+	if is_strict_attacking or current_state == State.ENRAGE_WINDUP:
+		print("[Asur Boss] Boulder hit during ENRAGE/STRICT ATTACK! Hyper-armor active - continuing attack!")
 		return
 
 	consecutive_hits_taken += 1
 	if consecutive_hits_taken >= STRICT_ATTACK_THRESHOLD:
 		consecutive_hits_taken = 0
-		_trigger_strict_attack()
+		_trigger_anger_flare_windup()
 		return
 
 	_cleanup_telegraph()
@@ -563,7 +652,12 @@ func take_rock_hit(amount: int = 85) -> void:
 	_play_anim("stunned")
 
 func _trigger_strict_attack() -> void:
-	print("[Asur Boss] STRICT ATTACK TRIGGERED! Unstoppable hyper-armor activated!")
+	_trigger_anger_flare_windup()
+
+func _trigger_anger_flare_windup() -> void:
+	print("[Asur Boss] ANGER FLARE TRIGGERED! 0.6s Enrage Windup!")
+	current_state = State.ENRAGE_WINDUP
+	enrage_windup_timer = ENRAGE_WINDUP_DURATION
 	is_strict_attacking = true
 	hurt_timer = 0.0
 	recovery_timer = 0.0
@@ -571,18 +665,140 @@ func _trigger_strict_attack() -> void:
 	hurt_grace_timer = 0.0
 	attack_cooldown = 0.0
 
-	# Intense fiery flare signaling hyper armor
+	_cleanup_telegraph()
+
+	# Face towards player
+	if player_ref and is_instance_valid(player_ref):
+		var offset = player_ref.global_position - global_position
+		if offset.x < -0.8:
+			current_direction = Direction.LEFT
+		elif offset.x > 0.8:
+			current_direction = Direction.RIGHT
+		else:
+			current_direction = Direction.DOWN
+
+	var dir_str = _get_dir_str()
+	_play_anim("roar_" + dir_str)
+
+	emit_signal("boss_roared")
+	emit_signal("boss_enraged", ENRAGE_WINDUP_DURATION)
+
+	# Camera rumble
+	_trigger_camera_shake(0.35, 18.0)
+
+	# Visual Anger Tell 1: Overhead 3D Banner
+	_show_enrage_banner()
+
+	# Visual Anger Tell 2: Flaming Crimson Eye Flares
+	_ignite_eye_flares()
+
+	# Visual Anger Tell 3: Violent crimson aura light & sprite flare
 	if aura_light:
 		var tw = create_tween()
-		tw.tween_property(aura_light, "light_color", Color(2.5, 0.3, 0.1, 1.0), 0.08)
-		tw.tween_property(aura_light, "light_energy", 6.5, 0.08)
-		tw.tween_property(aura_light, "light_energy", 3.0, 0.4)
+		tw.tween_property(aura_light, "light_color", Color(3.5, 0.08, 0.08, 1.0), 0.08)
+		tw.tween_property(aura_light, "light_energy", 8.5, 0.08)
+		tw.tween_property(aura_light, "light_energy", 5.0, 0.5)
 
-	# If Asur was already in the middle of ATTACK, let it continue with hyper armor
-	if current_state == State.ATTACK:
+	if anim_sprite:
+		var tw_spr = create_tween()
+		tw_spr.tween_property(anim_sprite, "modulate", Color(2.8, 0.35, 0.35, 1.0), 0.12)
+		tw_spr.tween_property(anim_sprite, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.48)
+
+	if aura_particles:
+		aura_particles.emitting = true
+		aura_particles.color = Color(1.0, 0.15, 0.08, 1.0)
+
+func _update_eye_flare_positions() -> void:
+	match current_direction:
+		Direction.LEFT:
+			if eye_flare_left:
+				eye_flare_left.position = Vector3(-0.35, 2.82, 0.22)
+			if eye_flare_right:
+				eye_flare_right.position = Vector3(-0.20, 2.80, 0.10)
+		Direction.RIGHT:
+			if eye_flare_left:
+				eye_flare_left.position = Vector3(0.20, 2.80, 0.10)
+			if eye_flare_right:
+				eye_flare_right.position = Vector3(0.35, 2.82, 0.22)
+		Direction.UP:
+			if eye_flare_left:
+				eye_flare_left.position = Vector3(-0.22, 2.88, -0.15)
+			if eye_flare_right:
+				eye_flare_right.position = Vector3(0.22, 2.88, -0.15)
+		_: # DOWN
+			if eye_flare_left:
+				eye_flare_left.position = Vector3(-0.24, 2.82, 0.35)
+			if eye_flare_right:
+				eye_flare_right.position = Vector3(0.24, 2.82, 0.35)
+
+func _ignite_eye_flares() -> void:
+	_update_eye_flare_positions()
+	if eye_flare_left:
+		eye_flare_left.visible = true
+		eye_flare_left.scale = Vector3.ZERO
+		var tw_l = create_tween()
+		tw_l.tween_property(eye_flare_left, "scale", Vector3(1.6, 1.6, 1.6), 0.12)
+		tw_l.tween_property(eye_flare_left, "scale", Vector3(1.1, 1.1, 1.1), 0.48)
+		if eye_light_left:
+			eye_light_left.light_energy = 5.0
+	if eye_flare_right:
+		eye_flare_right.visible = true
+		eye_flare_right.scale = Vector3.ZERO
+		var tw_r = create_tween()
+		tw_r.tween_property(eye_flare_right, "scale", Vector3(1.6, 1.6, 1.6), 0.12)
+		tw_r.tween_property(eye_flare_right, "scale", Vector3(1.1, 1.1, 1.1), 0.48)
+		if eye_light_right:
+			eye_light_right.light_energy = 5.0
+
+func _extinguish_eye_flares() -> void:
+	if eye_flare_left and eye_flare_left.visible:
+		var tw_l = create_tween()
+		tw_l.tween_property(eye_flare_left, "scale", Vector3.ZERO, 0.12)
+		tw_l.tween_callback(func():
+			if is_instance_valid(eye_flare_left):
+				eye_flare_left.visible = false
+		)
+		if eye_light_left:
+			eye_light_left.light_energy = 0.0
+	if eye_flare_right and eye_flare_right.visible:
+		var tw_r = create_tween()
+		tw_r.tween_property(eye_flare_right, "scale", Vector3.ZERO, 0.12)
+		tw_r.tween_callback(func():
+			if is_instance_valid(eye_flare_right):
+				eye_flare_right.visible = false
+		)
+		if eye_light_right:
+			eye_light_right.light_energy = 0.0
+
+func _show_enrage_banner() -> void:
+	if not enrage_banner:
 		return
+	enrage_banner.visible = true
+	enrage_banner.modulate = Color(3.5, 0.2, 0.2, 1.0)
+	enrage_banner.scale = Vector3(0.2, 0.2, 0.2)
+	var tw = create_tween()
+	tw.tween_property(enrage_banner, "scale", Vector3(1.25, 1.25, 1.25), 0.12)
+	tw.tween_property(enrage_banner, "scale", Vector3(1.0, 1.0, 1.0), 0.08)
+	tw.tween_property(enrage_banner, "modulate", Color(1.0, 0.15, 0.15, 1.0), 0.20)
+	tw.tween_property(enrage_banner, "modulate", Color(2.8, 0.3, 0.3, 1.0), 0.20)
+
+func _execute_strict_retaliation() -> void:
+	print("[Asur Boss] Enrage windup finished! Unleashing retaliation attack!")
+	if enrage_banner:
+		var tw = create_tween()
+		tw.tween_property(enrage_banner, "modulate:a", 0.0, 0.15)
+		tw.tween_callback(func():
+			if is_instance_valid(enrage_banner):
+				enrage_banner.visible = false
+		)
+	_extinguish_eye_flares()
+
+	if aura_particles:
+		aura_particles.color = Color(1.0, 0.32, 0.1, 0.85)
 
 	current_state = State.IDLE
+	attack_cooldown = 0.0
+
 	# Choose attack: Stomp if ready or in range, otherwise Gadha Slam
 	if stomp_cooldown <= 0.0:
 		attack_stomp()
@@ -592,6 +808,10 @@ func _trigger_strict_attack() -> void:
 func _on_defeated() -> void:
 	_cleanup_telegraph()
 	is_strict_attacking = false
+	enrage_windup_timer = 0.0
+	if enrage_banner:
+		enrage_banner.visible = false
+	_extinguish_eye_flares()
 	recovery_timer = 0.0
 	stun_timer = 0.0
 	emit_signal("boss_defeated")
@@ -628,6 +848,9 @@ func _get_dir_str() -> String:
 
 func _on_animation_finished() -> void:
 	_cleanup_telegraph()
+	if current_state == State.ENRAGE_WINDUP:
+		# Enrage windup timer drives the transition into retaliation attack!
+		return
 	is_strict_attacking = false
 	if current_state in [State.ROAR, State.STAGGER, State.HURT]:
 		current_state = State.IDLE
